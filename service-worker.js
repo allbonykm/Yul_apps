@@ -1,11 +1,11 @@
 const CACHE_NAME = 'yul-apps-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/gecko.png',
-  '/coin.png',
-  '/bike.png'
+  './',
+  './index.html',
+  './style.css',
+  './gecko.png',
+  './coin.png',
+  './bike.png'
 ];
 
 self.addEventListener('install', event => {

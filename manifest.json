@@ -2,7 +2,7 @@
   "name": "율이의 앱",
   "short_name": "율이앱",
   "description": "율이를 위한 앱 모음",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#87CEEB",
   "theme_color": "#87CEEB",
