@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영어책 생성기</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            padding: 40px 20px;
+        }
+
+        .generator-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .generator-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .subtitle {
+            color: white;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(147, 112, 219, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #6B46C1;
+            margin-bottom: 10px;
+        }
+
+        .form-hint {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(147, 112, 219, 0.1);
+            border-radius: 10px;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(147, 112, 219, 0.3);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Noto Sans KR', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #6B46C1;
+            box-shadow: 0 0 0 3px rgba(147, 112, 219, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .gen-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans KR', sans-serif;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .gen-btn-primary {
+            background: linear-gradient(135deg, #6B46C1, #9370DB);
+            color: white;
+        }
+
+        .gen-btn-secondary {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+        }
+
+        .gen-btn-tertiary {
+            background: linear-gradient(135deg, #FF9800, #FFB74D);
+            color: white;
+        }
+
+        .gen-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .example-data {
+            background: rgba(255, 248, 220, 0.5);
+            border-left: 4px solid #FFB74D;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .example-title {
+            font-weight: bold;
+            color: #FF9800;
+            margin-bottom: 8px;
+        }
+
+        .icon-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .icon-option {
+            font-size: 2rem;
+            padding: 15px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .icon-option:hover {
+            transform: scale(1.1);
+            border-color: #6B46C1;
+        }
+
+        .icon-option.selected {
+            background: rgba(147, 112, 219, 0.2);
+            border-color: #6B46C1;
+            box-shadow: 0 0 0 3px rgba(147, 112, 219, 0.2);
+        }
+
+        .preview-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(147, 112, 219, 0.3);
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6B46C1;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .output-code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Stars Background -->
+    <div class="stars" id="stars"></div>
+
+    <div class="generator-container">
+        <div class="generator-header">
+            <h1>✨ 영어책 생성기 ✨</h1>
+            <p class="subtitle">텍스트를 입력하면 자동으로 영어책 HTML을 만들어드려요!</p>
+        </div>
+
+        <div class="form-container">
+            <!-- Book Info -->
+            <div class="form-section">
+                <label class="form-label">📖 책 제목 (영어)</label>
+                <input type="text" class="form-input" id="book-title" placeholder="Yulia's Magic Camera">
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">📝 책 설명 (한글)</label>
+                <input type="text" class="form-input" id="book-description" placeholder="율이의 마법 카메라 이야기">
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">🔖 책 ID (영문/숫자만, 공백없이)</label>
+                <div class="form-hint">예: camera_story, pete_goldfish, unicorn_stevie</div>
+                <input type="text" class="form-input" id="book-id" placeholder="camera_story">
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">🎨 책 아이콘 선택</label>
+                <div class="icon-selector" id="icon-selector">
+                    <div class="icon-option selected" data-icon="📚">📚</div>
+                    <div class="icon-option" data-icon="📖">📖</div>
+                    <div class="icon-option" data-icon="📷">📷</div>
+                    <div class="icon-option" data-icon="🐱">🐱</div>
+                    <div class="icon-option" data-icon="🦄">🦄</div>
+                    <div class="icon-option" data-icon="🐠">🐠</div>
+                    <div class="icon-option" data-icon="🎨">🎨</div>
+                    <div class="icon-option" data-icon="🚲">🚲</div>
+                    <div class="icon-option" data-icon="🌟">🌟</div>
+                    <div class="icon-option" data-icon="🎵">🎵</div>
+                    <div class="icon-option" data-icon="🌈">🌈</div>
+                    <div class="icon-option" data-icon="🎪">🎪</div>
+                </div>
+            </div>
+
+            <!-- Story Content -->
+            <div class="form-section">
+                <label class="form-label">📜 이야기 내용</label>
+                <div class="form-hint">
+                    형식: <code>영어 문장 | 한글 번역</code> (한 줄에 하나씩)<br>
+                    주요 단어는 아래 단어 목록에 추가하세요
+                </div>
+                <textarea class="form-textarea" id="story-content" placeholder="This is a lovely girl named Cho Yulia. | 이 소녀는 사랑스러운 조율입니다.
+Yulia loves her pink rabbit doll, Toto. | 율이는 분홍색 토끼 인형 토토를 정말 좋아해요."></textarea>
+
+                <div class="example-data">
+                    <div class="example-title">💡 예시 데이터</div>
+                    <button class="gen-btn gen-btn-tertiary" onclick="loadExampleStory()"
+                        style="padding: 8px 16px; font-size: 0.9rem;">예시 불러오기</button>
+                </div>
+            </div>
+
+            <!-- Vocabulary -->
+            <div class="form-section">
+                <label class="form-label">📚 단어 목록</label>
+                <div class="form-hint">
+                    형식: <code>단어 | 한글 뜻 | 예문</code> (한 줄에 하나씩)
+                </div>
+                <textarea class="form-textarea" id="vocabulary-content" placeholder="lovely | 사랑스러운 | This is a lovely girl.
+camera | 카메라 | It is a shiny white camera." style="min-height: 150px;"></textarea>
+
+                <div class="example-data">
+                    <div class="example-title">💡 예시 데이터</div>
+                    <button class="gen-btn gen-btn-tertiary" onclick="loadExampleVocab()"
+                        style="padding: 8px 16px; font-size: 0.9rem;">예시 불러오기</button>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-group">
+                <button class="gen-btn gen-btn-primary" onclick="generateBook()">🎉 책 생성하기</button>
+                <button class="gen-btn gen-btn-secondary" onclick="downloadBook()">💾 HTML 다운로드</button>
+                <button class="gen-btn gen-btn-tertiary" onclick="location.reload()">🔄 초기화</button>
+            </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="preview-section" id="preview-section" style="display: none;">
+            <div class="preview-title">생성된 HTML 코드</div>
+            <div class="output-code" id="output-code"></div>
+            <div class="button-group" style="margin-top: 20px;">
+                <button class="gen-btn gen-btn-secondary" onclick="copyToClipboard()">📋 복사하기</button>
+                <button class="gen-btn gen-btn-primary" onclick="downloadBook()">💾 다운로드</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedIcon = '📚';
+        let generatedHTML = '';
+
+        // Create stars
+        const starsContainer = document.getElementById('stars');
+        const numberOfStars = 50;
+        for (let i = 0; i < numberOfStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Icon selection
+        document.querySelectorAll('.icon-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.icon-option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedIcon = option.dataset.icon;
+            });
+        });
+
+        // Load example data
+        function loadExampleStory() {
+            document.getElementById('story-content').value = `This is a lovely girl named Cho Yulia. | 이 소녀는 사랑스러운 조율입니다.
+Yulia loves her pink rabbit doll, Toto. | 율이는 분홍색 토끼 인형 토토를 정말 좋아해요.
+Yulia has a special friend. | 율이에게는 특별한 친구가 있어요.
+It is a camera! A shiny, white Instax Mini. | 그건 바로 카메라예요! 반짝이는 하얀색 인스탁스 미니죠.`;
+        }
+
+        function loadExampleVocab() {
+            document.getElementById('vocabulary-content').value = `lovely | 사랑스러운 | This is a lovely girl.
+special | 특별한 | Yulia has a special friend.
+camera | 카메라 | It is a shiny white camera.
+shiny | 반짝이는 | A shiny, white Instax Mini.`;
+        }
+
+        // Parse input
+        function parseStory(text) {
+            const lines = text.trim().split('\n').filter(line => line.trim());
+            const vocab = parseVocabulary(document.getElementById('vocabulary-content').value);
+            const vocabWords = vocab.map(v => v.word.toLowerCase());
+
+            return lines.map(line => {
+                const [en, ko] = line.split('|').map(s => s.trim());
+
+                // Find highlight words
+                const highlightWords = [];
+                vocabWords.forEach(word => {
+                    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                    if (regex.test(en)) {
+                        highlightWords.push(word);
+                    }
+                });
+
+                return { en, ko, highlightWords };
+            });
+        }
+
+        function parseVocabulary(text) {
+            const lines = text.trim().split('\n').filter(line => line.trim());
+            return lines.map(line => {
+                const [word, meaning, example] = line.split('|').map(s => s.trim());
+                return { word, meaning, example };
+            });
+        }
+
+        // Generate book HTML
+        function generateBook() {
+            const title = document.getElementById('book-title').value || 'My English Book';
+            const description = document.getElementById('book-description').value || '영어 학습 책';
+            const bookId = document.getElementById('book-id').value || 'my_book';
+            const storyText = document.getElementById('story-content').value;
+            const vocabText = document.getElementById('vocabulary-content').value;
+
+            if (!storyText || !vocabText) {
+                alert('이야기 내용과 단어 목록을 모두 입력해주세요!');
+                return;
+            }
+
+            const story = parseStory(storyText);
+            const vocabulary = parseVocabulary(vocabText);
+
+            const storyJSON = JSON.stringify(story, null, 2);
+            const vocabularyJSON = JSON.stringify(vocabulary, null, 2);
+
+            generatedHTML = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>${title}</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="book_style.css">
+</head>
+
+<body>
+  <!-- Stars Background -->
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <button class="back-button" onclick="window.history.back()">← 뒤로</button>
+      <div class="book-title">${selectedIcon} ${title}</div>
+      <div class="speed-control">
+        <button class="speed-btn" data-speed="0.8">🐢</button>
+        <button class="speed-btn active" data-speed="1.0">●</button>
+        <button class="speed-btn" data-speed="1.2">🐇</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="read">📖 읽기</button>
+      <button class="tab-btn" data-tab="words">📝 단어</button>
+      <button class="tab-btn" data-tab="review">📊 복습</button>
+    </div>
+
+    <!-- Read Tab -->
+    <div id="read-tab" class="tab-content active">
+      <div class="read-mode">
+        <div id="sentences-container"></div>
+        
+        <div class="controls">
+          <button class="control-btn" id="toggle-korean">한글 숨기기</button>
+        </div>
+        
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="progress-text">0 / ${story.length} 문장</div>
+      </div>
+    </div>
+
+    <!-- Words Tab -->
+    <div id="words-tab" class="tab-content">
+      <div class="word-mode">
+        <div class="card-counter" id="card-counter">1 / ${vocabulary.length} 단어</div>
+        
+        <div class="flashcard-container">
+          <div class="flashcard" id="flashcard">
+            <div class="word-front" id="word-front">
+              <div class="word-text" id="word-text"></div>
+              <div class="tap-hint">탭하여 뜻 보기</div>
+            </div>
+            
+            <div class="word-back" id="word-back">
+              <div class="word-text" id="word-text-back"></div>
+              <div class="word-meaning" id="word-meaning"></div>
+              <div class="word-example" id="word-example"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="answer-buttons">
+          <button class="answer-btn know" id="know-btn">😊 알아요!</button>
+          <button class="answer-btn study" id="study-btn">🤔 더 볼래요</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Tab -->
+    <div id="review-tab" class="tab-content">
+      <div class="review-mode">
+        <div class="review-header">
+          <div class="review-title">학습 현황</div>
+          <div class="star-rating">⭐⭐⭐☆☆</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value"><span id="completed-sentences">0</span>/<span id="total-sentences">${story.length}</span></div>
+            <div class="stat-label">읽은 문장</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value"><span id="mastered-words">0</span>/<span id="total-words">${vocabulary.length}</span></div>
+            <div class="stat-label">외운 단어</div>
+          </div>
+        </div>
+
+        <div class="word-list-section">
+          <div class="word-list-title">✓ 학습한 단어</div>
+          <div class="word-list" id="mastered-words-list">
+            <div class="empty-message">아직 학습한 단어가 없어요</div>
+          </div>
+        </div>
+
+        <div class="word-list-section">
+          <div class="word-list-title">📚 복습할 단어</div>
+          <div class="word-list" id="review-words-list">
+            <div class="empty-message">복습할 단어가 없어요</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="control-btn" onclick="location.reload()">처음부터 다시</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="book_reader_base.js"><` + `/script>
+  <script>
+    // Book Data
+    const BOOK_DATA = {
+      id: "${bookId}",
+      title: "${title}",
+      description: "${description}",
+      story: ${storyJSON},
+      vocabulary: ${vocabularyJSON}
+    };
+
+    // Initialize book reader
+    const reader = initBookReader(BOOK_DATA);
+  <` + `/script>
+</body>
+
+</html>`;
+
+
+            // Show preview
+            document.getElementById('output-code').textContent = generatedHTML;
+            document.getElementById('preview-section').style.display = 'block';
+            document.getElementById('preview-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Download book
+        function downloadBook() {
+            if (!generatedHTML) {
+                alert('먼저 책을 생성해주세요!');
+                return;
+            }
+
+            const bookId = document.getElementById('book-id').value || 'my_book';
+            const blob = new Blob([generatedHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${bookId}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Copy to clipboard
+        function copyToClipboard() {
+            if (!generatedHTML) {
+                alert('먼저 책을 생성해주세요!');
+                return;
+            }
+
+            navigator.clipboard.writeText(generatedHTML).then(() => {
+                alert('클립보드에 복사되었습니다!');
+            });
+        }
+    </script>
+</body>
+
+</html>

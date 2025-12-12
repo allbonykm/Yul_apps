@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>율이의 영어책 도서관</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .library-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .add-book-btn {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans KR', sans-serif;
+            margin-top: 20px;
+        }
+
+        .add-book-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .book-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(147, 112, 219, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(147, 112, 219, 0.4);
+        }
+
+        .book-icon {
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .book-info {
+            flex: 1;
+        }
+
+        .book-card-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #6B46C1;
+            margin-bottom: 8px;
+        }
+
+        .book-description {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .book-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .mini-progress-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(147, 112, 219, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .mini-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6B46C1, #9370DB);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-label {
+            font-size: 0.85rem;
+            color: #6B46C1;
+            font-weight: bold;
+        }
+
+        .empty-library {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-library-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .books-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Stars Background -->
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <button class="back-button" onclick="window.history.back()"
+            style="position: absolute; top: 20px; left: 20px; z-index: 10;">← 뒤로</button>
+
+        <h1>📚 율이의 영어책 도서관</h1>
+
+        <div class="library-header">
+            <button class="add-book-btn" onclick="location.href='../book_generator.html'">
+                ➕ 새 책 만들기
+            </button>
+        </div>
+
+        <div class="books-grid" id="books-grid">
+            <!-- Camera Story -->
+            <a href="camera_story.html" class="book-card" data-book-id="camera_story">
+                <div class="book-icon">📷</div>
+                <div class="book-info">
+                    <div class="book-card-title">Yulia's Magic Camera</div>
+                    <div class="book-description">율이의 마법 카메라 이야기</div>
+                    <div class="book-progress">
+                        <div class="mini-progress-bar">
+                            <div class="mini-progress-fill" data-progress="camera_story" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-label">0%</div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- More books will be added here -->
+        </div>
+    </div>
+
+    <script>
+        // Create stars
+        const starsContainer = document.getElementById('stars');
+        const numberOfStars = 50;
+        for (let i = 0; i < numberOfStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Load and display progress for each book
+        function loadBookProgress() {
+            const bookCards = document.querySelectorAll('.book-card');
+
+            bookCards.forEach(card => {
+                const bookId = card.dataset.bookId;
+                const progressBar = card.querySelector('[data-progress]');
+                const progressLabel = card.querySelector('.progress-label');
+
+                if (!bookId || !progressBar) return;
+
+                const saved = localStorage.getItem(`book_progress_${bookId}`);
+                if (saved) {
+                    const progress = JSON.parse(saved);
+
+                    // Calculate overall progress (average of reading and vocabulary)
+                    const readProgress = progress.lastReadSentence !== undefined ? progress.lastReadSentence + 1 : 0;
+                    const vocabProgress = Object.values(progress.vocabulary || {}).filter(v => v.learned).length;
+
+                    // You would need to know total counts - for now using estimates
+                    // In real implementation, fetch from book data
+                    const percentage = Math.min(100, Math.round((readProgress / 24) * 50 + (vocabProgress / 8) * 50));
+
+                    progressBar.style.width = percentage + '%';
+                    progressLabel.textContent = percentage + '%';
+                }
+            });
+        }
+
+        loadBookProgress();
+    </script>
+</body>
+
+</html>

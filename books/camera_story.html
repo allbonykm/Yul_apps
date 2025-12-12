@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Yulia's Magic Camera</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="book_style.css">
+</head>
+
+<body>
+    <!-- Stars Background -->
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-button" onclick="window.history.back()">← 뒤로</button>
+            <div class="book-title">📷 Yulia's Magic Camera</div>
+            <div class="speed-control">
+                <button class="speed-btn" data-speed="0.8">🐢</button>
+                <button class="speed-btn active" data-speed="1.0">●</button>
+                <button class="speed-btn" data-speed="1.2">🐇</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="read">📖 읽기</button>
+            <button class="tab-btn" data-tab="words">📝 단어</button>
+            <button class="tab-btn" data-tab="review">📊 복습</button>
+        </div>
+
+        <!-- Read Tab -->
+        <div id="read-tab" class="tab-content active">
+            <div class="read-mode">
+                <div id="sentences-container"></div>
+
+                <div class="controls">
+                    <button class="control-btn" id="toggle-korean">한글 숨기기</button>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-text">0 / 24 문장</div>
+            </div>
+        </div>
+
+        <!-- Words Tab -->
+        <div id="words-tab" class="tab-content">
+            <div class="word-mode">
+                <div class="card-counter" id="card-counter">1 / 8 단어</div>
+
+                <div class="flashcard-container">
+                    <div class="flashcard" id="flashcard">
+                        <div class="word-front" id="word-front">
+                            <div class="word-text" id="word-text">lovely</div>
+                            <div class="tap-hint">탭하여 뜻 보기</div>
+                        </div>
+
+                        <div class="word-back" id="word-back">
+                            <div class="word-text" id="word-text-back"></div>
+                            <div class="word-meaning" id="word-meaning">사랑스러운</div>
+                            <div class="word-example" id="word-example">"This is a lovely girl."</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="answer-buttons">
+                    <button class="answer-btn know" id="know-btn">😊 알아요!</button>
+                    <button class="answer-btn study" id="study-btn">🤔 더 볼래요</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Tab -->
+        <div id="review-tab" class="tab-content">
+            <div class="review-mode">
+                <div class="review-header">
+                    <div class="review-title">학습 현황</div>
+                    <div class="star-rating">⭐⭐⭐☆☆</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value"><span id="completed-sentences">0</span>/<span
+                                id="total-sentences">24</span></div>
+                        <div class="stat-label">읽은 문장</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value"><span id="mastered-words">0</span>/<span id="total-words">8</span></div>
+                        <div class="stat-label">외운 단어</div>
+                    </div>
+                </div>
+
+                <div class="word-list-section">
+                    <div class="word-list-title">✓ 학습한 단어</div>
+                    <div class="word-list" id="mastered-words-list">
+                        <div class="empty-message">아직 학습한 단어가 없어요</div>
+                    </div>
+                </div>
+
+                <div class="word-list-section">
+                    <div class="word-list-title">📚 복습할 단어</div>
+                    <div class="word-list" id="review-words-list">
+                        <div class="empty-message">복습할 단어가 없어요</div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="control-btn" onclick="location.reload()">처음부터 다시</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="book_reader_base.js"></script>
+    <script>
+        // Book Data
+        const BOOK_DATA = {
+            id: "camera_story",
+            title: "Yulia's Magic Camera",
+            description: "율이의 마법 카메라 이야기",
+            story: [
+                { en: "This is a lovely girl named Cho Yulia.", ko: "이 소녀는 사랑스러운 조율입니다.", highlightWords: ["lovely"] },
+                { en: "Yulia loves her pink rabbit doll, Toto.", ko: "율이는 분홍색 토끼 인형 토토를 정말 좋아해요.", highlightWords: [] },
+                { en: "Yulia has a special friend.", ko: "율이에게는 특별한 친구가 있어요.", highlightWords: ["special"] },
+                { en: "It is a camera! A shiny, white Instax Mini.", ko: "그건 바로 카메라예요! 반짝이는 하얀색 인스탁스 미니죠.", highlightWords: ["camera", "shiny"] },
+                { en: "It looks like a soft, white cloud.", ko: "마치 부드러운 하얀 구름처럼 보여요.", highlightWords: [] },
+                { en: "Click!", ko: "찰칵!", highlightWords: [] },
+                { en: "Yulia takes a photo of Baekhap.", ko: "율이는 백합이 사진을 찍어요.", highlightWords: ["photo"] },
+                { en: "Smile, Baekhap! You are a cute gecko!", ko: "웃어 봐, 백합아! 넌 귀여운 도마뱀이야!", highlightWords: [] },
+                { en: "Whirrr~ A small photo comes out! It is magic.", ko: "윙~ 작은 사진이 나와요! 정말 마법 같아요.", highlightWords: ["magic"] },
+                { en: "Yulia runs to the fish tank.", ko: "율이는 어항으로 달려가요.", highlightWords: [] },
+                { en: "Hello, Guppies! One, two!", ko: "안녕, 구피들아! 하나, 둘!", highlightWords: [] },
+                { en: "Click! Now, the swimming fish are in the photo.", ko: "찰칵! 이제 헤엄치는 물고기들이 사진 속에 있어요.", highlightWords: [] },
+                { en: "Yulia goes outside.", ko: "율이는 밖으로 나가요.", highlightWords: [] },
+                { en: "She rides her two-wheeled bike. Zoom, zoom!", ko: "율이는 두발자전거를 타요. 쌩쌩!", highlightWords: [] },
+                { en: "Look at the flowers and trees!", ko: "꽃이랑 나무 좀 봐!", highlightWords: [] },
+                { en: "Yulia stops her bike and takes a photo of nature.", ko: "율이는 자전거를 멈추고 자연 사진을 찍어요.", highlightWords: ["nature"] },
+                { en: "Then, her best friends come.", ko: "그때, 율이의 베스트 프렌드들이 와요.", highlightWords: [] },
+                { en: "Hi, Whee-seo! Hi, No-el! Hi, Jae-i!", ko: "안녕, 휘서야! 안녕, 노엘아! 안녕, 재이야!", highlightWords: [] },
+                { en: "They stand together. Say Cheese!", ko: "친구들은 함께 서요. '치즈!'", highlightWords: [] },
+                { en: "Click!", ko: "찰칵!", highlightWords: [] },
+                { en: "Now, Yulia has a beautiful memory with her friends.", ko: "이제 율이에게는 친구들과의 아름다운 추억이 생겼어요.", highlightWords: ["memory"] },
+                { en: "Who does Yulia love the most?", ko: "율이는 누구를 가장 사랑할까요?", highlightWords: [] },
+                { en: "Yes! Mom and Dad.", ko: "맞아요! 엄마와 아빠예요.", highlightWords: [] },
+                { en: "Yulia takes a special photo of her family.", ko: "율이는 가족의 특별한 사진을 찍어요.", highlightWords: [] }
+            ],
+            vocabulary: [
+                { word: "lovely", meaning: "사랑스러운", example: "This is a lovely girl." },
+                { word: "special", meaning: "특별한", example: "Yulia has a special friend." },
+                { word: "camera", meaning: "카메라", example: "It is a shiny white camera." },
+                { word: "shiny", meaning: "반짝이는", example: "A shiny, white Instax Mini." },
+                { word: "photo", meaning: "사진", example: "A small photo comes out!" },
+                { word: "magic", meaning: "마법", example: "It is magic!" },
+                { word: "nature", meaning: "자연", example: "A photo of nature." },
+                { word: "memory", meaning: "추억", example: "A beautiful memory with friends." }
+            ]
+        };
+
+        // Initialize book reader
+        const reader = initBookReader(BOOK_DATA);
+    </script>
+</body>
+
+</html>
