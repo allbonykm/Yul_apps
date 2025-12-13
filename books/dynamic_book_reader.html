@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>영어책 읽기</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="book_style.css">
+    <script src="book_data.js"></script>
+</head>
+
+<body>
+    <!-- Stars Background -->
+    <div class="stars" id="stars"></div>
+
+    <div class="container" id="main-container">
+        <!-- Loading State -->
+        <div id="loading-state" style="text-align: center; padding: 60px 20px; color: white;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">📚</div>
+            <div style="font-size: 1.2rem;">책을 불러오는 중...</div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" style="display: none; text-align: center; padding: 60px 20px;">
+            <div style="font-size: 3rem; margin-bottom: 20px;">❌</div>
+            <div style="font-size: 1.2rem; color: white; margin-bottom: 20px;">책을 찾을 수 없습니다</div>
+            <button class="control-btn" onclick="window.location.href='library.html'">도서관으로 돌아가기</button>
+        </div>
+
+        <!-- Book Content (will be populated dynamically) -->
+        <div id="book-content" style="display: none;">
+            <!-- Header -->
+            <div class="header">
+                <button class="back-button" onclick="window.location.href='library.html'">← 도서관</button>
+                <div class="book-title" id="book-title-display"></div>
+                <div class="speed-control">
+                    <button class="speed-btn" data-speed="0.8">🐢</button>
+                    <button class="speed-btn active" data-speed="1.0">●</button>
+                    <button class="speed-btn" data-speed="1.2">🐇</button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="read">📖 읽기</button>
+                <button class="tab-btn" data-tab="words">📝 단어</button>
+                <button class="tab-btn" data-tab="review">📊 복습</button>
+            </div>
+
+            <!-- Read Tab -->
+            <div id="read-tab" class="tab-content active">
+                <div class="read-mode">
+                    <div id="sentences-container"></div>
+
+                    <div class="controls">
+                        <button class="control-btn" id="toggle-korean">한글 숨기기</button>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text">0 / 0 문장</div>
+                </div>
+            </div>
+
+            <!-- Words Tab -->
+            <div id="words-tab" class="tab-content">
+                <div class="word-mode">
+                    <div class="card-counter" id="card-counter">1 / 0 단어</div>
+
+                    <div class="flashcard-container">
+                        <div class="flashcard" id="flashcard">
+                            <div class="word-front" id="word-front">
+                                <div class="word-text" id="word-text"></div>
+                                <div class="tap-hint">탭하여 뜻 보기</div>
+                            </div>
+
+                            <div class="word-back" id="word-back">
+                                <div class="word-text" id="word-text-back"></div>
+                                <div class="word-meaning" id="word-meaning"></div>
+                                <div class="word-example" id="word-example"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="answer-buttons">
+                        <button class="answer-btn know" id="know-btn">😊 알아요!</button>
+                        <button class="answer-btn study" id="study-btn">🤔 더 볼래요</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Tab -->
+            <div id="review-tab" class="tab-content">
+                <div class="review-mode">
+                    <div class="review-header">
+                        <div class="review-title">학습 현황</div>
+                        <div class="star-rating">⭐⭐⭐☆☆</div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value"><span id="completed-sentences">0</span>/<span
+                                    id="total-sentences">0</span></div>
+                            <div class="stat-label">읽은 문장</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value"><span id="mastered-words">0</span>/<span id="total-words">0</span>
+                            </div>
+                            <div class="stat-label">외운 단어</div>
+                        </div>
+                    </div>
+
+                    <div class="word-list-section">
+                        <div class="word-list-title">✓ 학습한 단어</div>
+                        <div class="word-list" id="mastered-words-list">
+                            <div class="empty-message">아직 학습한 단어가 없어요</div>
+                        </div>
+                    </div>
+
+                    <div class="word-list-section">
+                        <div class="word-list-title">📚 복습할 단어</div>
+                        <div class="word-list" id="review-words-list">
+                            <div class="empty-message">복습할 단어가 없어요</div>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <button class="control-btn" onclick="location.reload()">처음부터 다시</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="book_reader_base.js"></script>
+    <script>
+        // Get book ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookId = urlParams.get('id');
+
+        // Load and display book
+        function loadDynamicBook() {
+            const loadingState = document.getElementById('loading-state');
+            const errorState = document.getElementById('error-state');
+            const bookContent = document.getElementById('book-content');
+
+            if (!bookId) {
+                loadingState.style.display = 'none';
+                errorState.style.display = 'block';
+                return;
+            }
+
+            // Get book data from localStorage
+            const book = getBook(bookId);
+
+            if (!book) {
+                loadingState.style.display = 'none';
+                errorState.style.display = 'block';
+                return;
+            }
+
+            // Show book content
+            loadingState.style.display = 'none';
+            bookContent.style.display = 'block';
+
+            // Update book title
+            document.getElementById('book-title-display').textContent = `${book.icon || '📚'} ${book.title}`;
+            document.title = book.title;
+
+            // Update progress text
+            document.getElementById('progress-text').textContent = `0 / ${book.story.length} 문장`;
+            document.getElementById('card-counter').textContent = `1 / ${book.vocabulary.length} 단어`;
+            document.getElementById('total-sentences').textContent = book.story.length;
+            document.getElementById('total-words').textContent = book.vocabulary.length;
+
+            // Create book data object for reader
+            const BOOK_DATA = {
+                id: book.id,
+                title: book.title,
+                description: book.description,
+                story: book.story,
+                vocabulary: book.vocabulary
+            };
+
+            // Initialize book reader
+            const reader = initBookReader(BOOK_DATA);
+        }
+
+        // Load book on page load
+        loadDynamicBook();
+    </script>
+</body>
+
+</html>

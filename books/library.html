@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="../style.css">
+    <script src="book_data.js"></script>
+    <script src="book_list.js"></script>
     <style>
         .library-header {
             text-align: center;
@@ -124,6 +126,25 @@
             margin-bottom: 20px;
         }
 
+        .delete-btn {
+            background: linear-gradient(135deg, #f44336, #e57373);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans KR', sans-serif;
+            margin-top: 10px;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+            transform: scale(1.05);
+        }
+
         @media (min-width: 768px) {
             .books-grid {
                 grid-template-columns: 1fr 1fr;
@@ -149,22 +170,7 @@
         </div>
 
         <div class="books-grid" id="books-grid">
-            <!-- Camera Story -->
-            <a href="camera_story.html" class="book-card" data-book-id="camera_story">
-                <div class="book-icon">📷</div>
-                <div class="book-info">
-                    <div class="book-card-title">Yulia's Magic Camera</div>
-                    <div class="book-description">율이의 마법 카메라 이야기</div>
-                    <div class="book-progress">
-                        <div class="mini-progress-bar">
-                            <div class="mini-progress-fill" data-progress="camera_story" style="width: 0%"></div>
-                        </div>
-                        <div class="progress-label">0%</div>
-                    </div>
-                </div>
-            </a>
-
-            <!-- More books will be added here -->
+            <!-- Books will be loaded dynamically -->
         </div>
     </div>
 
@@ -210,7 +216,134 @@
             });
         }
 
-        loadBookProgress();
+        // Load and display all books (localStorage + static files)
+        function loadAllBooks() {
+            const booksGrid = document.getElementById('books-grid');
+
+            // Get books from localStorage
+            const dynamicBooks = getAllBooks();
+
+            // Get static books from book_list.js
+            const staticBooks = typeof STATIC_BOOKS !== 'undefined' ? STATIC_BOOKS : [];
+
+            // Combine both sources
+            const allBooks = [];
+
+            // Add dynamic books (from localStorage)
+            dynamicBooks.forEach(book => {
+                allBooks.push({
+                    ...book,
+                    isDynamic: true,
+                    url: `dynamic_book_reader.html?id=${book.id}`
+                });
+            });
+
+            // Add static books (from HTML files)
+            staticBooks.forEach(book => {
+                allBooks.push({
+                    ...book,
+                    isDynamic: false,
+                    url: book.filename,
+                    createdDate: '2000-01-01' // Old date so dynamic books appear first
+                });
+            });
+
+            // Clear existing books
+            booksGrid.innerHTML = '';
+
+            // Show empty state if no books
+            if (allBooks.length === 0) {
+                booksGrid.innerHTML = `
+                    <div class="empty-library">
+                        <div class="empty-library-icon">📚</div>
+                        <div style="font-size: 1.2rem; margin-bottom: 10px;">도서관이 비어있어요</div>
+                        <div>새 책을 만들어보세요!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort books by creation date (newest first)
+            allBooks.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+
+            // Create book cards
+            allBooks.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.style.position = 'relative';
+
+                const bookLink = document.createElement('a');
+                bookLink.href = book.url;
+                bookLink.className = 'book-card';
+                bookLink.dataset.bookId = book.id;
+
+                // Calculate progress
+                const progress = calculateProgress(book.id, book.story?.length || 0, book.vocabulary?.length || 0);
+
+                // Show delete button only for dynamic books
+                const deleteButton = book.isDynamic
+                    ? `<button class="delete-btn" onclick="deleteBookConfirm(event, '${book.id}', '${book.title}')">🗑️ 삭제</button>`
+                    : '';
+
+                bookLink.innerHTML = `
+                    <div class="book-icon">${book.icon || '📚'}</div>
+                    <div class="book-info">
+                        <div class="book-card-title">${book.title}</div>
+                        <div class="book-description">${book.description}</div>
+                        <div class="book-progress">
+                            <div class="mini-progress-bar">
+                                <div class="mini-progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                            <div class="progress-label">${progress}%</div>
+                        </div>
+                        ${deleteButton}
+                    </div>
+                `;
+
+                bookCard.appendChild(bookLink);
+                booksGrid.appendChild(bookCard);
+            });
+        }
+
+        // Calculate progress for a book
+        function calculateProgress(bookId, totalSentences, totalVocab) {
+            const saved = localStorage.getItem(`book_progress_${bookId}`);
+            if (!saved) return 0;
+
+            try {
+                const progress = JSON.parse(saved);
+                const readProgress = progress.lastReadSentence !== undefined ? progress.lastReadSentence + 1 : 0;
+                const vocabProgress = Object.values(progress.vocabulary || {}).filter(v => v.learned).length;
+
+                if (totalSentences === 0 && totalVocab === 0) return 0;
+
+                const readPercent = totalSentences > 0 ? (readProgress / totalSentences) * 50 : 0;
+                const vocabPercent = totalVocab > 0 ? (vocabProgress / totalVocab) * 50 : 0;
+
+                return Math.min(100, Math.round(readPercent + vocabPercent));
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        // Delete book with confirmation
+        function deleteBookConfirm(event, bookId, bookTitle) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const confirmed = confirm(`"${bookTitle}"을(를) 정말 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`);
+            if (confirmed) {
+                const success = deleteBook(bookId);
+                if (success) {
+                    alert('✅ 책이 삭제되었습니다.');
+                    loadAllBooks(); // Reload the library
+                } else {
+                    alert('❌ 삭제 중 오류가 발생했습니다.');
+                }
+            }
+        }
+
+        // Load books on page load
+        loadAllBooks();
     </script>
 </body>
 
