@@ -201,6 +201,7 @@
             word-wrap: break-word;
         }
     </style>
+    <script src="books/book_data.js"></script>
 </head>
 
 <body>
@@ -285,7 +286,9 @@ camera | 카메라 | It is a shiny white camera." style="min-height: 150px;"></t
             <!-- Buttons -->
             <div class="button-group">
                 <button class="gen-btn gen-btn-primary" onclick="generateBook()">🎉 책 생성하기</button>
-                <button class="gen-btn gen-btn-secondary" onclick="downloadBook()">💾 HTML 다운로드</button>
+                <button class="gen-btn gen-btn-secondary" onclick="saveToLibrary()" id="save-to-library-btn"
+                    style="display: none;">💾 도서관에 저장</button>
+                <button class="gen-btn gen-btn-secondary" onclick="downloadBook()">📥 HTML 다운로드</button>
                 <button class="gen-btn gen-btn-tertiary" onclick="location.reload()">🔄 초기화</button>
             </div>
         </div>
@@ -533,6 +536,7 @@ shiny | 반짝이는 | A shiny, white Instax Mini.`;
             // Show preview
             document.getElementById('output-code').textContent = generatedHTML;
             document.getElementById('preview-section').style.display = 'block';
+            document.getElementById('save-to-library-btn').style.display = 'inline-block';
             document.getElementById('preview-section').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -563,6 +567,52 @@ shiny | 반짝이는 | A shiny, white Instax Mini.`;
             navigator.clipboard.writeText(generatedHTML).then(() => {
                 alert('클립보드에 복사되었습니다!');
             });
+        }
+
+        // Save to library
+        function saveToLibrary() {
+            const title = document.getElementById('book-title').value || 'My English Book';
+            const description = document.getElementById('book-description').value || '영어 학습 책';
+            const bookId = document.getElementById('book-id').value || 'my_book';
+            const storyText = document.getElementById('story-content').value;
+            const vocabText = document.getElementById('vocabulary-content').value;
+
+            if (!storyText || !vocabText) {
+                alert('이야기 내용과 단어 목록을 모두 입력해주세요!');
+                return;
+            }
+
+            // Check if book ID already exists
+            if (bookExists(bookId)) {
+                const confirmUpdate = confirm(`책 ID "${bookId}"가 이미 존재합니다. 덮어쓰시겠습니까?`);
+                if (!confirmUpdate) return;
+            }
+
+            const story = parseStory(storyText);
+            const vocabulary = parseVocabulary(vocabText);
+
+            const bookData = {
+                id: bookId,
+                title: title,
+                description: description,
+                icon: selectedIcon,
+                story: story,
+                vocabulary: vocabulary,
+                createdDate: new Date().toISOString()
+            };
+
+            try {
+                saveBook(bookData);
+                alert(`✅ "${title}" 이(가) 도서관에 저장되었습니다!\n\n도서관에서 확인해보세요.`);
+
+                // Ask if user wants to go to library
+                const goToLibrary = confirm('도서관으로 이동하시겠습니까?');
+                if (goToLibrary) {
+                    window.location.href = 'books/library.html';
+                }
+            } catch (error) {
+                alert('❌ 저장 중 오류가 발생했습니다: ' + error.message);
+            }
         }
     </script>
 </body>
