@@ -46,7 +46,7 @@
     }
     .back-btn { text-decoration: none; font-size: 1.5rem; border:none; background:none; cursor:pointer;}
 
-    /* 채팅 내용 영역 */
+    /* 채팅 내용 영역 (★수정된 부분★) */
     #chat-container {
       flex: 1;
       padding: 15px;
@@ -54,7 +54,10 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding-bottom: 20px;
+      
+      /* 입력창 높이만큼 아래에 여백을 넉넉히 주어 가려짐 방지 (20px -> 120px) */
+      padding-bottom: 120px; 
+      
       -webkit-overflow-scrolling: touch;
       z-index: 1;
     }
@@ -181,12 +184,9 @@
     const storage = firebase.storage();
 
     /* =========================================
-       [설정] 여기의 주소만 바꾸면 프로필이 바뀝니다!
+       [설정] 아빠와 율이 사진
        ========================================= */
-    // 아빠 프로필 사진 주소
     const DAD_PROFILE_URL = "https://cdn.imgbin.com/16/17/13/imgbin-steve-jobs-memorial-apple-icon-steve-jobs-steve-jobs-0tbHUhDyd0Yqt7vs6CAeBtubw.jpg"; 
-    
-    // 율이 프로필 사진 주소
     const YUL_PROFILE_URL = "https://i.pinimg.com/564x/a5/61/9e/a5619e9ef5949fb35e71523644ea6c24.jpg";
     /* ========================================= */
 
@@ -223,16 +223,12 @@
         const msgRow = document.createElement('div');
         msgRow.className = `message-row ${isMine ? 'mine' : 'yours'}`;
         
-        // ★ 프로필 사진 결정 로직 ★
-        // DB에 저장된 게 있어도 무시하고, 현재 코드의 설정값(DAD_PROFILE_URL 등)을 따릅니다.
-        // 이렇게 해야 나중에 사진을 바꿨을 때 옛날 대화의 얼굴도 싹 바뀝니다.
         const profileImg = document.createElement('img');
         profileImg.className = 'profile-img';
         
         if (data.sender === "아빠") {
             profileImg.src = DAD_PROFILE_URL;
         } else {
-            // 아빠가 아니면 전부 율이로 취급 (혹시 모를 오류 방지)
             profileImg.src = YUL_PROFILE_URL;
         }
 
