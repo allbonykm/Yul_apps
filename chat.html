@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>아빠랑 율이랑</title>
+  <title>율이랑 아빠랑</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
   
@@ -59,14 +59,14 @@
       z-index: 1;
     }
 
-    /* 말풍선 줄 공통 */
+    /* 말풍선 공통 */
     .message-row {
       display: flex;
-      align-items: flex-start; /* 프로필 사진 때문에 상단 정렬로 변경 */
+      align-items: flex-start;
       margin-bottom: 10px;
     }
     
-    /* 프로필 사진 스타일 (동적 이미지 태그용) */
+    /* 프로필 사진 */
     .profile-img {
       width: 40px;
       height: 40px;
@@ -74,10 +74,11 @@
       border: 2px solid #fff;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       object-fit: cover;
-      flex-shrink: 0; /* 크기 줄어듦 방지 */
+      flex-shrink: 0;
+      background: #eee;
     }
 
-    /* 말풍선 내용 박스 */
+    /* 말풍선 박스 */
     .message-bubble-box {
         display: flex;
         flex-direction: column;
@@ -93,86 +94,35 @@
       word-break: break-all;
       box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
+    .message-content img { max-width: 100%; border-radius: 10px; display: block; margin-top: 5px; }
 
-    .message-content img {
-      max-width: 100%;
-      border-radius: 10px;
-      display: block;
-      margin-top: 5px;
-    }
+    .message-time { font-size: 0.7rem; color: #555; margin-top: 5px; }
 
-    .message-time {
-      font-size: 0.7rem;
-      color: #555;
-      margin-top: 5px;
-    }
+    /* 율이(나) 스타일 */
+    .mine { flex-direction: row-reverse; }
+    .mine .profile-img { margin-left: 10px; }
+    .mine .message-content { background-color: #Fef01b; color: #000; border-top-right-radius: 2px; }
+    .mine .message-bubble-box { align-items: flex-end; }
+    .mine .message-time { text-align: right; }
 
-    /* 율이(나)의 스타일 (오른쪽) */
-    .mine {
-      flex-direction: row-reverse; /* 요소 순서 반대로 (프로필이 맨 오른쪽 가도록) */
-    }
-    .mine .profile-img { margin-left: 10px; } /* 프로필 왼쪽에 여백 */
-    .mine .message-content {
-      background-color: #Fef01b;
-      color: #000;
-      border-top-right-radius: 2px;
-    }
-    .mine .message-bubble-box { align-items: flex-end; } /* 시간 오른쪽 정렬 */
-
-    /* 아빠(상대방)의 스타일 (왼쪽) */
-    .yours {
-      flex-direction: row; /* 기본 순서 (프로필이 맨 왼쪽) */
-    }
-    .yours .profile-img { margin-right: 10px; } /* 프로필 오른쪽에 여백 */
-    .yours .message-content {
-      background-color: #ffffff;
-      color: #000;
-      border-top-left-radius: 2px;
-    }
-    .yours .message-bubble-box { align-items: flex-start; } /* 시간 왼쪽 정렬 */
+    /* 아빠(상대방) 스타일 */
+    .yours { flex-direction: row; }
+    .yours .profile-img { margin-right: 10px; }
+    .yours .message-content { background-color: #ffffff; color: #000; border-top-left-radius: 2px; }
+    .yours .message-bubble-box { align-items: flex-start; }
 
 
-    /* ======================
-       하단 입력 및 아바타 영역
-       ====================== */
-    .bottom-container {
-        position: fixed;
-        bottom: 0; left: 0; right: 0;
-        background: #fff;
-        z-index: 20;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    /* 아바타 선택 영역 */
-    #avatar-selector {
-        display: flex;
-        gap: 10px;
-        padding: 10px;
-        overflow-x: auto; /* 가로 스크롤 */
-        background: #f9f9f9;
-        border-bottom: 1px solid #eee;
-        -webkit-overflow-scrolling: touch;
-    }
-    .avatar-option {
-        width: 35px; height: 35px;
-        border-radius: 50%;
-        border: 3px solid transparent; /* 선택 안됐을 때 투명 테두리 */
-        cursor: pointer;
-        transition: all 0.2s;
-        flex-shrink: 0;
-    }
-    .avatar-option.selected {
-        border-color: #Fef01b; /* 선택되면 노란 테두리 */
-        transform: scale(1.1); /* 약간 커짐 */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    /* 입력창 영역 */
+    /* 하단 입력창 */
     .input-area {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #fff;
+      padding: 10px;
       display: flex;
       align-items: center;
-      padding: 10px;
+      box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      z-index: 10;
     }
 
     #msg-input {
@@ -186,9 +136,7 @@
       margin: 0 10px;
     }
 
-    .icon-btn {
-      background: none; border: none; font-size: 1.6rem; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
+    .icon-btn { background: none; border: none; font-size: 1.6rem; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   </style>
 </head>
 <body>
@@ -197,7 +145,7 @@
 
   <header>
     <a href="index.html" class="back-btn">🔙</a>
-    <span id="header-title">아빠랑 비밀톡 💕</span>
+    <span id="header-title">율이랑 아빠랑 💕</span>
     <span style="width: 30px;"></span>
   </header>
 
@@ -207,16 +155,11 @@
     </div>
   </div>
 
-  <div class="bottom-container">
-      <div id="avatar-selector">
-          </div>
-
-      <div class="input-area">
-        <label for="img-input" class="icon-btn">📷</label>
-        <input type="file" id="img-input" accept="image/*" style="display: none;">
-        <input type="text" id="msg-input" placeholder="메시지 입력..." autocomplete="off">
-        <button id="send-btn" class="icon-btn" style="color:#Fef01b; background:#3b1e1e; border-radius:50%; width:35px; height:35px; font-size:1rem;">⬆</button>
-      </div>
+  <div class="input-area">
+    <label for="img-input" class="icon-btn">📷</label>
+    <input type="file" id="img-input" accept="image/*" style="display: none;">
+    <input type="text" id="msg-input" placeholder="메시지 입력..." autocomplete="off">
+    <button id="send-btn" class="icon-btn" style="color:#Fef01b; background:#3b1e1e; border-radius:50%; width:35px; height:35px; font-size:1rem;">⬆</button>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -237,65 +180,36 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // --- 사용자 및 아바타 설정 ---
+    /* =========================================
+       [설정] 여기의 주소만 바꾸면 프로필이 바뀝니다!
+       ========================================= */
+    // 아빠 프로필 사진 주소
+    const DAD_PROFILE_URL = "https://cdn.imgbin.com/16/17/13/imgbin-steve-jobs-memorial-apple-icon-steve-jobs-steve-jobs-0tbHUhDyd0Yqt7vs6CAeBtubw.jpg"; 
+    
+    // 율이 프로필 사진 주소
+    const YUL_PROFILE_URL = "https://i.pinimg.com/564x/a5/61/9e/a5619e9ef5949fb35e71523644ea6c24.jpg";
+    /* ========================================= */
+
+
+    // 사용자 설정
     let myName = localStorage.getItem('chatUser') || "율이";
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('user') === 'dad') {
         myName = "아빠";
         localStorage.setItem('chatUser', "아빠");
     }
-    if (myName === "아빠") document.getElementById('header-title').innerText = "율이와 비밀톡 👧";
-
-    // 사용할 아바타 목록 (무료 CDN 이미지 사용)
-    const avatarList = [
-        'https://cdn-icons-png.flaticon.com/128/4520/4520826.png', // 토끼
-        'https://cdn-icons-png.flaticon.com/128/4520/4520837.png', // 고양이
-        'https://cdn-icons-png.flaticon.com/128/4520/4520859.png', // 강아지
-        'https://cdn-icons-png.flaticon.com/128/4520/4520830.png', // 곰돌이
-        'https://cdn-icons-png.flaticon.com/128/4520/4520867.png', // 판다
-        'https://cdn-icons-png.flaticon.com/128/2395/2395796.png', // 아빠 얼굴 1
-        'https://cdn-icons-png.flaticon.com/128/4825/4825038.png', // 아빠 얼굴 2
-        'https://cdn-icons-png.flaticon.com/128/4520/4520845.png'  // 병아리
-    ];
-
-    // 현재 선택된 아바타 (기본값 설정)
-    let currentAvatar = localStorage.getItem('myAvatar') || (myName === '아빠' ? avatarList[6] : avatarList[0]);
-    
-    // 아바타 선택 UI 생성 함수
-    const avatarSelector = document.getElementById('avatar-selector');
-    function createAvatarSelector() {
-        avatarList.forEach(src => {
-            const img = document.createElement('img');
-            img.src = src;
-            img.className = `avatar-option ${src === currentAvatar ? 'selected' : ''}`;
-            img.onclick = () => selectAvatar(src, img);
-            avatarSelector.appendChild(img);
-        });
-    }
-    
-    // 아바타 선택 시 실행되는 함수
-    function selectAvatar(src, imgElement) {
-        currentAvatar = src;
-        localStorage.setItem('myAvatar', currentAvatar); // 선택 기억하기
-        
-        // 모든 선택 표시 제거 후 현재 것만 표시
-        document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
-        imgElement.classList.add('selected');
-    }
-    
-    createAvatarSelector(); // 실행!
-
+    if (myName === "아빠") document.getElementById('header-title').innerText = "율이랑 아빠랑 👧";
 
     const chatContainer = document.getElementById('chat-container');
     const msgInput = document.getElementById('msg-input');
     const sendBtn = document.getElementById('send-btn');
     const imgInput = document.getElementById('img-input');
 
-    // --- 메시지 그리기 함수 (핵심 변경 부분!) ---
     function renderMessage(doc) {
         const data = doc.data();
         const isMine = data.sender === myName;
         
+        // 날짜 계산
         let timeStr = "";
         if (data.timestamp) {
             const date = data.timestamp.toDate();
@@ -306,18 +220,22 @@
             timeStr = `${ampm} ${hours}:${minutes}`;
         }
 
-        // 1. 전체 행 (Row)
         const msgRow = document.createElement('div');
-        // mine이면 flex-direction: row-reverse가 되어 프로필이 오른쪽으로 감
-        msgRow.className = `message-row ${isMine ? 'mine' : 'yours'}`; 
+        msgRow.className = `message-row ${isMine ? 'mine' : 'yours'}`;
         
-        // 2. 프로필 사진 (동적으로 생성)
+        // ★ 프로필 사진 결정 로직 ★
+        // DB에 저장된 게 있어도 무시하고, 현재 코드의 설정값(DAD_PROFILE_URL 등)을 따릅니다.
+        // 이렇게 해야 나중에 사진을 바꿨을 때 옛날 대화의 얼굴도 싹 바뀝니다.
         const profileImg = document.createElement('img');
         profileImg.className = 'profile-img';
-        // 메시지에 저장된 아바타가 없으면 기본값 사용 (옛날 메시지 호환용)
-        profileImg.src = data.avatar || (data.sender === '아빠' ? avatarList[6] : avatarList[0]); 
+        
+        if (data.sender === "아빠") {
+            profileImg.src = DAD_PROFILE_URL;
+        } else {
+            // 아빠가 아니면 전부 율이로 취급 (혹시 모를 오류 방지)
+            profileImg.src = YUL_PROFILE_URL;
+        }
 
-        // 3. 말풍선 + 시간 박스
         const bubbleBox = document.createElement('div');
         bubbleBox.className = 'message-bubble-box';
 
@@ -341,7 +259,6 @@
         timeDiv.innerText = timeStr;
         bubbleBox.appendChild(timeDiv);
 
-        // 4. 조립 (프로필과 말풍선 박스를 행에 추가)
         msgRow.appendChild(profileImg);
         msgRow.appendChild(bubbleBox);
 
@@ -350,11 +267,9 @@
 
     function scrollToBottom() {
         chatContainer.scrollTop = chatContainer.scrollHeight;
-        // 아이폰에서 키보드 올라올 때 스크롤 맞추기용
         setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 100);
     }
 
-    // --- 메시지 전송 (아바타 정보 추가!) ---
     function sendMessage(text, imageUrl = null) {
       if (!text && !imageUrl) return;
 
@@ -362,7 +277,6 @@
         sender: myName,
         text: text,
         imageUrl: imageUrl,
-        avatar: currentAvatar, // ★ 현재 선택된 아바타 URL을 같이 저장! ★
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
         msgInput.value = "";
@@ -372,7 +286,7 @@
 
     sendBtn.addEventListener('click', () => sendMessage(msgInput.value));
     msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(msgInput.value); });
-    msgInput.addEventListener('focus', scrollToBottom); // 입력창 터치시 스크롤
+    msgInput.addEventListener('focus', scrollToBottom);
 
     imgInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
