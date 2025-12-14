@@ -8,31 +8,60 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
   
   <style>
-    /* 전체 디자인 (율이 앱 스타일) */
+    /* 전체 디자인 */
     body {
       margin: 0;
       padding: 0;
-      background: #b2c7d9; /* 카톡 기본 배경색 느낌 */
+      background: linear-gradient(to bottom, #89C4F4, #b2c7d9); /* 하늘색 그라데이션 */
       font-family: 'Noto Sans KR', sans-serif;
       height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* 스크롤 튕김 방지 */
+      overflow: hidden;
+      position: relative; /* 구름 배치를 위해 */
     }
+
+    /* ======================
+       배경 구름 스타일 (추가됨)
+       ====================== */
+    .bg-clouds {
+      position: fixed; /* 스크롤해도 고정 */
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1; /* 채팅창 뒤로 보내기 */
+      pointer-events: none; /* 터치 방해 안 함 */
+      overflow: hidden;
+    }
+
+    .cloud {
+        position: absolute;
+        background: #fff;
+        border-radius: 50%; /* 동글동글하게 */
+        box-shadow: #fff 60px -15px 0 5px, #fff -25px 25px 0 5px, #fff 25px 30px 0 10px; /* 뭉게뭉게 효과 */
+        opacity: 0.4; /* 반투명하게 (글씨 방해 X) */
+        filter: blur(15px); /* 테두리 부드럽게 */
+    }
+    
+    /* 구름 4개 위치 및 크기 조정 */
+    .c1 { top: 10%; left: -5%; width: 100px; height: 40px; }
+    .c2 { top: 25%; right: -10%; width: 120px; height: 45px; opacity: 0.3; }
+    .c3 { bottom: 30%; left: 5%; width: 110px; height: 40px; }
+    .c4 { bottom: 10%; right: 15%; width: 130px; height: 50px; opacity: 0.5; }
+
 
     /* 상단 헤더 */
     header {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.85); /* 헤더도 약간 투명하게 */
+      backdrop-filter: blur(5px); /* 아이폰 스타일 블러 */
       padding: 15px;
       text-align: center;
       font-weight: bold;
       font-size: 1.1rem;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 5px rgba(0,0,0,0.05);
       z-index: 10;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: env(safe-area-inset-top); /* 아이폰 노치 대응 */
+      padding-top: env(safe-area-inset-top);
     }
     .back-btn { text-decoration: none; font-size: 1.5rem; border:none; background:none; cursor:pointer;}
 
@@ -40,12 +69,13 @@
     #chat-container {
       flex: 1;
       padding: 15px;
-      overflow-y: scroll; /* 스크롤 가능 */
+      overflow-y: scroll;
       display: flex;
       flex-direction: column;
       gap: 10px;
       padding-bottom: 20px;
-      -webkit-overflow-scrolling: touch; /* 부드러운 스크롤 */
+      -webkit-overflow-scrolling: touch;
+      z-index: 1; /* 구름보다 앞에 */
     }
 
     /* 말풍선 공통 */
@@ -84,7 +114,7 @@
       justify-content: flex-end;
     }
     .mine .message-content {
-      background-color: #Fef01b; /* 카톡 노란색 */
+      background-color: #Fef01b;
       color: #000;
       border-top-right-radius: 2px;
     }
@@ -100,14 +130,14 @@
       border-top-left-radius: 2px;
     }
     
-    /* 프로필 사진 (아빠만) */
+    /* 프로필 사진 */
     .profile-pic {
       width: 35px;
       height: 35px;
       border-radius: 50%;
       background-color: #ddd;
       margin-right: 8px;
-      background-image: url('https://cdn-icons-png.flaticon.com/512/4825/4825038.png'); /* 아빠 아이콘 */
+      background-image: url('https://cdn-icons-png.flaticon.com/512/4825/4825038.png');
       background-size: cover;
       border: 1px solid rgba(0,0,0,0.1);
     }
@@ -119,7 +149,8 @@
       display: flex;
       align-items: center;
       box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
-      padding-bottom: calc(10px + env(safe-area-inset-bottom)); /* 아이폰 하단 바 대응 */
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      z-index: 10; /* 구름보다 앞에 */
     }
 
     #msg-input {
@@ -147,6 +178,13 @@
 </head>
 <body>
 
+  <div class="bg-clouds">
+      <div class="cloud c1"></div>
+      <div class="cloud c2"></div>
+      <div class="cloud c3"></div>
+      <div class="cloud c4"></div>
+  </div>
+
   <header>
     <a href="index.html" class="back-btn">🔙</a>
     <span id="header-title">아빠랑 비밀톡 💕</span>
@@ -154,17 +192,15 @@
   </header>
 
   <div id="chat-container">
-    <div style="text-align:center; margin-top:20px; color:#666; font-size:0.8rem;">
-      대화 내용을 불러오고 있어요... 🚀
+    <div style="text-align:center; margin-top:20px; color:#555; font-size:0.8rem; background: rgba(255,255,255,0.5); padding: 5px; border-radius: 10px; display:inline-block; margin: 20px auto;">
+      ☁️ 대화 내용을 불러오고 있어요... 🚀
     </div>
   </div>
 
   <div class="input-area">
     <label for="img-input" class="icon-btn">📷</label>
     <input type="file" id="img-input" accept="image/*" style="display: none;">
-    
     <input type="text" id="msg-input" placeholder="메시지 입력..." autocomplete="off">
-    
     <button id="send-btn" class="icon-btn" style="color:#Fef01b; background:#3b1e1e; border-radius:50%; width:35px; height:35px; font-size:1rem;">⬆</button>
   </div>
 
@@ -173,7 +209,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
   <script>
-    // 1. 아빠가 보내준 키 적용!
     const firebaseConfig = {
       apiKey: "AIzaSyB_mGDSlGtox4DN6HsL8SDcX6gzoVO1V8M",
       authDomain: "yul-apps.firebaseapp.com",
@@ -183,22 +218,16 @@
       appId: "1:1025363432906:web:9c55059683677b3a9f2b33"
     };
 
-    // Firebase 시작
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // 2. 사용자 설정 (기본은 율이)
     let myName = localStorage.getItem('chatUser') || "율이";
-    
-    // URL에 ?user=dad 가 있으면 아빠로 변신
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('user') === 'dad') {
         myName = "아빠";
         localStorage.setItem('chatUser', "아빠");
     }
-
-    // 제목 표시
     if (myName === "아빠") {
       document.getElementById('header-title').innerText = "율이와 비밀톡 👧";
     }
@@ -208,12 +237,10 @@
     const sendBtn = document.getElementById('send-btn');
     const imgInput = document.getElementById('img-input');
 
-    // 3. 메시지 그리기 함수
     function renderMessage(doc) {
         const data = doc.data();
         const isMine = data.sender === myName;
         
-        // 날짜 변환
         let timeStr = "";
         if (data.timestamp) {
             const date = data.timestamp.toDate();
@@ -228,21 +255,19 @@
         const msgRow = document.createElement('div');
         msgRow.className = `message-row ${isMine ? 'mine' : 'yours'}`;
         
-        // 상대방(아빠)일 때만 프로필 사진 표시
         if (!isMine) {
             const profile = document.createElement('div');
             profile.className = 'profile-pic';
             msgRow.appendChild(profile);
         }
 
-        // 내용 박스
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
 
         if (data.imageUrl) {
             const img = document.createElement('img');
             img.src = data.imageUrl;
-            img.onload = () => scrollToBottom(); // 이미지 로딩되면 스크롤 내림
+            img.onload = () => scrollToBottom();
             contentDiv.appendChild(img);
         }
         if (data.text) {
@@ -251,12 +276,10 @@
             contentDiv.appendChild(textSpan);
         }
 
-        // 시간 표시
         const timeDiv = document.createElement('div');
         timeDiv.className = 'message-time';
         timeDiv.innerText = timeStr;
 
-        // 순서 배치 (내가 보낸건 시간-내용, 남이 보낸건 내용-시간)
         if (isMine) {
             msgRow.appendChild(timeDiv);
             msgRow.appendChild(contentDiv);
@@ -272,7 +295,6 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    // 4. 메시지 전송
     function sendMessage(text, imageUrl = null) {
       if (!text && !imageUrl) return;
 
@@ -290,28 +312,23 @@
       });
     }
 
-    // 버튼 클릭 이벤트
     sendBtn.addEventListener('click', () => sendMessage(msgInput.value));
     msgInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') sendMessage(msgInput.value);
     });
 
-    // 5. 이미지 업로드
     imgInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
-
-      // 파일명 겹치지 않게 시간 추가
       const fileName = new Date().getTime() + '_' + file.name;
       const storageRef = storage.ref().child('chat_images/' + fileName);
       
-      // 로딩 중 표시 (간단히 입력창에 표시)
-      msgInput.placeholder = "사진 보내는 중... ✈️";
+      msgInput.placeholder = "사진 보내는 중... ☁️";
 
       storageRef.put(file).then((snapshot) => {
         return snapshot.ref.getDownloadURL();
       }).then((url) => {
-          sendMessage(null, url); // 이미지 주소만 전송
+          sendMessage(null, url);
           msgInput.placeholder = "메시지 입력...";
       }).catch((error) => {
           console.error("Upload failed:", error);
@@ -320,16 +337,14 @@
       });
     });
 
-    // 6. 실시간 수신 대기 (가장 중요!)
     let isFirstLoad = true;
     db.collection("messages")
       .orderBy("timestamp", "asc")
       .onSnapshot((snapshot) => {
         if(isFirstLoad) {
-            chatContainer.innerHTML = ""; // 로딩 문구 삭제
+            chatContainer.innerHTML = "";
             isFirstLoad = false;
         }
-        
         snapshot.docChanges().forEach((change) => {
           if (change.type === "added") {
             renderMessage(change.doc);
@@ -337,7 +352,6 @@
         });
         scrollToBottom();
       });
-
   </script>
 </body>
 </html>
