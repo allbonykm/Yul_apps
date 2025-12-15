@@ -180,13 +180,13 @@
     const storage = firebase.storage();
 
     /* =========================================
-       [설정] 아빠와 율이 사진
+       [설정] 아빠와 율이 사진 및 알림음
        ========================================= */
     const DAD_PROFILE_URL = "https://cdn.imgbin.com/16/17/13/imgbin-steve-jobs-memorial-apple-icon-steve-jobs-steve-jobs-0tbHUhDyd0Yqt7vs6CAeBtubw.jpg"; 
     const YUL_PROFILE_URL = "https://i.pinimg.com/564x/a5/61/9e/a5619e9ef5949fb35e71523644ea6c24.jpg";
     
-    // ★ 알림음 파일 (귀여운 띵동 소리)
-    const alertSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.m4a");
+    // ★ 율이 목소리 알림음 (수정됨)
+    const alertSound = new Audio("https://firebasestorage.googleapis.com/v0/b/yul-apps.firebasestorage.app/o/sounds%2Fyul-talk.mp3?alt=media&token=02b2a1aa-c06f-4f62-ba9e-db2cdf25268e");
     /* ========================================= */
 
     // 사용자 설정
@@ -203,7 +203,7 @@
     const sendBtn = document.getElementById('send-btn');
     const imgInput = document.getElementById('img-input');
 
-function renderMessage(doc) {
+    function renderMessage(doc) {
         const data = doc.data();
         const isMine = data.sender === myName;
         
@@ -236,17 +236,17 @@ function renderMessage(doc) {
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
         
-        // ★★★ 여기가 수정된 부분입니다 ★★★
+        // ★ [수정] 이미지가 삭제되어도 앱이 멈추지 않게 처리
         if (data.imageUrl) {
             const img = document.createElement('img');
             img.src = data.imageUrl;
             
-            // 사진 로딩 성공 시
+            // 이미지 로딩 성공 시
             img.onload = () => scrollToBottom();
             
-            // 사진 로딩 실패 시 (삭제된 파일 등)
+            // 이미지 로딩 실패 시 (삭제된 경우)
             img.onerror = () => {
-                img.style.display = 'none'; // 깨진 이미지 아이콘 숨기기
+                img.style.display = 'none'; // 깨진 이미지 숨김
                 const errorText = document.createElement('div');
                 errorText.innerText = "☁️ 사진이 삭제되었어요";
                 errorText.style.color = "#aaa";
@@ -257,7 +257,6 @@ function renderMessage(doc) {
             
             contentDiv.appendChild(img);
         }
-        // ★★★ 수정 끝 ★★★
 
         if (data.text) {
             const textSpan = document.createElement('div');
@@ -282,7 +281,7 @@ function renderMessage(doc) {
         setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 100);
     }
 
-    // 소리 재생 함수 (브라우저 정책 대응)
+    // 소리 재생 함수
     function playNotification() {
         alertSound.currentTime = 0; 
         alertSound.play().catch(error => {
@@ -341,7 +340,6 @@ function renderMessage(doc) {
         
         scrollToBottom();
 
-        // 첫 데이터 로드가 끝나면 isFirstLoad를 false로 변경
         if (isFirstLoad) {
             isFirstLoad = false;
         }
