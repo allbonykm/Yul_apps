@@ -203,7 +203,7 @@
     const sendBtn = document.getElementById('send-btn');
     const imgInput = document.getElementById('img-input');
 
-    function renderMessage(doc) {
+function renderMessage(doc) {
         const data = doc.data();
         const isMine = data.sender === myName;
         
@@ -235,12 +235,30 @@
 
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
+        
+        // ★★★ 여기가 수정된 부분입니다 ★★★
         if (data.imageUrl) {
             const img = document.createElement('img');
             img.src = data.imageUrl;
+            
+            // 사진 로딩 성공 시
             img.onload = () => scrollToBottom();
+            
+            // 사진 로딩 실패 시 (삭제된 파일 등)
+            img.onerror = () => {
+                img.style.display = 'none'; // 깨진 이미지 아이콘 숨기기
+                const errorText = document.createElement('div');
+                errorText.innerText = "☁️ 사진이 삭제되었어요";
+                errorText.style.color = "#aaa";
+                errorText.style.fontSize = "0.8rem";
+                errorText.style.marginTop = "5px";
+                contentDiv.appendChild(errorText);
+            };
+            
             contentDiv.appendChild(img);
         }
+        // ★★★ 수정 끝 ★★★
+
         if (data.text) {
             const textSpan = document.createElement('div');
             textSpan.innerText = data.text;
