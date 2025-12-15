@@ -6,6 +6,13 @@
 
 const STATIC_BOOKS = [
     {
+        id: "Steve_jobs",
+        title: "Steve jobs",
+        description: "스티브 잡스 스탠포드 발표",
+        icon: "🧔🏻",
+        filename: "Steve_jobs.html"
+    },
+    {
         id: "camera_story",
         title: "Yulia's Magic Camera",
         description: "율이의 마법 카메라 이야기",
@@ -28,3 +35,4 @@ const STATIC_BOOKS = [
     //     filename: "파일명.html"
     // }
 ];
+
