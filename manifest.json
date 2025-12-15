@@ -1,6 +1,6 @@
 {
   "name": "율이의 앱",
-  "short_name": "율이앱",
+  "short_name": "Yul's apps!",
   "description": "율이를 위한 앱 모음",
   "start_url": "./",
   "display": "standalone",
@@ -21,4 +21,5 @@
       "purpose": "any maskable"
     }
   ]
+
 }
