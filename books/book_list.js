@@ -6,6 +6,13 @@
 
 const STATIC_BOOKS = [
     {
+        id: "Holly_Jolly",
+        title: "Holly Jolly Christmas",
+        description: "즐거운 크리스마스",
+        icon: "🎅🏻",
+        filename: "Holly_Jolly_Christmas.html"
+    },
+    {
         id: "Steve_jobs",
         title: "Steve jobs",
         description: "스티브 잡스 스탠포드 발표",
@@ -35,4 +42,5 @@ const STATIC_BOOKS = [
     //     filename: "파일명.html"
     // }
 ];
+
 
