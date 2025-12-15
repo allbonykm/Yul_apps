@@ -40,22 +40,21 @@
       box-shadow: 0 1px 5px rgba(0,0,0,0.05);
       z-index: 10;
       display: flex;
-      justify-content: space-between;
+      justify-content: center; /* 제목 중앙 정렬 */
       align-items: center;
+      position: relative;
       padding-top: env(safe-area-inset-top);
     }
-    .back-btn { text-decoration: none; font-size: 1.5rem; border:none; background:none; cursor:pointer;}
-    
-    /* 소리 테스트 버튼 스타일 */
-    #sound-test-btn {
-        border: 1px solid #ddd;
-        background: #fff;
-        border-radius: 15px;
-        padding: 5px 10px;
-        font-size: 0.8rem;
-        cursor: pointer;
+    .back-btn { 
+        position: absolute; 
+        left: 15px; 
+        text-decoration: none; 
+        font-size: 1.5rem; 
+        border:none; 
+        background:none; 
+        cursor:pointer;
     }
-
+    
     /* 채팅 내용 영역 */
     #chat-container {
       flex: 1;
@@ -157,9 +156,7 @@
     
     <div style="display:flex; flex-direction:column; align-items:center;">
         <span id="header-title">율이랑 아빠랑 💕</span>
-    </div>
-
-    <button id="sound-test-btn">🔔소리켜기</button>
+        </div>
   </header>
 
   <div id="chat-container">
@@ -199,40 +196,75 @@
     const DAD_PROFILE_URL = "https://cdn.imgbin.com/16/17/13/imgbin-steve-jobs-memorial-apple-icon-steve-jobs-steve-jobs-0tbHUhDyd0Yqt7vs6CAeBtubw.jpg"; 
     const YUL_PROFILE_URL = "https://i.pinimg.com/564x/a5/61/9e/a5619e9ef5949fb35e71523644ea6c24.jpg";
     
-    // ★ 율이 목소리 파일 주소 (변하지 않는 값으로 설정)
+    // ★ 율이 목소리 파일 주소
     const SOUND_URL = "https://firebasestorage.googleapis.com/v0/b/yul-apps.firebasestorage.app/o/sounds%2Fyul-talk.mp3?alt=media&token=02b2a1aa-c06f-4f62-ba9e-db2cdf25268e";
     /* ========================================= */
 
+    // [1] 사용자(아빠/율이) 설정 및 제목 변경 기능
     let myName = localStorage.getItem('chatUser') || "율이";
+    
+    // URL로 강제 접속 시 (예: ?user=dad)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('user') === 'dad') {
         myName = "아빠";
         localStorage.setItem('chatUser', "아빠");
     }
-    if (myName === "아빠") document.getElementById('header-title').innerText = "율이랑 아빠랑 👧";
+
+    const titleElement = document.getElementById('header-title');
+    // 아빠 모드일 경우 제목에 아이콘 변경 (구분을 위해)
+    if (myName === "아빠") titleElement.innerText = "율이랑 아빠랑 👧";
+
+    // 제목 클릭 시 사용자 전환 기능 (Method 2)
+    titleElement.style.cursor = "pointer";
+    titleElement.addEventListener('click', () => {
+        const newUser = myName === "아빠" ? "율이" : "아빠";
+        if (confirm(`지금 '${myName}' 모드입니다.\n'${newUser}'(으)로 바꾸시겠어요? 🔄`)) {
+            localStorage.setItem('chatUser', newUser);
+            // URL 파라미터 초기화 (꼬임 방지)
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.pushState({path:newUrl},'',newUrl);
+            location.reload(); // 새로고침
+        }
+    });
 
     const chatContainer = document.getElementById('chat-container');
     const msgInput = document.getElementById('msg-input');
     const sendBtn = document.getElementById('send-btn');
     const imgInput = document.getElementById('img-input');
-    const soundBtn = document.getElementById('sound-test-btn'); 
 
-    // [수정] 소리 켜기 버튼 (클릭 시 새 오디오 생성 및 재생)
-    soundBtn.addEventListener('click', () => {
+    /* =========================================
+       [소리 자동 활성화 마법 코드]
+       화면을 아무데나 한 번이라도 터치하면
+       소리 기능을 몰래 켜둡니다. (버튼 불필요)
+       ========================================= */
+    let audioContextAllowed = false;
+
+    function unlockAudio() {
+        if (audioContextAllowed) return; // 이미 켜졌으면 패스
+        
+        // 빈 소리를 한번 재생해서 브라우저의 보안을 뚫습니다
         const audio = new Audio(SOUND_URL);
+        audio.volume = 0; // 소리 안나게
         audio.play().then(() => {
-            alert('🔊 소리 확인 완료! (이제 메시지가 오면 소리가 날 거예요)');
-            soundBtn.style.display = 'none'; 
-        }).catch((e) => {
-            alert('⚠️ 소리 재생 실패. 아이폰 옆면 스위치가 [진동]인지 확인해주세요.');
-        });
-    });
+            audioContextAllowed = true;
+            // 이벤트 리스너 제거 (한번만 하면 됨)
+            document.body.removeEventListener('click', unlockAudio);
+            document.body.removeEventListener('touchstart', unlockAudio);
+            document.body.removeEventListener('keydown', unlockAudio);
+        }).catch(e => { /* 아직 준비 안됨 */ });
+    }
 
-    // [수정] 소리 재생 함수 (매번 새 오디오 생성 -> 아이폰 호환성 UP)
+    // 화면 터치, 클릭, 키보드 입력 시 시도
+    document.body.addEventListener('click', unlockAudio);
+    document.body.addEventListener('touchstart', unlockAudio);
+    document.body.addEventListener('keydown', unlockAudio);
+
+    // 실제 메시지 왔을 때 소리 재생 함수
     function playNotification() {
         const audio = new Audio(SOUND_URL);
+        audio.volume = 1.0;
         audio.play().catch(e => {
-            console.log("재생 실패 (화면 터치 필요):", e);
+            console.log("소리 재생 차단됨 (화면 활성화 필요):", e);
         });
     }
 
@@ -348,7 +380,7 @@
               const data = change.doc.data();
               renderMessage(change.doc);
 
-              // 첫 로딩이 아니고(실시간), 상대방이 보낸 메시지일 때만 소리 재생
+              // [중요] 첫 로딩이 아니고(실시간), 상대방이 보낸 메시지일 때만 소리 재생
               if (!isFirstLoad && data.sender !== myName) {
                   playNotification();
               }
@@ -361,24 +393,6 @@
             isFirstLoad = false;
         }
       });
-
-  const titleElement = document.getElementById('header-title');
-  
-  titleElement.style.cursor = "pointer"; // 클릭 가능하다는 표시
-  
-  titleElement.addEventListener('click', () => {
-      const currentUser = localStorage.getItem('chatUser') || "율이";
-      const newUser = currentUser === "아빠" ? "율이" : "아빠";
-      
-      if (confirm(`지금 '${currentUser}' 모드입니다.\n'${newUser}'(으)로 바꾸시겠어요? 🔄`)) {
-          localStorage.setItem('chatUser', newUser);
-          // URL에서 ?user=dad 파라미터가 있다면 제거하여 꼬임 방지
-          const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-          window.history.pushState({path:newUrl},'',newUrl);
-          
-          location.reload(); // 새로고침하여 적용
-      }
-  });
   </script>
 </body>
 </html>
