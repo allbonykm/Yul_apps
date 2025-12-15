@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>holly jolly Christmas</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="book_style.css">
+</head>
+
+<body>
+  <!-- Stars Background -->
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <button class="back-button" onclick="window.history.back()">← 뒤로</button>
+      <div class="book-title">🎵 holly jolly Christmas</div>
+      <div class="speed-control">
+        <button class="speed-btn" data-speed="0.8">🐢</button>
+        <button class="speed-btn active" data-speed="1.0">●</button>
+        <button class="speed-btn" data-speed="1.2">🐇</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="read">📖 읽기</button>
+      <button class="tab-btn" data-tab="words">📝 단어</button>
+      <button class="tab-btn" data-tab="review">📊 복습</button>
+    </div>
+
+    <!-- Read Tab -->
+    <div id="read-tab" class="tab-content active">
+      <div class="read-mode">
+        <div id="sentences-container"></div>
+        
+        <div class="controls">
+          <button class="control-btn" id="toggle-korean">한글 숨기기</button>
+        </div>
+        
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="progress-text">0 / 12 문장</div>
+      </div>
+    </div>
+
+    <!-- Words Tab -->
+    <div id="words-tab" class="tab-content">
+      <div class="word-mode">
+        <div class="card-counter" id="card-counter">1 / 11 단어</div>
+        
+        <div class="flashcard-container">
+          <div class="flashcard" id="flashcard">
+            <div class="word-front" id="word-front">
+              <div class="word-text" id="word-text"></div>
+              <div class="tap-hint">탭하여 뜻 보기</div>
+            </div>
+            
+            <div class="word-back" id="word-back">
+              <div class="word-text" id="word-text-back"></div>
+              <div class="word-meaning" id="word-meaning"></div>
+              <div class="word-example" id="word-example"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="answer-buttons">
+          <button class="answer-btn know" id="know-btn">😊 알아요!</button>
+          <button class="answer-btn study" id="study-btn">🤔 더 볼래요</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Tab -->
+    <div id="review-tab" class="tab-content">
+      <div class="review-mode">
+        <div class="review-header">
+          <div class="review-title">학습 현황</div>
+          <div class="star-rating">⭐⭐⭐☆☆</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value"><span id="completed-sentences">0</span>/<span id="total-sentences">12</span></div>
+            <div class="stat-label">읽은 문장</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value"><span id="mastered-words">0</span>/<span id="total-words">11</span></div>
+            <div class="stat-label">외운 단어</div>
+          </div>
+        </div>
+
+        <div class="word-list-section">
+          <div class="word-list-title">✓ 학습한 단어</div>
+          <div class="word-list" id="mastered-words-list">
+            <div class="empty-message">아직 학습한 단어가 없어요</div>
+          </div>
+        </div>
+
+        <div class="word-list-section">
+          <div class="word-list-title">📚 복습할 단어</div>
+          <div class="word-list" id="review-words-list">
+            <div class="empty-message">복습할 단어가 없어요</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="control-btn" onclick="location.reload()">처음부터 다시</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="book_reader_base.js"></script>
+  <script>
+    // Book Data
+    const BOOK_DATA = {
+      id: "Holly_Jolly_Christmas",
+      title: "holly jolly Christmas",
+      description: "할리갈리",
+      story: [
+  {
+    "en": "Have a holly jolly Christmas",
+    "ko": "행복하고 즐거운 크리스마스 보내세요.",
+    "highlightWords": [
+      "christmas"
+    ]
+  },
+  {
+    "en": "It's the best time of the year",
+    "ko": "일 년 중 가장 좋은 때니까요.",
+    "highlightWords": [
+      "best",
+      "time",
+      "year"
+    ]
+  },
+  {
+    "en": "Now I don't know if there'll be snow",
+    "ko": "눈이 올지는 모르겠지만,",
+    "highlightWords": [
+      "snow"
+    ]
+  },
+  {
+    "en": "But have a cup of cheer",
+    "ko": "기운을 내세요. (즐거운 마음을 가지세요.)",
+    "highlightWords": [
+      "cup"
+    ]
+  },
+  {
+    "en": "Have a holly jolly Christmas",
+    "ko": "행복하고 즐거운 크리스마스 보내세요.",
+    "highlightWords": [
+      "christmas"
+    ]
+  },
+  {
+    "en": "And when you walk down the street",
+    "ko": "그리고 거리를 걸을 때,",
+    "highlightWords": [
+      "street"
+    ]
+  },
+  {
+    "en": "Say hello to friends you know",
+    "ko": "아는 친구들에게 인사를 건네세요.",
+    "highlightWords": [
+      "say"
+    ]
+  },
+  {
+    "en": "And everyone you meet",
+    "ko": "그리고 만나는 모든 사람들에게도요.",
+    "highlightWords": [
+      "meet"
+    ]
+  },
+  {
+    "en": "Have a holly jolly Christmas",
+    "ko": "행복하고 즐거운 크리스마스 보내세요.",
+    "highlightWords": [
+      "christmas"
+    ]
+  },
+  {
+    "en": "And in case you didn't hear",
+    "ko": "혹시 못 들었을까 봐 말하는데,",
+    "highlightWords": [
+      "hear"
+    ]
+  },
+  {
+    "en": "Oh, by golly",
+    "ko": "오, 정말로",
+    "highlightWords": []
+  },
+  {
+    "en": "Have a holly jolly Christmas this year",
+    "ko": "올해는 행복하고 즐거운 크리스마스 보내세요.",
+    "highlightWords": [
+      "christmas",
+      "year"
+    ]
+  }
+],
+      vocabulary: [
+  {
+    "word": "Christmas",
+    "meaning": "크리스마스",
+    "example": "We wish you a Merry Christmas."
+  },
+  {
+    "word": "best",
+    "meaning": "최고의 (가장 좋은)",
+    "example": "You are my best friend."
+  },
+  {
+    "word": "time",
+    "meaning": "시간 (때)",
+    "example": "It is time for lunch."
+  },
+  {
+    "word": "year",
+    "meaning": "해 (년)",
+    "example": "Happy New Year!"
+  },
+  {
+    "word": "snow",
+    "meaning": "눈",
+    "example": "Do you like snow?"
+  },
+  {
+    "word": "cup",
+    "meaning": "컵",
+    "example": "I need a cup of water."
+  },
+  {
+    "word": "street",
+    "meaning": "거리",
+    "example": "Look across the street."
+  },
+  {
+    "word": "say",
+    "meaning": "말하다",
+    "example": "Please say hello to him."
+  },
+  {
+    "word": "friend",
+    "meaning": "친구",
+    "example": "I play with my friend."
+  },
+  {
+    "word": "meet",
+    "meaning": "만나다",
+    "example": "Nice to meet you."
+  },
+  {
+    "word": "hear",
+    "meaning": "듣다",
+    "example": "Can you hear the music?"
+  }
+]
+    };
+
+    // Initialize book reader
+    const reader = initBookReader(BOOK_DATA);
+  </script>
+</body>
+
+</html>
