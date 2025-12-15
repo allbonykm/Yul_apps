@@ -361,6 +361,24 @@
             isFirstLoad = false;
         }
       });
+
+  const titleElement = document.getElementById('header-title');
+  
+  titleElement.style.cursor = "pointer"; // 클릭 가능하다는 표시
+  
+  titleElement.addEventListener('click', () => {
+      const currentUser = localStorage.getItem('chatUser') || "율이";
+      const newUser = currentUser === "아빠" ? "율이" : "아빠";
+      
+      if (confirm(`지금 '${currentUser}' 모드입니다.\n'${newUser}'(으)로 바꾸시겠어요? 🔄`)) {
+          localStorage.setItem('chatUser', newUser);
+          // URL에서 ?user=dad 파라미터가 있다면 제거하여 꼬임 방지
+          const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+          window.history.pushState({path:newUrl},'',newUrl);
+          
+          location.reload(); // 새로고침하여 적용
+      }
+  });
   </script>
 </body>
 </html>
