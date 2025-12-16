@@ -19,6 +19,13 @@ const STATIC_BOOKS = [
         icon: "🧔🏻",
         filename: "Steve_jobs.html"
     },
+        {
+        id: "Snow_Daze",
+        title: "Pete : Snow daze",
+        description: "토브 : Snow daze",
+        icon: "❄️",
+        filename: "Snow_daze.html"
+    },
     {
         id: "camera_story",
         title: "Yulia's Magic Camera",
@@ -42,5 +49,6 @@ const STATIC_BOOKS = [
     //     filename: "파일명.html"
     // }
 ];
+
 
 
