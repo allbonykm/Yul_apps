@@ -1018,7 +1018,12 @@
             }
 
             // 스크롤 끝으로 이동
-            wordHistoryContainer.scrollLeft = wordHistoryContainer.scrollWidth;
+            // 부모 요소(.history-bar)가 스크롤을 담당하므로 부모를 스크롤해야 함
+            setTimeout(() => {
+                if (wordHistoryContainer.parentElement) {
+                    wordHistoryContainer.parentElement.scrollLeft = wordHistoryContainer.parentElement.scrollWidth;
+                }
+            }, 10);
         }
 
         // 승리 표시
