@@ -90,6 +90,115 @@
             transform: scale(0.95);
         }
 
+        /* Hint 버튼 */
+        .hint-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #feca57 0%, #ff9a9e 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .hint-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hint-button:active {
+            transform: translateY(0);
+        }
+
+        /* Hint 패널 */
+        .hint-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            max-width: 90vw;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2);
+            z-index: 1500;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            padding: 80px 30px 30px;
+        }
+
+        .hint-panel.open {
+            right: 0;
+        }
+
+        .hint-panel-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .hint-panel-close:hover {
+            transform: rotate(90deg);
+            background: #ff4757;
+        }
+
+        .hint-panel-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #2c5f7c;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .hint-panel-subtitle {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .killer-word-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .killer-word-item {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c5f7c;
+            padding: 12px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .killer-word-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
         /* 메인 컨테이너 */
         .container {
             position: relative;
@@ -503,6 +612,14 @@
                 height: 80px;
                 font-size: 36px;
             }
+
+            .hint-panel {
+                width: 100%;
+            }
+
+            .killer-word-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
         }
     </style>
 </head>
@@ -514,10 +631,21 @@
     <!-- 뒤로가기 버튼 -->
     <button class="back-button" onclick="window.location.href='index.html'">←</button>
 
+    <!-- Hint 버튼 -->
+    <button class="hint-button" onclick="toggleHintPanel()">💡 Hint</button>
+
+    <!-- Hint 패널 -->
+    <div class="hint-panel" id="hintPanel">
+        <button class="hint-panel-close" onclick="toggleHintPanel()">×</button>
+        <h2 class="hint-panel-title">🎯 결정적 단어</h2>
+        <p class="hint-panel-subtitle">이 단어들로 끝나면 상대방이 이어갈 수 없어요!<br>잘 외워서 사용해보세요!</p>
+        <div class="killer-word-grid" id="killerWordGrid"></div>
+    </div>
+
     <div class="container">
         <!-- 헤더 -->
         <div class="header">
-            <h1 class="title">🎮 끝말잇기 훈련</h1>
+            <h1 class="title">🎮 끝말잇기 게임</h1>
             <div class="gecko-points">
                 Gecko Point: <span class="points-number" id="geckoPoints">0</span>
             </div>
@@ -578,8 +706,16 @@
         let rallyCount = 0;
         let isListening = false;
 
-        // 필살기 단어 (한방 단어)
-        const killerWords = ['늄', '듐', '녘', '릇', '슴', '즈', '쁨', '믐', '뜸', '읊'];
+        // 필살기 단어 (결정적 단어)
+        const killerWords = [
+            '가슴', '구경꾼', '그믐', '그릇', '기슭', '기쁨', '낚시꾼', '나트륨', '남녘', '나무꾼',
+            '노릇', '누리꾼', '동녘', '라듐', '라켓', '렌즈', '로켓', '리튬', '마그네슘', '마요네즈',
+            '마켓', '무릎', '바스켓', '버릇', '베릴륨', '북녘', '부엌', '비즈', '사냥꾼', '사슴',
+            '사이즈', '산기슭', '산짐승', '살갗', '살림꾼', '서녘', '소리꾼', '소켓', '수탉', '슈퍼마켓',
+            '시리즈', '씨암탉', '아침녘', '알루미늄', '암탉', '오스뮴', '우라늄', '으뜸', '이리듐', '일꾼',
+            '장사꾼', '재킷', '제라늄', '질그릇', '짐꾼', '치즈', '카드뮴', '칼륨', '칼슘', '크로뮴',
+            '크리켓', '퀴즈', '티켓', '티타늄', '팔라듐', '포켓', '플루토늄', '해질녘', '헬륨'
+        ];
 
         // 일반 단어 데이터베이스 (AI가 사용할 단어들)
         const wordDatabase = [
@@ -587,17 +723,48 @@
             '바나나', '나비', '비행기', '기차', '차가운', '운동', '동물', '물고기',
             '고양이', '이불', '불고기', '기린', '린스', '스키', '키보드', '드럼',
             '럼주', '주스', '스포츠', '츠나미', '미끄럼틀', '틀니', '니모', '모자',
-            '자전거', '거북이', '이야기', '기쁨', '쁨쁨이', '이상한', '한글', '글씨',
+            '자전거', '거북이', '이야기', '쁨쁨이', '이상한', '한글', '글씨',
             '씨앗', '앗싸', '싸움', '움직임', '집', '사자', '자리', '리본',
-            '본능', '능력', '력사', '사랑', '랑데부', '부엌', '엌', '크레파스',
-            '스타', '타조', '조개', '개구리', '리듬', '듬직한', '한복', '복숭아',
+            '본능', '능력', '력사', '사랑', '랑데부', '부엌', '크레파스',
+            '스타', '타조', '조개', '개구리', '듬직한', '한복', '복숭아',
             '아기', '기억', '억새', '새우', '우산', '산', '나무', '무지개',
             '개나리', '리코더', '더위', '위험', '험난한', '한강', '강아지', '지우개',
             '개미', '미술', '술', '라면', '면도', '도넛', '넛크래커', '커피',
             '피아노', '노래', '래퍼', '퍼즐', '즐거움', '음악', '악어', '어항',
             '항구', '구름', '름직한', '한라산', '산소', '소금', '금메달', '달빛',
-            '빛', '트럭', '럭셔리', '리더', '더블', '블루베리', '리액션', '션샤인'
+            '빛', '트럭', '럭셔리', '리더', '더블', '블루베리', '리액션', '션샤인',
+            // 추가 단어들
+            '호랑이', '독수리', '코끼리', '다람쥐', '토끼', '펭귄', '하마', '캥거루', '너구리', '앵무새',
+            '거미', '잠자리', '매미', '여우', '늑대', '송아지', '망아지', '얼룩말', '오징어', '문어',
+            '수박', '딸기', '포도', '참외', '멜론', '자두', '감', '밤', '대추', '호두',
+            '햄버거', '피자', '치킨', '떡볶이', '김밥', '볶음밥', '탕수육', '자장면', '우유', '요구르트',
+            '사탕', '초콜릿', '아이스크림', '케이크', '샌드위치', '오므라이스', '계란', '두부', '김치',
+            '학교', '교실', '운동장', '선생님', '친구', '칠판', '분필', '공책', '연필', '가위',
+            '실내화', '가방', '안경', '우체국', '병원', '약국', '소방서', '경찰서', '놀이터', '공원',
+            '텔레비전', '냉장고', '세탁기', '선풍기', '에어컨', '청소기', '컴퓨터', '전화기', '스마트폰',
+            '여름', '겨울', '가을', '우주', '지구', '태양', '별', '바람', '태풍', '눈사람',
+            '장미', '튤립', '해바라기', '민들레', '선인장', '소나무', '단풍', '은행',
+            '로봇', '인형', '장난감', '블록', '풍선', '비누', '수건', '치약', '칫솔',
+            '장갑', '장화', '장독대', '보물', '보석', '주사위', '주전자', '차표', '표범',
+            '수영', '요일', '일기', '차도', '도라지', '지도', '도시'
         ];
+
+        // Hint 패널에 단어 표시
+        function populateKillerWords() {
+            const grid = document.getElementById('killerWordGrid');
+            killerWords.forEach(word => {
+                const item = document.createElement('div');
+                item.className = 'killer-word-item';
+                item.textContent = word;
+                grid.appendChild(item);
+            });
+        }
+
+        // Hint 패널 토글
+        function toggleHintPanel() {
+            const panel = document.getElementById('hintPanel');
+            panel.classList.toggle('open');
+        }
 
         // 별 생성
         const starsContainer = document.getElementById('stars');
@@ -609,6 +776,9 @@
             star.style.animationDelay = Math.random() * 3 + 's';
             starsContainer.appendChild(star);
         }
+
+        // 페이지 로드 시 힌트 단어 표시
+        populateKillerWords();
 
         // DOM 요소
         const micButton = document.getElementById('micButton');
@@ -642,7 +812,7 @@
             };
 
             recognition.onerror = (event) => {
-                statusMessage.textContent = '음성 인식 실패. 다시 시도해주세요.';
+                statusMessage.textContent = '잘 못 알아들었어요. 다시 말해주세요.';
                 micButton.classList.remove('listening');
                 isListening = false;
             };
@@ -704,9 +874,8 @@
             currentWord = word;
             textInput.value = '';
 
-            // 필살기 단어 체크
-            const lastChar = getLastChar(word);
-            if (isKillerWord(lastChar)) {
+            // 필살기 단어 체크 - killerWords 배열에 있는 모든 단어 체크
+            if (isKillerWord(word)) {
                 // 승리!
                 showVictory(word);
                 return;
@@ -718,14 +887,21 @@
             }, 1000);
         }
 
-        // 마지막 글자 추출 (받침 처리)
+        // 마지막 글자 추출
         function getLastChar(word) {
             return word.charAt(word.length - 1);
         }
 
-        // 필살기 단어 확인
-        function isKillerWord(char) {
-            return killerWords.includes(char);
+        // 필살기 단어 확인 - 전체 단어 또는 마지막 글자 체크
+        function isKillerWord(word) {
+            // 단어 전체가 필살기 단어 리스트에 있는지 확인
+            if (killerWords.includes(word)) {
+                return true;
+            }
+
+            // 또는 마지막 글자로 시작하는 필살기 단어가 있는지 확인
+            const lastChar = getLastChar(word);
+            return killerWords.some(killerWord => killerWord.endsWith(lastChar));
         }
 
         // AI 응답
@@ -788,14 +964,14 @@
             if (aiGaveUp) {
                 victoryMessage.innerHTML = `휘서: "으악! 이어갈 단어가 없어!<br>내가 졌어!"`;
             } else {
-                victoryMessage.innerHTML = `완벽해요! <strong>"${killerWord}"</strong>는<br>필살기 단어예요! 🎯`;
+                victoryMessage.innerHTML = `완벽해요! <strong>"${killerWord}"</strong>는<br>결정적 단어예요! 🎯`;
             }
 
             pointsGained.textContent = `Gecko Point +${rallyCount}`;
 
             victoryPopup.classList.add('show');
 
-            statusMessage.textContent = '🎉 승리했어요! 🎉';
+            statusMessage.textContent = '🎉 휘서와의 끝말잇기 승리! 🎉';
         }
 
         // 게임 재시작
