@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>끝말잇기 훈련</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #a8d8ea 0%, #d4f1f4 50%, #b8e6f0 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 별 애니메이션 배경 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* 뒤로가기 버튼 */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-button:active {
+            transform: scale(0.95);
+        }
+
+        /* 메인 컨테이너 */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 헤더 */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #2c5f7c;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .gecko-points {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c5f7c;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .points-number {
+            color: #ff6b9d;
+            font-size: 24px;
+            margin-left: 5px;
+        }
+
+        /* 히스토리 바 */
+        .history-bar {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            min-height: 80px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .history-title {
+            font-size: 14px;
+            color: #2c5f7c;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .word-bubbles {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .word-bubble {
+            display: inline-block;
+            background: linear-gradient(135deg, #89cff0 0%, #a8d8ea 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 700;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            animation: bubblePop 0.3s ease;
+            position: relative;
+        }
+
+        .word-bubble.user {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        }
+
+        .word-bubble.ai {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        @keyframes bubblePop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .arrow {
+            color: #2c5f7c;
+            font-size: 20px;
+        }
+
+        /* VS 배틀 스테이지 */
+        .battle-stage {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .character {
+            text-align: center;
+            flex: 1;
+        }
+
+        .character-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            animation: idle 2s ease-in-out infinite;
+            background: white;
+        }
+
+        @keyframes idle {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .character-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: #2c5f7c;
+            margin-top: 15px;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .vs-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ff6b9d 0%, #feca57 100%);
+            color: white;
+            font-size: 36px;
+            font-weight: 900;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            animation: pulse 1.5s ease-in-out infinite;
+            border: 4px solid white;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        /* 입력 영역 */
+        .input-area {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .mic-button {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+            border: none;
+            font-size: 48px;
+            color: white;
+            cursor: pointer;
+            margin: 0 auto 20px;
+            display: block;
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .mic-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.5);
+        }
+
+        .mic-button:active {
+            transform: scale(0.95);
+        }
+
+        .mic-button.listening {
+            animation: listening 1s ease-in-out infinite;
+            background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+        }
+
+        @keyframes listening {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+            }
+
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 8px 35px rgba(255, 107, 157, 0.8);
+            }
+        }
+
+        .text-input-container {
+            text-align: center;
+        }
+
+        .text-input-label {
+            font-size: 14px;
+            color: #2c5f7c;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .text-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px 20px;
+            border: 3px solid #a8d8ea;
+            border-radius: 25px;
+            font-size: 18px;
+            font-family: 'Noto Sans KR', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .text-input:focus {
+            border-color: #89cff0;
+            box-shadow: 0 0 15px rgba(137, 207, 240, 0.3);
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, #89cff0 0%, #a8d8ea 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        /* 상태 메시지 */
+        .status-message {
+            text-align: center;
+            font-size: 16px;
+            color: #2c5f7c;
+            margin-top: 15px;
+            min-height: 25px;
+            font-weight: 700;
+        }
+
+        /* 승리 팝업 */
+        .victory-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .victory-popup.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .victory-content {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            animation: popIn 0.5s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .victory-title {
+            font-size: 36px;
+            font-weight: 900;
+            color: #ff6b9d;
+            margin-bottom: 20px;
+        }
+
+        .victory-message {
+            font-size: 18px;
+            color: #2c5f7c;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .points-gained {
+            font-size: 28px;
+            font-weight: 900;
+            color: #feca57;
+            margin-bottom: 30px;
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3);
+        }
+
+        .restart-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 24px;
+            }
+
+            .character-image {
+                width: 120px;
+                height: 120px;
+            }
+
+            .vs-badge {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .mic-button {
+                width: 80px;
+                height: 80px;
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 별 배경 -->
+    <div class="stars" id="stars"></div>
+
+    <!-- 뒤로가기 버튼 -->
+    <button class="back-button" onclick="window.location.href='index.html'">←</button>
+
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <h1 class="title">🎮 끝말잇기 훈련</h1>
+            <div class="gecko-points">
+                Gecko Point: <span class="points-number" id="geckoPoints">0</span>
+            </div>
+        </div>
+
+        <!-- 히스토리 바 -->
+        <div class="history-bar">
+            <div class="history-title">📝 단어 이력</div>
+            <div class="word-bubbles" id="wordHistory">
+                <div style="color: #2c5f7c; font-size: 14px;">첫 단어를 말해보세요!</div>
+            </div>
+        </div>
+
+        <!-- VS 배틀 스테이지 -->
+        <div class="battle-stage">
+            <div class="character">
+                <img src="hwiseo_character.jpg" alt="휘서" class="character-image" id="hwiseoImage">
+                <div class="character-name">휘서</div>
+            </div>
+
+            <div class="vs-badge">VS</div>
+
+            <div class="character">
+                <img src="yul_character.jpg" alt="조율" class="character-image" id="yulImage">
+                <div class="character-name">조율</div>
+            </div>
+        </div>
+
+        <!-- 입력 영역 -->
+        <div class="input-area">
+            <button class="mic-button" id="micButton">🎤</button>
+
+            <div class="text-input-container">
+                <label class="text-input-label">또는 직접 입력하기</label>
+                <input type="text" class="text-input" id="textInput" placeholder="단어를 입력하세요">
+                <button class="submit-button" id="submitButton">입력</button>
+            </div>
+
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+    </div>
+
+    <!-- 승리 팝업 -->
+    <div class="victory-popup" id="victoryPopup">
+        <div class="victory-content">
+            <div class="victory-title">🎉 승리! 🎉</div>
+            <div class="victory-message" id="victoryMessage"></div>
+            <div class="points-gained" id="pointsGained"></div>
+            <button class="restart-button" onclick="restartGame()">다시 하기</button>
+        </div>
+    </div>
+
+    <script>
+        // 게임 상태
+        let geckoPoints = 0;
+        let wordHistory = [];
+        let currentWord = '';
+        let rallyCount = 0;
+        let isListening = false;
+
+        // 필살기 단어 (한방 단어)
+        const killerWords = ['늄', '듐', '녘', '릇', '슴', '즈', '쁨', '믐', '뜸', '읊'];
+
+        // 일반 단어 데이터베이스 (AI가 사용할 단어들)
+        const wordDatabase = [
+            '사과', '과자', '자동차', '차례', '례의', '의사', '사람', '람보',
+            '바나나', '나비', '비행기', '기차', '차가운', '운동', '동물', '물고기',
+            '고양이', '이불', '불고기', '기린', '린스', '스키', '키보드', '드럼',
+            '럼주', '주스', '스포츠', '츠나미', '미끄럼틀', '틀니', '니모', '모자',
+            '자전거', '거북이', '이야기', '기쁨', '쁨쁨이', '이상한', '한글', '글씨',
+            '씨앗', '앗싸', '싸움', '움직임', '집', '사자', '자리', '리본',
+            '본능', '능력', '력사', '사랑', '랑데부', '부엌', '엌', '크레파스',
+            '스타', '타조', '조개', '개구리', '리듬', '듬직한', '한복', '복숭아',
+            '아기', '기억', '억새', '새우', '우산', '산', '나무', '무지개',
+            '개나리', '리코더', '더위', '위험', '험난한', '한강', '강아지', '지우개',
+            '개미', '미술', '술', '라면', '면도', '도넛', '넛크래커', '커피',
+            '피아노', '노래', '래퍼', '퍼즐', '즐거움', '음악', '악어', '어항',
+            '항구', '구름', '름직한', '한라산', '산소', '소금', '금메달', '달빛',
+            '빛', '트럭', '럭셔리', '리더', '더블', '블루베리', '리액션', '션샤인'
+        ];
+
+        // 별 생성
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // DOM 요소
+        const micButton = document.getElementById('micButton');
+        const textInput = document.getElementById('textInput');
+        const submitButton = document.getElementById('submitButton');
+        const statusMessage = document.getElementById('statusMessage');
+        const wordHistoryContainer = document.getElementById('wordHistory');
+        const geckoPointsDisplay = document.getElementById('geckoPoints');
+        const victoryPopup = document.getElementById('victoryPopup');
+
+        // 음성 인식 설정
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'ko-KR';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                isListening = true;
+                micButton.classList.add('listening');
+                statusMessage.textContent = '듣고 있어요... 🎤';
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.trim();
+                textInput.value = transcript;
+                statusMessage.textContent = `"${transcript}" 들었어요!`;
+            };
+
+            recognition.onerror = (event) => {
+                statusMessage.textContent = '음성 인식 실패. 다시 시도해주세요.';
+                micButton.classList.remove('listening');
+                isListening = false;
+            };
+
+            recognition.onend = () => {
+                micButton.classList.remove('listening');
+                isListening = false;
+            };
+        }
+
+        // 마이크 버튼 클릭
+        micButton.addEventListener('click', () => {
+            if (!recognition) {
+                statusMessage.textContent = '음성 인식을 지원하지 않는 브라우저입니다.';
+                return;
+            }
+
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+
+        // 텍스트 입력 제출
+        submitButton.addEventListener('click', () => {
+            handleUserInput();
+        });
+
+        textInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleUserInput();
+            }
+        });
+
+        // 사용자 입력 처리
+        function handleUserInput() {
+            const word = textInput.value.trim();
+
+            if (!word) {
+                statusMessage.textContent = '단어를 입력해주세요!';
+                return;
+            }
+
+            // 첫 단어이거나, 끝말잇기 규칙 확인
+            if (currentWord) {
+                const lastChar = getLastChar(currentWord);
+                const firstChar = word.charAt(0);
+
+                if (lastChar !== firstChar) {
+                    statusMessage.textContent = `"${lastChar}"(으)로 시작하는 단어를 말해주세요!`;
+                    return;
+                }
+            }
+
+            // 단어 추가
+            addWordToHistory(word, 'user');
+            rallyCount++;
+            currentWord = word;
+            textInput.value = '';
+
+            // 필살기 단어 체크
+            const lastChar = getLastChar(word);
+            if (isKillerWord(lastChar)) {
+                // 승리!
+                showVictory(word);
+                return;
+            }
+
+            // AI 응답
+            setTimeout(() => {
+                aiResponse();
+            }, 1000);
+        }
+
+        // 마지막 글자 추출 (받침 처리)
+        function getLastChar(word) {
+            return word.charAt(word.length - 1);
+        }
+
+        // 필살기 단어 확인
+        function isKillerWord(char) {
+            return killerWords.includes(char);
+        }
+
+        // AI 응답
+        function aiResponse() {
+            const lastChar = getLastChar(currentWord);
+
+            // 해당 글자로 시작하는 단어 찾기
+            const possibleWords = wordDatabase.filter(word => word.charAt(0) === lastChar);
+
+            if (possibleWords.length === 0) {
+                // AI가 단어를 못 찾음 (사용자 승리)
+                showVictory(currentWord, true);
+                return;
+            }
+
+            // 랜덤으로 단어 선택
+            const aiWord = possibleWords[Math.floor(Math.random() * possibleWords.length)];
+            addWordToHistory(aiWord, 'ai');
+            rallyCount++;
+            currentWord = aiWord;
+
+            statusMessage.textContent = '휘서가 단어를 말했어요!';
+        }
+
+        // 히스토리에 단어 추가
+        function addWordToHistory(word, speaker) {
+            wordHistory.push({ word, speaker });
+
+            // 첫 단어면 초기 메시지 제거
+            if (wordHistory.length === 1) {
+                wordHistoryContainer.innerHTML = '';
+            }
+
+            const bubble = document.createElement('div');
+            bubble.className = `word-bubble ${speaker}`;
+            bubble.textContent = word;
+
+            wordHistoryContainer.appendChild(bubble);
+
+            // 화살표 추가 (마지막이 아닌 경우)
+            if (wordHistory.length > 1 && wordHistory.length % 2 === 1) {
+                const arrow = document.createElement('span');
+                arrow.className = 'arrow';
+                arrow.textContent = '→';
+                wordHistoryContainer.insertBefore(arrow, bubble);
+            }
+
+            // 스크롤 끝으로 이동
+            wordHistoryContainer.scrollLeft = wordHistoryContainer.scrollWidth;
+        }
+
+        // 승리 표시
+        function showVictory(killerWord, aiGaveUp = false) {
+            geckoPoints += rallyCount;
+            geckoPointsDisplay.textContent = geckoPoints;
+
+            const victoryMessage = document.getElementById('victoryMessage');
+            const pointsGained = document.getElementById('pointsGained');
+
+            if (aiGaveUp) {
+                victoryMessage.innerHTML = `휘서: "으악! 이어갈 단어가 없어!<br>내가 졌어!"`;
+            } else {
+                victoryMessage.innerHTML = `완벽해요! <strong>"${killerWord}"</strong>는<br>필살기 단어예요! 🎯`;
+            }
+
+            pointsGained.textContent = `Gecko Point +${rallyCount}`;
+
+            victoryPopup.classList.add('show');
+
+            statusMessage.textContent = '🎉 승리했어요! 🎉';
+        }
+
+        // 게임 재시작
+        function restartGame() {
+            wordHistory = [];
+            currentWord = '';
+            rallyCount = 0;
+
+            wordHistoryContainer.innerHTML = '<div style="color: #2c5f7c; font-size: 14px;">첫 단어를 말해보세요!</div>';
+            statusMessage.textContent = '';
+            textInput.value = '';
+
+            victoryPopup.classList.remove('show');
+        }
+    </script>
+</body>
+
+</html>
