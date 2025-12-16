@@ -796,6 +796,17 @@
 
                 isDataLoaded = true;
                 populateKillerWords();
+
+                // 디버깅: 데이터 확인
+                console.log('폴백 데이터 로드 완료!');
+                console.log('일반 단어 수:', wordDatabase.length);
+                console.log('필살기 단어 수:', killerWords.length);
+                console.log('일반 단어 샘플:', wordDatabase.slice(0, 10));
+                console.log('필살기 단어 샘플:', killerWords.slice(0, 5));
+
+                setTimeout(() => {
+                    statusMessage.textContent = `단어 DB 준비 완료! (일반: ${wordDatabase.length}개, 필살기: ${killerWords.length}개) 🎮`;
+                }, 500);
             }
         }
 
@@ -827,13 +838,7 @@
             starsContainer.appendChild(star);
         }
 
-        // 페이지 로드 시 Google Sheets에서 단어 불러오기
-        loadWordsFromSheet();
-
-        // 페이지 로드 시 힌트 단어 표시
-        populateKillerWords();
-
-        // DOM 요소
+        // DOM 요소 (먼저 초기화!)
         const micButton = document.getElementById('micButton');
         const textInput = document.getElementById('textInput');
         const submitButton = document.getElementById('submitButton');
@@ -841,6 +846,9 @@
         const wordHistoryContainer = document.getElementById('wordHistory');
         const geckoPointsDisplay = document.getElementById('geckoPoints');
         const victoryPopup = document.getElementById('victoryPopup');
+
+        // 페이지 로드 시 Google Sheets에서 단어 불러오기 (DOM 요소 초기화 후!)
+        loadWordsFromSheet();
 
         // 음성 인식 설정
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -943,6 +951,9 @@
 
             // AI 응답
             setTimeout(() => {
+                console.log('AI 응답 시작 - 현재 단어:', currentWord);
+                console.log('일반 단어 DB 크기:', wordDatabase.length);
+                console.log('필살기 단어 DB 크기:', killerWords.length);
                 aiResponse();
             }, 1000);
         }
