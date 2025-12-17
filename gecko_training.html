@@ -94,8 +94,26 @@
         .hint-button {
             position: fixed;
             top: 20px;
-            right: 20px;
+            right: 140px;
             background: linear-gradient(135deg, #feca57 0%, #ff9a9e 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        /* Defense 버튼 */
+        .defense-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -114,6 +132,15 @@
         }
 
         .hint-button:active {
+            transform: translateY(0);
+        }
+
+        .defense-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .defense-button:active {
             transform: translateY(0);
         }
 
@@ -195,6 +222,29 @@
         }
 
         .killer-word-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .defense-word-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .defense-word-item {
+            background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .defense-word-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
@@ -634,12 +684,23 @@
     <!-- Hint 버튼 -->
     <button class="hint-button" onclick="toggleHintPanel()">💡 Hint</button>
 
+    <!-- Defense 버튼 -->
+    <button class="defense-button" onclick="toggleDefensePanel()">🛡️ 방어</button>
+
     <!-- Hint 패널 -->
     <div class="hint-panel" id="hintPanel">
         <button class="hint-panel-close" onclick="toggleHintPanel()">×</button>
         <h2 class="hint-panel-title">🎯 결정적 단어</h2>
         <p class="hint-panel-subtitle">이 단어들로 끝나면 상대방이 이어갈 수 없어요!<br>잘 외워서 사용해보세요!</p>
         <div class="killer-word-grid" id="killerWordGrid"></div>
+    </div>
+
+    <!-- Defense 패널 -->
+    <div class="hint-panel" id="defensePanel">
+        <button class="hint-panel-close" onclick="toggleDefensePanel()">×</button>
+        <h2 class="hint-panel-title">🛡️ 필살기 방어 단어</h2>
+        <p class="hint-panel-subtitle">결정적 단어에 대응할 수 있는 방어 단어들이예요!<br>이 단어들을 잘 활용해보세요!</p>
+        <div class="defense-word-grid" id="defenseWordGrid"></div>
     </div>
 
     <div class="container">
@@ -715,6 +776,7 @@
         // 단어 데이터 (Google Sheets에서 로드)
         let wordDatabase = [];
         let killerWords = [];
+        let defenseWords = [];
         let isDataLoaded = false;
 
         // Google Sheets에서 데이터 로드
@@ -747,17 +809,24 @@
                     if (columns[1] && columns[1].trim()) {
                         killerWords.push(columns[1].trim());
                     }
+
+                    // C열: 필살기 방어 단어
+                    if (columns[2] && columns[2].trim()) {
+                        defenseWords.push(columns[2].trim());
+                    }
                 }
 
                 isDataLoaded = true;
-                statusMessage.textContent = `단어 로드 완료! (일반: ${wordDatabase.length}개, 필살기: ${killerWords.length}개) 🎮`;
+                statusMessage.textContent = `단어 로드 완료! (일반: ${wordDatabase.length}개, 필살기: ${killerWords.length}개, 방어: ${defenseWords.length}개) 🎮`;
 
                 // Hint 패널 업데이트
                 populateKillerWords();
+                populateDefenseWords();
 
                 console.log('단어 로드 성공:', {
                     일반단어: wordDatabase.length,
-                    필살기단어: killerWords.length
+                    필살기단어: killerWords.length,
+                    방어단어: defenseWords.length
                 });
 
             } catch (error) {
@@ -785,17 +854,27 @@
                 ];
 
                 killerWords = [
-                    '가슴', '구경꾼', '그믐', '그릇', '기슭', '기쁨', '낚시꾼', '나트륨', '남녘', '나무꾼',
-                    '노릇', '누리꾼', '동녘', '라듐', '라켓', '렌즈', '로켓', '리튬', '마그네슘', '마요네즈',
-                    '마켓', '무릎', '바스켓', '버릇', '베릴륨', '북녘', '부엌', '비즈', '사냥꾼', '사슴',
-                    '사이즈', '산기슭', '산짐승', '살갗', '살림꾼', '서녘', '소리꾼', '소켓', '수탉', '슈퍼마켓',
-                    '시리즈', '씨암탉', '아침녘', '알루미늄', '암탉', '오스뮴', '우라늄', '으뜸', '이리듐', '일꾼',
-                    '장사꾼', '재킷', '제라늄', '질그릇', '짐꾼', '치즈', '카드뮴', '칼륨', '칼슘', '크로뮴',
-                    '크리켓', '퀴즈', '티켓', '티타늄', '팔라듐', '포켓', '플루토늄', '해질녘', '헬륨'
+                    '가슴', '갈륨', '거즈', '구경꾼', '그릇', '그믐', '기쁨', '기슭', '꽃사슴', '나무꾼',
+                    '나트륨', '낚시꾼', '남녘', '노릇', '노벨륨', '노이즈', '누리꾼', '다름슈타튬', '동녘', '라듐',
+                    '라켓', '렌즈', '로듐', '로켓', '루비듐', '루테튬', '리버모륨', '리튬', '마그네슘', '마요네즈',
+                    '마이트너륨', '마켓', '말버릇', '머슴', '무릎', '뮤즈', '바나듐', '바륨', '바스켓', '버릇',
+                    '베릴륨', '보륨', '부엌', '북녘', '비즈', '사냥꾼', '사슴', '사이즈', '산기슭', '산짐승',
+                    '살갗', '살림꾼', '새가슴', '서녘', '서포터즈', '세륨', '소듐', '소리꾼', '소켓', '수사슴',
+                    '수탉', '슈즈', '슈퍼마켓', '스칸듐', '스트론튬', '시리즈', '씨암탉', '알루미늄', '암사슴', '암탉',
+                    '오스뮴', '우라늄', '으뜸', '이리듐', '이트륨', '인듐', '일꾼', '장사꾼', '재즈', '재킷',
+                    '제라늄', '질그릇', '짐꾼', '치즈', '카드뮴', '칼륨', '칼슘', '퀴즈', '큐륨', '크로뮴',
+                    '크루즈', '크리켓', '키즈', '탈륨', '테크네튬', '토륨', '툴륨', '티켓', '티타늄', '팔라듐',
+                    '페르뮴', '포즈', '포켓', '퓨즈', '프랜차이즈', '프러포즈', '프로메튬', '플루토늄', '해질녘', '헬륨',
+                    '홀뮴'
+                ];
+
+                defenseWords = [
+                    '슴베', '슴벅슴벅', '즈런즈런', '즈워티', '킷값'
                 ];
 
                 isDataLoaded = true;
                 populateKillerWords();
+                populateDefenseWords();
 
                 // 디버깅: 데이터 확인
                 console.log('폴백 데이터 로드 완료!');
@@ -805,7 +884,7 @@
                 console.log('필살기 단어 샘플:', killerWords.slice(0, 5));
 
                 setTimeout(() => {
-                    statusMessage.textContent = `단어 DB 준비 완료! (일반: ${wordDatabase.length}개, 필살기: ${killerWords.length}개) 🎮`;
+                    statusMessage.textContent = `단어 DB 준비 완료! (일반: ${wordDatabase.length}개, 필살기: ${killerWords.length}개, 방어: ${defenseWords.length}개) 🎮`;
                 }, 500);
             }
         }
@@ -824,6 +903,24 @@
         // Hint 패널 토글
         function toggleHintPanel() {
             const panel = document.getElementById('hintPanel');
+            panel.classList.toggle('open');
+        }
+
+        // Defense 패널에 단어 표시
+        function populateDefenseWords() {
+            const grid = document.getElementById('defenseWordGrid');
+            grid.innerHTML = ''; // 기존 내용 초기화
+            defenseWords.forEach(word => {
+                const item = document.createElement('div');
+                item.className = 'defense-word-item';
+                item.textContent = word;
+                grid.appendChild(item);
+            });
+        }
+
+        // Defense 패널 토글
+        function toggleDefensePanel() {
+            const panel = document.getElementById('defensePanel');
             panel.classList.toggle('open');
         }
 
