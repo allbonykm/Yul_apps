@@ -302,6 +302,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             overflow-x: auto;
             white-space: nowrap;
+            scroll-behavior: smooth;
         }
 
         .history-title {
@@ -1117,10 +1118,9 @@
             // 스크롤 끝으로 이동
             // 부모 요소(.history-bar)가 스크롤을 담당하므로 부모를 스크롤해야 함
             setTimeout(() => {
-                if (wordHistoryContainer.parentElement) {
-                    wordHistoryContainer.parentElement.scrollLeft = wordHistoryContainer.parentElement.scrollWidth;
-                }
-            }, 10);
+        // 새로운 말풍선이 히스토리 바 안에서 항상 보이도록 오른쪽 끝으로 정렬
+        bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'end' });
+    }, 100);
         }
 
         // 승리 표시
@@ -1161,3 +1161,4 @@
 </body>
 
 </html>
+
