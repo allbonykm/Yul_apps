@@ -885,7 +885,7 @@
                 console.log('필살기 단어 샘플:', killerWords.slice(0, 5));
 
                 setTimeout(() => {
-                    statusMessage.textContent = `단어 DB 준비 완료! (일반: ${wordDatabase.length}개, 필살기: ${killerWords.length}개, 방어: ${defenseWords.length}개) 🎮`;
+                    statusMessage.textContent = `나 이제 준비됐어! 시작하자!`;
                 }, 500);
             }
         }
@@ -1029,7 +1029,7 @@
 
             // 중복 단어 체크
             if (usedWords.includes(word)) {
-                statusMessage.textContent = '이미 사용한 단어예요! 다른 단어를 말해주세요.';
+                statusMessage.textContent = '이미 사용한 단어야! 다른 단어를 생각해 봐.';
                 return;
             }
 
@@ -1089,7 +1089,7 @@
             rallyCount++;
             currentWord = aiWord;
 
-            statusMessage.textContent = '휘서가 단어를 말했어요!';
+            statusMessage.textContent = '끝말잇기 중!';
         }
 
         // 히스토리에 단어 추가
@@ -1132,7 +1132,7 @@
             const pointsGained = document.getElementById('pointsGained');
 
             if (aiGaveUp) {
-                victoryMessage.innerHTML = `휘서: "으악! 이어갈 단어가 없어!<br>내가 졌어!"`;
+                victoryMessage.innerHTML = `휘서: "헉! 율이 대단해!<br>내가 졌어!"`;
             } else {
                 victoryMessage.innerHTML = `완벽해요! <strong>"${killerWord}"</strong>는<br>결정적 단어예요! 🎯`;
             }
@@ -1151,7 +1151,7 @@
             rallyCount = 0;
             usedWords = []; // 사용된 단어 초기화
 
-            wordHistoryContainer.innerHTML = '<div style="color: #2c5f7c; font-size: 14px;">첫 단어를 말해보세요!</div>';
+            wordHistoryContainer.innerHTML = '<div style="color: #2c5f7c; font-size: 14px;">자 이제 시작해봐!</div>';
             statusMessage.textContent = '';
             textInput.value = '';
 
@@ -1161,4 +1161,5 @@
 </body>
 
 </html>
+
 
