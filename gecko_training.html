@@ -162,7 +162,9 @@
     </div>
 
     <script>
-        /* [기능 로직] 이전 코드의 로직을 그대로 유지합니다 */
+        // 1. 소리 파일 설정 (경쾌한 크리스마스 종소리 효과음)
+        const victorySound = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
+
         let geckoPoints = 0;
         let wordHistory = [];
         let currentWord = '';
@@ -189,7 +191,7 @@
         }
         createSnow();
 
-        // 시트 데이터 로드 (이전과 동일)
+        // 시트 데이터 로드
         async function loadWordsFromSheet() {
             try {
                 const SHEET_ID = '1J9AxPD_RfvhL5lJC-qAWIjTb1ucv-k6PdJbCxpJN0vA';
@@ -206,13 +208,13 @@
                 }
                 populateGrids();
             } catch (e) {
-                console.error("데이터 로드 실패, 기본 데이터를 사용합니다.");
-                // 폴백 데이터 생략 (이전 코드와 동일하게 넣으시면 됩니다)
+                console.error("데이터 로드 실패");
             }
         }
 
         function populateGrids() {
             const kGrid = document.getElementById('killerWordGrid');
+            kGrid.innerHTML = '';
             killerWords.forEach(w => {
                 const div = document.createElement('div');
                 div.className = 'killer-word-item';
@@ -220,6 +222,7 @@
                 kGrid.appendChild(div);
             });
             const dGrid = document.getElementById('defenseWordGrid');
+            dGrid.innerHTML = '';
             defenseWords.forEach(w => {
                 const div = document.createElement('div');
                 div.className = 'killer-word-item';
@@ -229,7 +232,6 @@
             });
         }
 
-        // 게임 핵심 로직 (이전 코드 복사본)
         function handleUserInput() {
             const input = document.getElementById('textInput');
             const word = input.value.trim();
@@ -280,10 +282,13 @@
             bubble.textContent = word;
             history.appendChild(bubble);
             wordHistory.push(word);
-            bubble.scrollIntoView();
+            bubble.scrollIntoView({ behavior: 'smooth' });
         }
 
         function showVictory(word, aiGaveUp = false) {
+            // 승리 시 소리 재생 🔔
+            victorySound.play().catch(e => console.log("소리 재생을 위해 화면을 한 번 클릭해주세요!"));
+
             geckoPoints += rallyCount;
             document.getElementById('geckoPoints').textContent = geckoPoints;
             document.getElementById('victoryMessage').innerHTML = aiGaveUp ? "Santa가 단어를 못 찾았어!<br>대단해, 너의 승리야!" : `<strong>${word}</strong>! 멋진 필살기였어!`;
@@ -292,8 +297,13 @@
         }
 
         function restartGame() {
+            // 소리 끄기 및 초기화 🔇
+            victorySound.pause();
+            victorySound.currentTime = 0;
+
             wordHistory = []; usedWords = []; currentWord = ''; rallyCount = 0;
-            document.getElementById('wordHistory').innerHTML = '<div style="color: #666;">다시 시작! 첫 단어를 말해봐.</div>';
+            document.getElementById('wordHistory').innerHTML = '<div style="color: #666;">Merry Christmas! 첫 단어를 말해봐!</div>';
+            document.getElementById('statusMessage').textContent = '';
             document.getElementById('victoryPopup').classList.remove('show');
         }
 
@@ -301,8 +311,9 @@
         function toggleDefensePanel() { document.getElementById('defensePanel').classList.toggle('open'); }
 
         document.getElementById('submitButton').onclick = handleUserInput;
+        document.getElementById('textInput').onkeypress = (e) => { if(e.key === 'Enter') handleUserInput(); };
+        
         loadWordsFromSheet();
     </script>
 </body>
 </html>
-
