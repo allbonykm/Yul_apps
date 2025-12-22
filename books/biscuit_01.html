@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Biscuit</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="book_style.css">
+</head>
+
+<body>
+  <!-- Stars Background -->
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <button class="back-button" onclick="window.history.back()">← 뒤로</button>
+      <div class="book-title">🐕 Biscuit</div>
+      <div class="speed-control">
+        <button class="speed-btn" data-speed="0.8">🐢</button>
+        <button class="speed-btn active" data-speed="1.0">●</button>
+        <button class="speed-btn" data-speed="1.2">🐇</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="read">📖 읽기</button>
+      <button class="tab-btn" data-tab="words">📝 단어</button>
+      <button class="tab-btn" data-tab="review">📊 복습</button>
+    </div>
+
+    <!-- Read Tab -->
+    <div id="read-tab" class="tab-content active">
+      <div class="read-mode">
+        <div id="sentences-container"></div>
+        
+        <div class="controls">
+          <button class="control-btn" id="toggle-korean">한글 숨기기</button>
+        </div>
+        
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="progress-text">0 / 40 문장</div>
+      </div>
+    </div>
+
+    <!-- Words Tab -->
+    <div id="words-tab" class="tab-content">
+      <div class="word-mode">
+        <div class="card-counter" id="card-counter">1 / 17 단어</div>
+        
+        <div class="flashcard-container">
+          <div class="flashcard" id="flashcard">
+            <div class="word-front" id="word-front">
+              <div class="word-text" id="word-text"></div>
+              <div class="tap-hint">탭하여 뜻 보기</div>
+            </div>
+            
+            <div class="word-back" id="word-back">
+              <div class="word-text" id="word-text-back"></div>
+              <div class="word-meaning" id="word-meaning"></div>
+              <div class="word-example" id="word-example"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="answer-buttons">
+          <button class="answer-btn know" id="know-btn">😊 알아요!</button>
+          <button class="answer-btn study" id="study-btn">🤔 더 볼래요</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Tab -->
+    <div id="review-tab" class="tab-content">
+      <div class="review-mode">
+        <div class="review-header">
+          <div class="review-title">학습 현황</div>
+          <div class="star-rating">⭐⭐⭐☆☆</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value"><span id="completed-sentences">0</span>/<span id="total-sentences">40</span></div>
+            <div class="stat-label">읽은 문장</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value"><span id="mastered-words">0</span>/<span id="total-words">17</span></div>
+            <div class="stat-label">외운 단어</div>
+          </div>
+        </div>
+
+        <div class="word-list-section">
+          <div class="word-list-title">✓ 학습한 단어</div>
+          <div class="word-list" id="mastered-words-list">
+            <div class="empty-message">아직 학습한 단어가 없어요</div>
+          </div>
+        </div>
+
+        <div class="word-list-section">
+          <div class="word-list-title">📚 복습할 단어</div>
+          <div class="word-list" id="review-words-list">
+            <div class="empty-message">복습할 단어가 없어요</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="control-btn" onclick="location.reload()">처음부터 다시</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="book_reader_base.js"></script>
+  <script>
+    // Book Data
+    const BOOK_DATA = {
+      id: "biscuit_01",
+      title: "Biscuit",
+      description: "Biscuit_1권",
+      story: [
+  {
+    "en": "This is Biscuit.",
+    "ko": "이 아이는 비스킷이에요.",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit is small.",
+    "ko": "비스킷은 작아요.",
+    "highlightWords": [
+      "small"
+    ]
+  },
+  {
+    "en": "Biscuit is yellow.",
+    "ko": "비스킷은 노란색이에요.",
+    "highlightWords": [
+      "yellow"
+    ]
+  },
+  {
+    "en": "Time for bed, Biscuit!",
+    "ko": "잠잘 시간이야, 비스킷!",
+    "highlightWords": [
+      "bed"
+    ]
+  },
+  {
+    "en": "Woof, woof!",
+    "ko": "멍, 멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants to play.",
+    "ko": "비스킷은 놀고 싶어 해요.",
+    "highlightWords": [
+      "play"
+    ]
+  },
+  {
+    "en": "Time for bed, Biscuit!",
+    "ko": "잠잘 시간이야, 비스킷!",
+    "highlightWords": [
+      "bed"
+    ]
+  },
+  {
+    "en": "Woof, woof!",
+    "ko": "멍, 멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants a snack.",
+    "ko": "비스킷은 간식을 원해요.",
+    "highlightWords": [
+      "snack"
+    ]
+  },
+  {
+    "en": "Time for bed, Biscuit!",
+    "ko": "잠잘 시간이야, 비스킷!",
+    "highlightWords": [
+      "bed"
+    ]
+  },
+  {
+    "en": "Woof, woof!",
+    "ko": "멍, 멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants a drink.",
+    "ko": "비스킷은 마실 것을 원해요.",
+    "highlightWords": [
+      "drink"
+    ]
+  },
+  {
+    "en": "Time for bed, Biscuit!",
+    "ko": "잠잘 시간이야, 비스킷!",
+    "highlightWords": [
+      "bed"
+    ]
+  },
+  {
+    "en": "Woof, woof!",
+    "ko": "멍, 멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants to hear a story.",
+    "ko": "비스킷은 이야기를 듣고 싶어 해요.",
+    "highlightWords": [
+      "hear",
+      "story"
+    ]
+  },
+  {
+    "en": "Time for bed, Biscuit!",
+    "ko": "잠잘 시간이야, 비스킷!",
+    "highlightWords": [
+      "bed"
+    ]
+  },
+  {
+    "en": "Woof, woof!",
+    "ko": "멍, 멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants his blanket.",
+    "ko": "비스킷은 자기 담요를 원해요.",
+    "highlightWords": [
+      "blanket"
+    ]
+  },
+  {
+    "en": "Time for bed, Biscuit!",
+    "ko": "잠잘 시간이야, 비스킷!",
+    "highlightWords": [
+      "bed"
+    ]
+  },
+  {
+    "en": "Woof, woof!",
+    "ko": "멍, 멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants his doll.",
+    "ko": "비스킷은 자기 인형을 원해요.",
+    "highlightWords": [
+      "doll"
+    ]
+  },
+  {
+    "en": "Time for bed, Biscuit!",
+    "ko": "잠잘 시간이야, 비스킷!",
+    "highlightWords": [
+      "bed"
+    ]
+  },
+  {
+    "en": "Woof, woof!",
+    "ko": "멍, 멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants a hug.",
+    "ko": "비스킷은 안아 주길 원해요.",
+    "highlightWords": [
+      "hug"
+    ]
+  },
+  {
+    "en": "Time for bed, Biscuit!",
+    "ko": "잠잘 시간이야, 비스킷!",
+    "highlightWords": [
+      "bed"
+    ]
+  },
+  {
+    "en": "Woof, woof!",
+    "ko": "멍, 멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants a kiss.",
+    "ko": "비스킷은 뽀뽀를 원해요.",
+    "highlightWords": [
+      "kiss"
+    ]
+  },
+  {
+    "en": "Time for bed, Biscuit!",
+    "ko": "잠잘 시간이야, 비스킷!",
+    "highlightWords": [
+      "bed"
+    ]
+  },
+  {
+    "en": "Woof, woof!",
+    "ko": "멍, 멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants a light on.",
+    "ko": "비스킷은 불을 켜 두길 원해요.",
+    "highlightWords": [
+      "light"
+    ]
+  },
+  {
+    "en": "Woof!",
+    "ko": "멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants to be tucked in.",
+    "ko": "비스킷은 이불 속에 포근히 안기길 원해요.",
+    "highlightWords": []
+  },
+  {
+    "en": "Woof!",
+    "ko": "멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants one more kiss.",
+    "ko": "비스킷은 뽀뽀 한 번 더 하길 원해요.",
+    "highlightWords": [
+      "kiss"
+    ]
+  },
+  {
+    "en": "Woof!",
+    "ko": "멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants one more hug.",
+    "ko": "비스킷은 한 번 더 안아 주길 원해요.",
+    "highlightWords": [
+      "hug"
+    ]
+  },
+  {
+    "en": "Woof!",
+    "ko": "멍!",
+    "highlightWords": []
+  },
+  {
+    "en": "Biscuit wants to curl up.",
+    "ko": "비스킷은 몸을 웅크리고 잠들고 싶어 해요.",
+    "highlightWords": [
+      "curl"
+    ]
+  },
+  {
+    "en": "Sleepy puppy.",
+    "ko": "졸린 강아지네요.",
+    "highlightWords": [
+      "sleepy",
+      "puppy"
+    ]
+  },
+  {
+    "en": "Good night, Biscuit.",
+    "ko": "잘 자, 비스킷.",
+    "highlightWords": []
+  }
+],
+      vocabulary: [
+  {
+    "word": "small",
+    "meaning": "작은",
+    "example": "Biscuit is small."
+  },
+  {
+    "word": "yellow",
+    "meaning": "노란색의",
+    "example": "Biscuit is yellow."
+  },
+  {
+    "word": "bed",
+    "meaning": "침대(잠자리)",
+    "example": "Time for bed, Biscuit!"
+  },
+  {
+    "word": "play",
+    "meaning": "놀다",
+    "example": "Biscuit wants to play."
+  },
+  {
+    "word": "snack",
+    "meaning": "간식",
+    "example": "Biscuit wants a snack."
+  },
+  {
+    "word": "drink",
+    "meaning": "마실 것",
+    "example": "Biscuit wants a drink."
+  },
+  {
+    "word": "hear",
+    "meaning": "듣다",
+    "example": "Biscuit wants to hear a story."
+  },
+  {
+    "word": "story",
+    "meaning": "이야기",
+    "example": "I like this story."
+  },
+  {
+    "word": "blanket",
+    "meaning": "담요",
+    "example": "This blanket is warm."
+  },
+  {
+    "word": "doll",
+    "meaning": "인형",
+    "example": "Biscuit wants his doll."
+  },
+  {
+    "word": "hug",
+    "meaning": "포옹(안아주기)",
+    "example": "Biscuit wants a hug."
+  },
+  {
+    "word": "kiss",
+    "meaning": "뽀뽀",
+    "example": "Give me a kiss."
+  },
+  {
+    "word": "light",
+    "meaning": "불(전등)",
+    "example": "Turn on the light."
+  },
+  {
+    "word": "tuck",
+    "meaning": "(이불 등으로) 감싸다",
+    "example": "Please tuck me in."
+  },
+  {
+    "word": "curl",
+    "meaning": "몸을 웅크리다",
+    "example": "Biscuit wants to curl up."
+  },
+  {
+    "word": "sleepy",
+    "meaning": "졸린",
+    "example": "Sleepy puppy."
+  },
+  {
+    "word": "puppy",
+    "meaning": "강아지",
+    "example": "You are a cute puppy."
+  }
+]
+    };
+
+    // Initialize book reader
+    const reader = initBookReader(BOOK_DATA);
+  </script>
+</body>
+
+</html>
