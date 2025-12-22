@@ -10,7 +10,7 @@ const STATIC_BOOKS = [
         title: "Biscuit_01",
         description: "Biscuit 01권",
         icon: "🐕",
-        filename: "Biscuit_01.html"
+        filename: "biscuit_01.html"
     },
     {
         id: "Holly_Jolly",
@@ -56,6 +56,7 @@ const STATIC_BOOKS = [
     //     filename: "파일명.html"
     // }
 ];
+
 
 
 
