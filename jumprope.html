@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>선 넘는 율이!</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="theme-color" content="#FF6B9D">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 배경 애니메이션 */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .rope {
+      position: absolute;
+      width: 8px;
+      height: 100px;
+      background: linear-gradient(to bottom, #FFD700, #FFA500);
+      border-radius: 4px;
+      opacity: 0.3;
+      animation: fall 4s linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+    }
+
+    /* 뒤로가기 버튼 */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #764ba2;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      font-family: 'Noto Sans KR', sans-serif;
+      z-index: 100;
+    }
+
+    .back-button:hover {
+      transform: scale(1.05);
+    }
+
+    /* 탭 네비게이션 */
+    .tab-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 60px 0 30px 0;
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 30px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: #764ba2;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* 탭 콘텐츠 */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 표지 화면 */
+    .cover-section {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .cover-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: white;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .cover-emoji {
+      font-size: 5rem;
+      margin: 30px 0;
+      animation: bounce 1s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .cover-subtitle {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 30px;
+    }
+
+    .goal-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      color: #333;
+      font-size: 1.3rem;
+      font-weight: bold;
+      padding: 15px 30px;
+      border-radius: 50px;
+      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+    }
+
+    /* 기록 화면 */
+    .record-section {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .total-box {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .total-label {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .total-number {
+      font-size: 4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .total-unit {
+      font-size: 1.5rem;
+      color: #764ba2;
+      font-weight: bold;
+    }
+
+    .input-box {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .input-label {
+      font-size: 1.1rem;
+      color: #333;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .count-input {
+      width: 100%;
+      font-size: 3rem;
+      font-weight: bold;
+      text-align: center;
+      border: 3px solid #764ba2;
+      border-radius: 20px;
+      padding: 20px;
+      color: #764ba2;
+      outline: none;
+      transition: all 0.3s ease;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .count-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .save-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Noto Sans KR', sans-serif;
+      margin-top: 20px;
+    }
+
+    .save-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .save-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .remaining-box {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      border-radius: 30px;
+      padding: 25px;
+      color: white;
+      box-shadow: 0 10px 40px rgba(240, 147, 251, 0.3);
+    }
+
+    .remaining-label {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+
+    .remaining-number {
+      font-size: 3rem;
+      font-weight: 900;
+    }
+
+    .remaining-text {
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    /* 통계 화면 */
+    .stats-section {
+      padding: 20px;
+    }
+
+    .stats-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 25px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-item:last-child {
+      border-bottom: none;
+    }
+
+    .stat-icon {
+      font-size: 2.5rem;
+      margin-right: 20px;
+    }
+
+    .stat-info {
+      flex: 1;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #764ba2;
+    }
+
+    .cheer-box {
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      border-radius: 30px;
+      padding: 40px;
+      text-align: center;
+      margin-top: 30px;
+      box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
+    }
+
+    .cheer-emoji {
+      font-size: 4rem;
+      margin-bottom: 15px;
+    }
+
+    .cheer-text {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #333;
+    }
+
+    /* 로딩 오버레이 */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 토스트 메시지 */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-weight: bold;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1001;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* 프로그레스 바 */
+    .progress-container {
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD700, #FFA500);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: white;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    /* iOS 안전 영역 */
+    @supports (padding: max(0px)) {
+      .container {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 배경 애니메이션 -->
+  <div class="bg-animation" id="bgAnimation"></div>
+
+  <!-- 뒤로가기 버튼 -->
+  <button class="back-button" onclick="location.href='index.html'">← 홈</button>
+
+  <div class="container">
+    <!-- 탭 네비게이션 -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="cover">🎀 표지</button>
+      <button class="tab-btn" data-tab="record">📝 기록</button>
+      <button class="tab-btn" data-tab="stats">📊 통계</button>
+    </nav>
+
+    <!-- 표지 탭 -->
+    <div id="cover" class="tab-content active">
+      <div class="cover-section">
+        <h1 class="cover-title">선 넘는 율이!</h1>
+        <div class="cover-emoji">🏃‍♀️</div>
+        <p class="cover-subtitle">줄넘기 10,000개 도전!</p>
+        <div class="goal-badge">🎯 목표: 10,000개</div>
+        
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" id="coverProgress" style="width: 0%"></div>
+          </div>
+          <p class="progress-text" id="coverProgressText">0% 달성!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 기록 탭 -->
+    <div id="record" class="tab-content">
+      <div class="record-section">
+        <div class="total-box">
+          <p class="total-label">🏆 지금까지 줄넘기 횟수</p>
+          <p class="total-number" id="totalCount">0</p>
+          <p class="total-unit">개</p>
+        </div>
+
+        <div class="input-box">
+          <p class="input-label">오늘 줄넘기 횟수를 입력하세요!</p>
+          <input type="number" class="count-input" id="countInput" placeholder="0" min="0" inputmode="numeric">
+          <button class="save-btn" id="saveBtn" onclick="saveRecord()">💾 저장하기</button>
+        </div>
+
+        <div class="remaining-box">
+          <p class="remaining-label">🎯 10,000개까지</p>
+          <p class="remaining-number" id="remainingCount">10,000</p>
+          <p class="remaining-text">개 남았어! 힘내!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 통계 탭 -->
+    <div id="stats" class="tab-content">
+      <div class="stats-section">
+        <div class="stats-card">
+          <div class="stat-item">
+            <span class="stat-icon">📅</span>
+            <div class="stat-info">
+              <p class="stat-label">줄넘기 한 총 일수</p>
+              <p class="stat-value" id="totalDays">0일</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">📈</span>
+            <div class="stat-info">
+              <p class="stat-label">하루 평균 줄넘기</p>
+              <p class="stat-value" id="avgCount">0개</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">⏱️</span>
+            <div class="stat-info">
+              <p class="stat-label">10,000개까지 예상 소요 일수</p>
+              <p class="stat-value" id="estimatedDays">-</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="cheer-box">
+          <div class="cheer-emoji">💪✨</div>
+          <p class="cheer-text">힘내 율이야!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로딩 오버레이 -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- 토스트 메시지 -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Google Apps Script Web App URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx52V-hRy06fBecGAbVZUUoTejy1Mil1SOmXdkOrdnKknUUcD8ur0yxIS_eQ_gfHpZq/exec';
+    
+    // 전역 상태
+    let totalJumps = 0;
+    let totalDays = 0;
+    let records = [];
+
+    // 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+      initTabs();
+      initBackground();
+      loadData();
+    });
+
+    // 탭 초기화
+    function initTabs() {
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabId = btn.dataset.tab;
+          
+          // 버튼 활성화
+          tabBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          // 콘텐츠 표시
+          document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+    }
+
+    // 배경 애니메이션
+    function initBackground() {
+      const bg = document.getElementById('bgAnimation');
+      for (let i = 0; i < 15; i++) {
+        const rope = document.createElement('div');
+        rope.className = 'rope';
+        rope.style.left = Math.random() * 100 + '%';
+        rope.style.animationDelay = Math.random() * 4 + 's';
+        rope.style.animationDuration = (3 + Math.random() * 2) + 's';
+        bg.appendChild(rope);
+      }
+    }
+
+    // 데이터 로드
+    async function loadData() {
+      showLoading(true);
+      try {
+        const response = await fetch(SCRIPT_URL + '?action=getJumprope');
+        const text = await response.text();
+        
+        // 응답 파싱 (JSON 형식 기대)
+        try {
+          const data = JSON.parse(text);
+          if (data.success) {
+            totalJumps = data.total || 0;
+            totalDays = data.days || 0;
+            records = data.records || [];
+          }
+        } catch (e) {
+          // 기존 형식 (숫자만 반환)인 경우
+          totalJumps = parseInt(text) || 0;
+        }
+        
+        updateUI();
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+        showToast('데이터를 불러오지 못했어요 😢');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // UI 업데이트
+    function updateUI() {
+      const remaining = Math.max(0, 10000 - totalJumps);
+      const progress = Math.min(100, (totalJumps / 10000) * 100);
+      
+      // 총합 표시
+      document.getElementById('totalCount').textContent = totalJumps.toLocaleString();
+      
+      // 남은 횟수
+      document.getElementById('remainingCount').textContent = remaining.toLocaleString();
+      
+      // 표지 프로그레스
+      document.getElementById('coverProgress').style.width = progress + '%';
+      document.getElementById('coverProgressText').textContent = progress.toFixed(1) + '% 달성!';
+      
+      // 통계
+      document.getElementById('totalDays').textContent = totalDays + '일';
+      
+      const avgCount = totalDays > 0 ? Math.round(totalJumps / totalDays) : 0;
+      document.getElementById('avgCount').textContent = avgCount.toLocaleString() + '개';
+      
+      // 예상 소요 일수
+      if (avgCount > 0 && remaining > 0) {
+        const estimatedDays = Math.ceil(remaining / avgCount);
+        document.getElementById('estimatedDays').textContent = estimatedDays + '일';
+      } else if (remaining === 0) {
+        document.getElementById('estimatedDays').textContent = '달성! 🎉';
+      } else {
+        document.getElementById('estimatedDays').textContent = '-';
+      }
+    }
+
+    // 기록 저장
+    async function saveRecord() {
+      const input = document.getElementById('countInput');
+      const count = parseInt(input.value);
+      
+      if (!count || count <= 0) {
+        showToast('횟수를 입력해주세요! 🙏');
+        return;
+      }
+      
+      showLoading(true);
+      document.getElementById('saveBtn').disabled = true;
+      
+      try {
+        const newTotal = totalJumps + count;
+        const remaining = Math.max(0, 10000 - newTotal);
+        
+        const formData = new FormData();
+        formData.append('action', 'jumprope');
+        formData.append('count', count);
+        formData.append('total', newTotal);
+        formData.append('remaining', remaining);
+        
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.text();
+        
+        if (result.includes('SUCCESS') || result.includes('success')) {
+          totalJumps = newTotal;
+          totalDays++; // 새 기록이므로 일수 증가 (실제로는 서버에서 계산해야 함)
+          input.value = '';
+          updateUI();
+          showToast('저장 완료! 잘했어 율이! 🎉');
+        } else {
+          throw new Error(result);
+        }
+      } catch (error) {
+        console.error('저장 실패:', error);
+        showToast('저장에 실패했어요 😢');
+      } finally {
+        showLoading(false);
+        document.getElementById('saveBtn').disabled = false;
+      }
+    }
+
+    // 로딩 표시
+    function showLoading(show) {
+      document.getElementById('loadingOverlay').classList.toggle('active', show);
+    }
+
+    // 토스트 메시지
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

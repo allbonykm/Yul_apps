@@ -2,114 +2,107 @@
 <html lang="ko">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>율이의 앱</title>
-
-  <!-- PWA Meta Tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="율이의 앱">
-  <meta name="theme-color" content="#87CEEB">
-
-  <!-- Icons -->
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>율이의 앱</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#9370DB">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <!-- 별 배경 -->
-  <div class="stars" id="stars"></div>
+    <!-- 별 애니메이션 배경 -->
+    <div class="stars" id="stars"></div>
 
-  <div class="container">
-    <h1>✨ 율이의 앱 ✨</h1>
+    <div class="container">
+        <h1>✨ 율이의 앱 ✨</h1>
 
-    <div class="apps-container">
-      <a href="chat.html" class="app-card" style="background: linear-gradient(135deg, #fff1eb 0%, #ace0f9 100%);">
-        <span class="app-icon"
-          style="font-size: 3rem; display:flex; justify-content:center; align-items:center;">💌</span>
-        <div class="app-info">
-          <div class="app-title">💬 율톡</div>
-          <div class="app-description">아빠랑 톡 보내기!</div>
+        <div class="apps-container">
+            <!-- 율톡 -->
+            <a href="chat.html" class="app-card">
+                <div class="app-icon">💌</div>
+                <div class="app-info">
+                    <p class="app-title">💬 율톡</p>
+                    <p class="app-description">아빠랑 톡 보내기!</p>
+                </div>
+            </a>
+
+            <!-- 선 넘는 율이 (NEW!) -->
+            <a href="jumprope.html" class="app-card">
+                <div class="app-icon">🏃‍♀️</div>
+                <div class="app-info">
+                    <p class="app-title">🪢 선 넘는 율이!</p>
+                    <p class="app-description">줄넘기 10,000개 도전!</p>
+                </div>
+            </a>
+
+            <!-- 도마뱀 일기 -->
+            <a href="https://allbonykm.github.io/guide/Gecko_diary.html" class="app-card">
+                <img src="gecko.png" alt="도마뱀" class="app-icon">
+                <div class="app-info">
+                    <p class="app-title">🦎 백합이 언니 조율</p>
+                    <p class="app-description">도마뱀 육아기록 남기기</p>
+                </div>
+            </a>
+
+            <!-- 저축왕 -->
+            <a href="https://allbonykm.github.io/guide/gecko.html" class="app-card">
+                <img src="coin.png" alt="코인" class="app-icon">
+                <div class="app-info">
+                    <p class="app-title">💰 나는 저축왕 조율</p>
+                    <p class="app-description">운동 후 리워드 기록하기</p>
+                </div>
+            </a>
+
+            <!-- 자전거 -->
+            <a href="https://allbonykm.github.io/guide/bike_cy.html" class="app-card">
+                <img src="bike.png" alt="자전거" class="app-icon">
+                <div class="app-info">
+                    <p class="app-title">🚲 바람의 요정 조율</p>
+                    <p class="app-description">자전거 속도/거리 기록하기</p>
+                </div>
+            </a>
+
+            <!-- 영어책 -->
+            <a href="english_menu.html" class="app-card">
+                <img src="alphabet.png" alt="알파벳" class="app-icon">
+                <div class="app-info">
+                    <p class="app-title">📚 AI English Teacher!</p>
+                    <p class="app-description">AI가 읽어주는 영어책</p>
+                </div>
+            </a>
+
+            <!-- 끝말잇기 -->
+            <a href="gecko_training.html" class="app-card">
+                <img src="game_icon.png" alt="게임" class="app-icon">
+                <div class="app-info">
+                    <p class="app-title">🎮 끝말잇기 게임</p>
+                    <p class="app-description">끝말잇기 마스터 변신!</p>
+                </div>
+            </a>
         </div>
-      </a>
-
-      <!-- 백합이 엄마 조율 -->
-      <a href="https://allbonykm.github.io/guide/Gecko_diary.html" class="app-card">
-        <img src="gecko.png" alt="게코" class="app-icon">
-        <div class="app-info">
-          <div class="app-title">🦎 백합이 언니 조율</div>
-          <div class="app-description">도마뱀 육아기록 남기기</div>
-        </div>
-      </a>
-
-      <!-- 나는 저축왕 조율 -->
-      <a href="https://allbonykm.github.io/guide/gecko.html" class="app-card">
-        <img src="coin.png" alt="코인" class="app-icon">
-        <div class="app-info">
-          <div class="app-title">💰 나는 저축왕 조율</div>
-          <div class="app-description">운동 후 리워드 기록하기</div>
-        </div>
-      </a>
-
-      <!-- 바람의 요정 조율 -->
-      <a href="https://allbonykm.github.io/guide/bike_cy.html" class="app-card">
-        <img src="bike.png" alt="자전거" class="app-icon">
-        <div class="app-info">
-          <div class="app-title">🚲 바람의 요정 조율</div>
-          <div class="app-description">자전거 속도/거리 기록하기</div>
-        </div>
-      </a>
-
-      <!-- I'm the AI English Teacher! -->
-      <a href="english_menu.html" class="app-card">
-        <img src="alphabet.png" alt="알파벳" class="app-icon">
-        <div class="app-info">
-          <div class="app-title">📚 AI English Teacher!</div>
-          <div class="app-description">AI가 읽어주는 영어책</div>
-        </div>
-      </a>
-
-      <!-- 끝말잇기 훈련 -->
-      <a href="gecko_training.html" class="app-card">
-        <img src="game_icon.png" alt="끝말잇기" class="app-icon">
-        <div class="app-info">
-          <div class="app-title">🎮 끝말잇기 게임</div>
-          <div class="app-description">끝말잇기 마스터 변신!</div>
-        </div>
-      </a>
     </div>
-  </div>
 
-  <script>
-    // 서비스 워커 등록
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js')
-        .catch(err => console.log('Service worker registration failed:', err));
-    }
+    <script>
+        // 별 애니메이션 생성
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numStars = 50;
 
-    // 별 생성
-    const starsContainer = document.getElementById('stars');
-    const numberOfStars = 50;
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
 
-    for (let i = 0; i < numberOfStars; i++) {
-      const star = document.createElement('div');
-      star.className = 'star';
-      star.style.left = Math.random() * 100 + '%';
-      star.style.top = Math.random() * 100 + '%';
-      star.style.animationDelay = Math.random() * 3 + 's';
-      starsContainer.appendChild(star);
-    }
-  </script>
+        createStars();
+    </script>
 </body>
 
 </html>
