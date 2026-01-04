@@ -5,6 +5,13 @@
  */
 
 const STATIC_BOOKS = [
+        {
+        id: "Biscuit_02",
+        title: "Biscuit finds a friend",
+        description: "Biscuit 02권",
+        icon: "🦆",
+        filename: "Biscuit_friend.html"
+    },
     {
         id: "Biscuit_01",
         title: "Biscuit_01",
@@ -56,6 +63,7 @@ const STATIC_BOOKS = [
     //     filename: "파일명.html"
     // }
 ];
+
 
 
 
