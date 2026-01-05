@@ -721,6 +721,9 @@
         let quizType = 1;           // 퀴즈 유형 (1: 듣고 단어, 2: 듣고 뜻, 3: 단어보고 뜻)
         let audioContext = null;    // 모바일 오디오 컨텍스트
         let audioUnlocked = false;  // 오디오 잠금 해제 여부
+        let reusableAudio = null;   // iOS용 재사용 오디오 객체
+        let pendingAudioContent = null; // 대기중인 오디오 콘텐츠
+        let isFirstPlay = true;     // 첫 번째 재생 여부
 
         // 초기화
         document.addEventListener('DOMContentLoaded', () => {
@@ -823,40 +826,46 @@
             return now.toISOString().split('T')[0];
         }
 
+        // iOS용 재사용 오디오 객체 생성 및 활성화
+        function initReusableAudio() {
+            if (!reusableAudio) {
+                reusableAudio = new Audio();
+                reusableAudio.setAttribute('playsinline', '');
+                reusableAudio.setAttribute('webkit-playsinline', '');
+            }
+            return reusableAudio;
+        }
+
         // 모바일 오디오 잠금 해제 (사용자 제스처 필요)
-        function unlockAudio() {
-            if (audioUnlocked) return Promise.resolve();
+        async function unlockAudio() {
+            if (audioUnlocked) return;
 
-            return new Promise((resolve) => {
-                // AudioContext 생성 및 resume
-                try {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume();
-                    }
-                } catch (e) {
-                    console.log('AudioContext not supported');
+            // AudioContext 생성 및 resume
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
                 }
+            } catch (e) {
+                console.log('AudioContext not supported');
+            }
 
-                // 무음 오디오 재생하여 잠금 해제
-                const silentAudio = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA');
-                silentAudio.volume = 0.01;
-                const playPromise = silentAudio.play();
+            // 재사용 오디오 객체 생성 및 무음 재생으로 활성화
+            const audio = initReusableAudio();
+            audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA';
+            audio.volume = 0.01;
 
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        audioUnlocked = true;
-                        console.log('Audio unlocked successfully');
-                        resolve();
-                    }).catch((err) => {
-                        console.log('Audio unlock failed:', err);
-                        resolve(); // 실패해도 진행
-                    });
-                } else {
-                    audioUnlocked = true;
-                    resolve();
-                }
-            });
+            try {
+                await audio.play();
+                audio.pause();
+                audio.currentTime = 0;
+                audio.volume = 1;
+                audioUnlocked = true;
+                console.log('Audio unlocked successfully (iOS)');
+            } catch (err) {
+                console.log('Audio unlock attempt:', err.message);
+                // 실패해도 진행 - 수동 듣기 버튼은 작동함
+            }
         }
 
         // 퀴즈 시작
@@ -986,7 +995,7 @@
         // Google Cloud TTS API Key
         const GOOGLE_TTS_API_KEY = "AIzaSyBMKc1I-gTN9YfuFxCIBzZQIQ8-HThqx4A";
 
-        // 단어 발음 (Google Cloud TTS)
+        // 단어 발음 (Google Cloud TTS - iOS 호환)
         async function playWord() {
             if (listenCount <= 0) return;
 
@@ -1020,14 +1029,16 @@
 
                 const data = await response.json();
                 if (data.audioContent) {
-                    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
-                    // Promise 처리로 자동재생 지원
-                    const playPromise = audio.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch((err) => {
-                            console.log('Auto-play blocked, trying fallback:', err);
-                            fallbackSpeak(currentWord.word);
-                        });
+                    // iOS: 재사용 오디오 객체 사용 (이미 활성화됨)
+                    const audio = reusableAudio || new Audio();
+                    audio.src = 'data:audio/mp3;base64,' + data.audioContent;
+
+                    try {
+                        await audio.play();
+                        isFirstPlay = false;
+                    } catch (err) {
+                        console.log('Play failed, trying fallback:', err.message);
+                        fallbackSpeak(currentWord.word);
                     }
                 } else if (data.error) {
                     console.error('TTS Error:', data.error);
