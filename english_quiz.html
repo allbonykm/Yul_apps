@@ -158,6 +158,76 @@
             }
         }
 
+        /* 퀴즈 유형 선택 버튼 */
+        .quiz-type-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .quiz-type-btn {
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .quiz-type-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .quiz-type-btn:active {
+            transform: scale(0.98);
+        }
+
+        .type-icon {
+            font-size: 2rem;
+        }
+
+        .type-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .type-desc {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* 단어 표시 영역 */
+        .word-display {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .word-display span {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        /* 퀴즈 유형 라벨 */
+        .quiz-type-label {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 10px;
+        }
+
         .stats-btn {
             position: fixed;
             bottom: 30px;
@@ -528,11 +598,27 @@
 
     <div class="container">
         <!-- ============ 홈 화면 ============ -->
-        <div class="home-screen" id="homeScreen" onclick="startQuiz()">
+        <div class="home-screen" id="homeScreen">
             <h1 class="home-title">율이야! 한 번 맞혀봐!</h1>
             <p class="home-subtitle">Hey Yul! Guess it once!</p>
             <div class="home-emoji">🎯</div>
-            <p class="tap-hint">👆 탭하면 시작!</p>
+            <div class="quiz-type-buttons">
+                <button class="quiz-type-btn" onclick="startQuiz(1)">
+                    <span class="type-icon">🔊</span>
+                    <span class="type-title">듣고 단어 맞추기</span>
+                    <span class="type-desc">영어 발음을 듣고 철자 선택</span>
+                </button>
+                <button class="quiz-type-btn" onclick="startQuiz(2)">
+                    <span class="type-icon">🎧</span>
+                    <span class="type-title">듣고 뜻 맞추기</span>
+                    <span class="type-desc">영어 발음을 듣고 뜻 선택</span>
+                </button>
+                <button class="quiz-type-btn" onclick="startQuiz(3)">
+                    <span class="type-icon">�</span>
+                    <span class="type-title">단어보고 뜻 맞추기</span>
+                    <span class="type-desc">영어 단어를 보고 뜻 선택</span>
+                </button>
+            </div>
         </div>
 
         <button class="stats-btn" id="statsBtn" onclick="showStats()">📊 통계 보기</button>
@@ -541,8 +627,12 @@
         <div class="quiz-screen" id="quizScreen">
             <div class="question-card">
                 <div class="question-number" id="questionNumber">1</div>
+                <div class="word-display" id="wordDisplay" style="display: none;">
+                    <span id="wordText"></span>
+                </div>
                 <button class="listen-btn" id="listenBtn" onclick="playWord()">🔊 듣기</button>
                 <p class="listen-count" id="listenCount">남은 듣기 횟수: 3회</p>
+                <p class="quiz-type-label" id="quizTypeLabel"></p>
             </div>
 
             <div class="choices-container" id="choicesContainer">
@@ -628,6 +718,7 @@
         let wasCorrectFirst = true; // 첫 시도에 맞췄는지
         let todayStats = { total: 0, correct: 0 }; // 오늘 통계
         let selectedVoice = null;   // TTS 음성
+        let quizType = 1;           // 퀴즈 유형 (1: 듣고 단어, 2: 듣고 뜻, 3: 단어보고 뜻)
 
         // 초기화
         document.addEventListener('DOMContentLoaded', () => {
@@ -700,12 +791,27 @@
             }
         }
 
-        // 오늘 통계 로드
-        function loadTodayStats() {
+        // 오늘 통계 로드 (Google Sheets 우선, localStorage 폴백)
+        async function loadTodayStats() {
             const today = getTodayString();
+
+            // 먼저 localStorage에서 로드 (빠른 표시)
             const saved = localStorage.getItem('quiz_stats_' + today);
             if (saved) {
                 todayStats = JSON.parse(saved);
+            }
+
+            // Google Sheets에서 최신 데이터 로드
+            try {
+                const response = await fetch(SCRIPT_URL + '?action=getTodayStats&date=' + today);
+                const data = await response.json();
+                if (data.success && data.stats) {
+                    todayStats = data.stats;
+                    // localStorage에도 저장 (동기화)
+                    localStorage.setItem('quiz_stats_' + today, JSON.stringify(todayStats));
+                }
+            } catch (error) {
+                console.log('Google Sheets 통계 로드 실패, localStorage 사용:', error);
             }
         }
 
@@ -716,7 +822,8 @@
         }
 
         // 퀴즈 시작
-        function startQuiz() {
+        function startQuiz(type = 1) {
+            quizType = type;
             document.getElementById('homeScreen').style.display = 'none';
             document.getElementById('statsBtn').style.display = 'none';
             document.getElementById('quizScreen').classList.add('active');
@@ -749,15 +856,42 @@
 
             // UI 업데이트
             document.getElementById('questionNumber').textContent = questionNumber;
-            document.getElementById('listenCount').textContent = `남은 듣기 횟수: ${listenCount}회`;
-            document.getElementById('listenBtn').disabled = false;
             document.getElementById('resultButtons').classList.remove('show');
+
+            // 유형별 UI 설정
+            const listenBtn = document.getElementById('listenBtn');
+            const listenCountEl = document.getElementById('listenCount');
+            const wordDisplay = document.getElementById('wordDisplay');
+            const wordText = document.getElementById('wordText');
+            const quizTypeLabel = document.getElementById('quizTypeLabel');
+
+            if (quizType === 3) {
+                // 유형 3: 단어보고 뜻 맞추기 - 음성 숨기고 단어 표시
+                listenBtn.style.display = 'none';
+                listenCountEl.style.display = 'none';
+                wordDisplay.style.display = 'block';
+                wordText.textContent = currentWord.word;
+                quizTypeLabel.textContent = '📖 단어를 보고 뜻을 맞추세요';
+            } else {
+                // 유형 1, 2: 듣기 모드
+                listenBtn.style.display = 'inline-block';
+                listenCountEl.style.display = 'block';
+                listenBtn.disabled = false;
+                wordDisplay.style.display = 'none';
+                listenCountEl.textContent = `남은 듣기 횟수: ${listenCount}회`;
+
+                if (quizType === 1) {
+                    quizTypeLabel.textContent = '🔊 듣고 단어(철자)를 맞추세요';
+                } else {
+                    quizTypeLabel.textContent = '🎧 듣고 뜻을 맞추세요';
+                }
+
+                // 자동 재생
+                setTimeout(() => playWord(), 500);
+            }
 
             // 선택지 생성
             generateChoices();
-
-            // 자동 재생
-            setTimeout(() => playWord(), 500);
         }
 
         // 복습할 단어 가져오기
@@ -790,11 +924,19 @@
             // 섞기
             choices.sort(() => Math.random() - 0.5);
 
-            // 버튼 생성
+            // 버튼 생성 (유형에 따라 표시 내용 다름)
             choices.forEach(word => {
                 const btn = document.createElement('button');
                 btn.className = 'choice-btn';
-                btn.textContent = word.word;
+
+                if (quizType === 1) {
+                    // 유형 1: 듣고 단어(철자) 맞추기 - 단어 표시
+                    btn.textContent = word.word;
+                } else {
+                    // 유형 2, 3: 뜻 맞추기 - 뜻 표시
+                    btn.textContent = word.meaning;
+                }
+
                 btn.onclick = () => checkAnswer(btn, word);
                 container.appendChild(btn);
             });
@@ -986,10 +1128,30 @@
             }
         }
 
-        // 오늘 통계 저장
-        function saveTodayStats() {
+        // 오늘 통계 저장 (Google Sheets + localStorage)
+        async function saveTodayStats() {
             const today = getTodayString();
+
+            // localStorage에 저장 (빠른 응답)
             localStorage.setItem('quiz_stats_' + today, JSON.stringify(todayStats));
+
+            // Google Sheets에도 저장
+            try {
+                const formData = new FormData();
+                formData.append('action', 'saveTodayStats');
+                formData.append('data', JSON.stringify({
+                    date: today,
+                    total: todayStats.total,
+                    correct: todayStats.correct
+                }));
+
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+            } catch (error) {
+                console.error('통계 저장 실패:', error);
+            }
         }
 
         // 퀴즈 종료
