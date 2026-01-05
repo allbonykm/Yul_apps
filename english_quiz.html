@@ -719,6 +719,8 @@
         let todayStats = { total: 0, correct: 0 }; // 오늘 통계
         let selectedVoice = null;   // TTS 음성
         let quizType = 1;           // 퀴즈 유형 (1: 듣고 단어, 2: 듣고 뜻, 3: 단어보고 뜻)
+        let audioContext = null;    // 모바일 오디오 컨텍스트
+        let audioUnlocked = false;  // 오디오 잠금 해제 여부
 
         // 초기화
         document.addEventListener('DOMContentLoaded', () => {
@@ -821,8 +823,47 @@
             return now.toISOString().split('T')[0];
         }
 
+        // 모바일 오디오 잠금 해제 (사용자 제스처 필요)
+        function unlockAudio() {
+            if (audioUnlocked) return Promise.resolve();
+
+            return new Promise((resolve) => {
+                // AudioContext 생성 및 resume
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                } catch (e) {
+                    console.log('AudioContext not supported');
+                }
+
+                // 무음 오디오 재생하여 잠금 해제
+                const silentAudio = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA');
+                silentAudio.volume = 0.01;
+                const playPromise = silentAudio.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        audioUnlocked = true;
+                        console.log('Audio unlocked successfully');
+                        resolve();
+                    }).catch((err) => {
+                        console.log('Audio unlock failed:', err);
+                        resolve(); // 실패해도 진행
+                    });
+                } else {
+                    audioUnlocked = true;
+                    resolve();
+                }
+            });
+        }
+
         // 퀴즈 시작
-        function startQuiz(type = 1) {
+        async function startQuiz(type = 1) {
+            // 모바일 오디오 잠금 해제 (사용자 터치로 인해 가능)
+            await unlockAudio();
+
             quizType = type;
             document.getElementById('homeScreen').style.display = 'none';
             document.getElementById('statsBtn').style.display = 'none';
@@ -980,7 +1021,14 @@
                 const data = await response.json();
                 if (data.audioContent) {
                     const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
-                    audio.play();
+                    // Promise 처리로 자동재생 지원
+                    const playPromise = audio.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch((err) => {
+                            console.log('Auto-play blocked, trying fallback:', err);
+                            fallbackSpeak(currentWord.word);
+                        });
+                    }
                 } else if (data.error) {
                     console.error('TTS Error:', data.error);
                     // 폴백: Web Speech API
