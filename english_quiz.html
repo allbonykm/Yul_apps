@@ -800,8 +800,11 @@
             });
         }
 
-        // 단어 발음
-        function playWord() {
+        // Google Cloud TTS API Key
+        const GOOGLE_TTS_API_KEY = "AIzaSyBMKc1I-gTN9YfuFxCIBzZQIQ8-HThqx4A";
+
+        // 단어 발음 (Google Cloud TTS)
+        async function playWord() {
             if (listenCount <= 0) return;
 
             listenCount--;
@@ -811,9 +814,47 @@
                 document.getElementById('listenBtn').disabled = true;
             }
 
-            // TTS 재생
+            // Google Cloud TTS 재생
+            try {
+                const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_TTS_API_KEY}`;
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        input: { text: currentWord.word },
+                        voice: {
+                            languageCode: 'en-US',
+                            name: 'en-US-Neural2-F',  // 미국 여성 Neural2 음성
+                            ssmlGender: 'FEMALE'
+                        },
+                        audioConfig: {
+                            audioEncoding: 'MP3',
+                            speakingRate: 0.9
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                if (data.audioContent) {
+                    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+                    audio.play();
+                } else if (data.error) {
+                    console.error('TTS Error:', data.error);
+                    // 폴백: Web Speech API
+                    fallbackSpeak(currentWord.word);
+                }
+            } catch (error) {
+                console.error('TTS Error:', error);
+                // 폴백: Web Speech API
+                fallbackSpeak(currentWord.word);
+            }
+        }
+
+        // 폴백 TTS (Google Cloud 실패 시)
+        function fallbackSpeak(text) {
             speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(currentWord.word);
+            const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'en-US';
             utterance.rate = 0.9;
             if (selectedVoice) {
