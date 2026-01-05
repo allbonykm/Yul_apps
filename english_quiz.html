@@ -1017,7 +1017,7 @@
                         input: { text: currentWord.word },
                         voice: {
                             languageCode: 'en-US',
-                            name: 'en-US-Neural2-F',  // 미국 여성 Neural2 음성
+                            name: 'en-US-Neural2-F',
                             ssmlGender: 'FEMALE'
                         },
                         audioConfig: {
@@ -1029,25 +1029,35 @@
 
                 const data = await response.json();
                 if (data.audioContent) {
-                    // iOS: 재사용 오디오 객체 사용 (이미 활성화됨)
-                    const audio = reusableAudio || new Audio();
-                    audio.src = 'data:audio/mp3;base64,' + data.audioContent;
+                    // iOS Safari 호환: Blob URL 사용 (data URL보다 안정적)
+                    const binaryString = atob(data.audioContent);
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    const blob = new Blob([bytes], { type: 'audio/mp3' });
+                    const blobUrl = URL.createObjectURL(blob);
+
+                    const audio = new Audio(blobUrl);
+                    audio.setAttribute('playsinline', '');
+
+                    audio.onended = () => {
+                        URL.revokeObjectURL(blobUrl); // 메모리 정리
+                    };
 
                     try {
                         await audio.play();
-                        isFirstPlay = false;
                     } catch (err) {
-                        console.log('Play failed, trying fallback:', err.message);
+                        console.log('Play failed:', err.message);
+                        URL.revokeObjectURL(blobUrl);
                         fallbackSpeak(currentWord.word);
                     }
                 } else if (data.error) {
                     console.error('TTS Error:', data.error);
-                    // 폴백: Web Speech API
                     fallbackSpeak(currentWord.word);
                 }
             } catch (error) {
                 console.error('TTS Error:', error);
-                // 폴백: Web Speech API
                 fallbackSpeak(currentWord.word);
             }
         }
