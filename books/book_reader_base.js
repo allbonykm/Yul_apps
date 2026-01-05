@@ -1,8 +1,10 @@
 /**
  * Book Reader Base Library
  * Shared JavaScript for all book reader pages
- * Uses Web Speech API for TTS (no API key required)
  */
+
+// Google TTS API Key
+const GOOGLE_TTS_API_KEY = "AIzaSyBMKc1I-gTN9YfuFxCIBzZQIQ8-HThqx4A";
 
 class BookReader {
   constructor(bookData) {
@@ -11,40 +13,15 @@ class BookReader {
     this.currentSentence = 0;
     this.currentWord = 0;
     this.isPlaying = false;
-    this.speed = 0.9; // 기본 속도 0.9 (초등학생용)
+    this.speed = 1.0;
     this.showKorean = true;
     this.isFlipped = false;
-    this.selectedVoice = null;
 
     // Load saved progress
     this.loadProgress();
 
-    // Initialize voices
-    this.initVoices();
-
     // Initialize
     this.init();
-  }
-
-  // Initialize TTS voices
-  initVoices() {
-    const loadVoices = () => {
-      const voices = speechSynthesis.getVoices();
-      // Prefer Google US English, fallback to any en-US voice
-      this.selectedVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('en-US'))
-        || voices.find(v => v.lang === 'en-US')
-        || voices.find(v => v.lang.includes('en'));
-      if (this.selectedVoice) {
-        console.log('Selected TTS voice:', this.selectedVoice.name);
-      }
-    };
-
-    // Voices may load asynchronously
-    if (speechSynthesis.getVoices().length > 0) {
-      loadVoices();
-    } else {
-      speechSynthesis.addEventListener('voiceschanged', loadVoices, { once: true });
-    }
   }
 
   init() {
@@ -165,33 +142,37 @@ class BookReader {
   }
 
   async speakText(text) {
-    return new Promise((resolve, reject) => {
-      try {
-        // Cancel any ongoing speech
-        speechSynthesis.cancel();
+    try {
+      const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_TTS_API_KEY}`;
 
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.rate = this.speed;
-        utterance.pitch = 1.0;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text: text },
+          voice: {
+            languageCode: 'en-US',
+            name: 'en-US-Neural2-F',
+            ssmlGender: 'FEMALE'
+          },
+          audioConfig: {
+            audioEncoding: 'MP3',
+            speakingRate: this.speed
+          }
+        })
+      });
 
-        // Use selected voice if available
-        if (this.selectedVoice) {
-          utterance.voice = this.selectedVoice;
-        }
-
-        utterance.onend = () => resolve();
-        utterance.onerror = (e) => {
-          console.error('TTS Error:', e);
-          resolve(); // Resolve anyway to not block the app
-        };
-
-        speechSynthesis.speak(utterance);
-      } catch (error) {
-        console.error('TTS Error:', error);
-        resolve(); // Resolve anyway to not block the app
+      const data = await response.json();
+      if (data.audioContent) {
+        const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+        await audio.play();
+        await new Promise(resolve => {
+          audio.onended = resolve;
+        });
       }
-    });
+    } catch (error) {
+      console.error('TTS Error:', error);
+    }
   }
 
   toggleKorean() {
