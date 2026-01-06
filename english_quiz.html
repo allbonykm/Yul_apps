@@ -846,25 +846,48 @@
                 if (audioContext.state === 'suspended') {
                     await audioContext.resume();
                 }
+                console.log('AudioContext state:', audioContext.state);
             } catch (e) {
-                console.log('AudioContext not supported');
+                console.log('AudioContext not supported:', e);
             }
 
             // 재사용 오디오 객체 생성 및 무음 재생으로 활성화
             const audio = initReusableAudio();
-            audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA';
+
+            // 짧은 무음 MP3 (iOS 호환성 향상)
+            const silentMp3 = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAA';
+
+            audio.src = silentMp3;
             audio.volume = 0.01;
+            audio.muted = false;
 
             try {
+                // iOS에서 load() 호출 필수
+                audio.load();
+
+                // canplaythrough 이벤트 대기
+                await new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => resolve(), 1000);
+                    audio.oncanplaythrough = () => {
+                        clearTimeout(timeout);
+                        resolve();
+                    };
+                    audio.onerror = () => {
+                        clearTimeout(timeout);
+                        resolve(); // 에러여도 진행
+                    };
+                });
+
                 await audio.play();
                 audio.pause();
                 audio.currentTime = 0;
                 audio.volume = 1;
                 audioUnlocked = true;
-                console.log('Audio unlocked successfully (iOS)');
+                console.log('Audio unlocked successfully (mobile)');
             } catch (err) {
-                console.log('Audio unlock attempt:', err.message);
-                // 실패해도 진행 - 수동 듣기 버튼은 작동함
+                console.log('Audio unlock attempt failed:', err.message);
+                // 실패해도 진행 - 수동 듣기 버튼은 작동할 수 있음
+                audioUnlocked = true; // 플래그는 설정 - 다시 시도 방지
             }
         }
 
@@ -1029,35 +1052,41 @@
 
                 const data = await response.json();
                 if (data.audioContent) {
-                    // iOS Safari 호환: Blob URL 사용 (data URL보다 안정적)
+                    // iOS Safari 호환: 재사용 Audio 객체 사용
+                    const audio = initReusableAudio();
+
+                    // 이전 Blob URL 정리
+                    if (audio._currentBlobUrl) {
+                        URL.revokeObjectURL(audio._currentBlobUrl);
+                    }
+
+                    // Base64 -> Blob URL 변환
                     const binaryString = atob(data.audioContent);
                     const bytes = new Uint8Array(binaryString.length);
                     for (let i = 0; i < binaryString.length; i++) {
                         bytes[i] = binaryString.charCodeAt(i);
                     }
-                    const blob = new Blob([bytes], { type: 'audio/mp3' });
+                    const blob = new Blob([bytes], { type: 'audio/mpeg' });
                     const blobUrl = URL.createObjectURL(blob);
+                    audio._currentBlobUrl = blobUrl;
 
-                    const audio = new Audio(blobUrl);
-                    audio.setAttribute('playsinline', '');
-
-                    audio.onended = () => {
-                        URL.revokeObjectURL(blobUrl); // 메모리 정리
-                    };
+                    // 오디오 소스 설정 및 재생
+                    audio.src = blobUrl;
+                    audio.load(); // iOS에서 필수: 새 소스 로드
 
                     try {
                         await audio.play();
+                        console.log('TTS 재생 성공:', currentWord.word);
                     } catch (err) {
-                        console.log('Play failed:', err.message);
-                        URL.revokeObjectURL(blobUrl);
+                        console.log('TTS Play failed, trying fallback:', err.message);
                         fallbackSpeak(currentWord.word);
                     }
                 } else if (data.error) {
-                    console.error('TTS Error:', data.error);
+                    console.error('TTS API Error:', data.error);
                     fallbackSpeak(currentWord.word);
                 }
             } catch (error) {
-                console.error('TTS Error:', error);
+                console.error('TTS fetch Error:', error);
                 fallbackSpeak(currentWord.word);
             }
         }
