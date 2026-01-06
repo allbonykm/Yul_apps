@@ -881,72 +881,21 @@
         }
 
         // 오디오 미리 로드 (Pre-loading)
-        async function preloadAudio(word) {
+        // 오디오 미리 로드 (Pre-loading with Google Translate TTS)
+        function preloadAudio(word) {
             if (!word) return;
             if (audioCache.has(word)) return; // 이미 캐시됨
 
             console.log('Pre-loading audio for:', word);
-            const ctx = getAudioContext();
 
-            try {
-                const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_TTS_API_KEY}`;
+            // Google Translate TTS URL (Unofficial)
+            const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(word)}`;
 
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        input: { text: word },
-                        voice: {
-                            languageCode: 'en-US',
-                            name: 'en-US-Neural2-F',
-                            ssmlGender: 'FEMALE'
-                        },
-                        audioConfig: {
-                            audioEncoding: 'MP3',
-                            speakingRate: 0.9
-                        }
-                    })
-                });
+            const audio = new Audio(url);
+            audio.preload = 'auto'; // 자동 로드
+            audio.load();
 
-                const data = await response.json();
-
-                if (data.audioContent) {
-                    const binaryString = atob(data.audioContent);
-                    const bytes = new Uint8Array(binaryString.length);
-                    for (let i = 0; i < binaryString.length; i++) {
-                        bytes[i] = binaryString.charCodeAt(i);
-                    }
-
-                    ctx.decodeAudioData(bytes.buffer, (decodedBuffer) => {
-                        // 앞뒤 무음 패딩 추가 (Head: 0.2s + Tail: 0.5s) - 잘림 방지
-                        const paddingHeadSec = 0.2;
-                        const paddingTailSec = 0.5;
-                        const paddingHeadSamples = Math.floor(decodedBuffer.sampleRate * paddingHeadSec);
-                        const paddingTailSamples = Math.floor(decodedBuffer.sampleRate * paddingTailSec);
-                        const newLength = decodedBuffer.length + paddingHeadSamples + paddingTailSamples;
-
-                        const newBuffer = ctx.createBuffer(
-                            decodedBuffer.numberOfChannels,
-                            newLength,
-                            decodedBuffer.sampleRate
-                        );
-
-                        // 채널별로 데이터 복사 (Offset 적용)
-                        for (let ch = 0; ch < decodedBuffer.numberOfChannels; ch++) {
-                            const newData = newBuffer.getChannelData(ch);
-                            const oldData = decodedBuffer.getChannelData(ch);
-                            newData.set(oldData, paddingHeadSamples); // 앞 패딩 뒤에 원본 데이터 복사
-                        }
-
-                        audioCache.set(word, newBuffer);
-                        console.log('Pre-load complete with Head+Tail padding:', word);
-                    }, (err) => {
-                        console.error('Decode failed during pre-load:', err);
-                    });
-                }
-            } catch (error) {
-                console.error('Pre-load fetch error:', error);
-            }
+            audioCache.set(word, audio);
         }
 
         // 퀴즈 시작
@@ -1075,12 +1024,16 @@
             });
         }
 
-        // Google Cloud TTS API Key
-        const GOOGLE_TTS_API_KEY = "AIzaSyBMKc1I-gTN9YfuFxCIBzZQIQ8-HThqx4A";
+        // Google Cloud TTS API Key removed
+
 
         // 단어 발음 (Web Audio API 사용)
+        // 단어 발음 (HTML5 Audio + Keep-Alive)
         async function playWord() {
             if (listenCount <= 0) return;
+
+            // 먼저 오디오 엔진 워밍업 (모바일 필수)
+            await unlockAudio();
 
             listenCount--;
             document.getElementById('listenCount').textContent = `남은 듣기 횟수: ${listenCount}회`;
@@ -1089,54 +1042,38 @@
                 document.getElementById('listenBtn').disabled = true;
             }
 
-            const ctx = getAudioContext();
-
-            // 1. 캐시 확인 및 없으면 다운로드
+            // 1. 캐시 확인 및 로드
             if (!audioCache.has(currentWord.word)) {
-                await preloadAudio(currentWord.word);
+                preloadAudio(currentWord.word);
             }
 
             // 2. 재생
-            if (audioCache.has(currentWord.word)) {
-                playAudioBuffer(ctx, audioCache.get(currentWord.word));
-            } else {
-                console.error('Audio cache miss even after preload attempt');
-                fallbackSpeak(currentWord.word);
-            }
-        }
+            const audio = audioCache.get(currentWord.word);
+            if (audio) {
+                try {
+                    audio.currentTime = 0;
+                    audio.playbackRate = 0.9; // 속도 조절
 
-        // 버퍼 재생 헬퍼 함수
-        function playAudioBuffer(ctx, buffer) {
-            try {
-                if (ctx.state === 'suspended') {
-                    ctx.resume();
+                    const playPromise = audio.play();
+
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log('Playback failed, trying resume:', error);
+                            // 혹시 모르니 다시 unlock 시도 후 재생
+                            unlockAudio().then(() => {
+                                audio.play().catch(e => console.error('Final playback fail:', e));
+                            });
+                        });
+                    }
+                } catch (e) {
+                    console.error('Play error:', e);
                 }
-
-                // 버퍼 소스 생성
-                const source = ctx.createBufferSource();
-                source.buffer = buffer;
-
-                // 오디오 그래프 연결 (Source -> Destination)
-                source.connect(ctx.destination);
-
-                // 재생 시작
-                source.start(0);
-            } catch (e) {
-                console.error('Play buffer failed:', e);
+            } else {
+                console.error('Audio object not found');
             }
         }
 
-        // 폴백 TTS (Google Cloud 실패 시)
-        function fallbackSpeak(text) {
-            speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.9;
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
-            }
-            speechSynthesis.speak(utterance);
-        }
+
 
         // 정답 확인
         function checkAnswer(btn, selectedWord) {
