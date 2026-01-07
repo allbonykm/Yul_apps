@@ -1024,16 +1024,9 @@
             });
         }
 
-        // Google Cloud TTS API Key removed
-
-
-        // 단어 발음 (Web Audio API 사용)
-        // 단어 발음 (HTML5 Audio + Keep-Alive)
-        async function playWord() {
+        // 단어 발음 (Web Speech API - SpeechSynthesis)
+        function playWord() {
             if (listenCount <= 0) return;
-
-            // 먼저 오디오 엔진 워밍업 (모바일 필수)
-            await unlockAudio();
 
             listenCount--;
             document.getElementById('listenCount').textContent = `남은 듣기 횟수: ${listenCount}회`;
@@ -1042,34 +1035,54 @@
                 document.getElementById('listenBtn').disabled = true;
             }
 
-            // 1. 캐시 확인 및 로드
-            if (!audioCache.has(currentWord.word)) {
-                preloadAudio(currentWord.word);
-            }
+            speakWord(currentWord.word);
+        }
 
-            // 2. 재생
-            const audio = audioCache.get(currentWord.word);
-            if (audio) {
-                try {
-                    audio.currentTime = 0;
-                    audio.playbackRate = 0.9; // 속도 조절
+        // 실제 발음 함수 (재시도 지원)
+        function speakWord(word, retryCount = 0) {
+            try {
+                // 기존 발화 완전 취소
+                speechSynthesis.cancel();
 
-                    const playPromise = audio.play();
-
-                    if (playPromise !== undefined) {
-                        playPromise.catch(error => {
-                            console.log('Playback failed, trying resume:', error);
-                            // 혹시 모르니 다시 unlock 시도 후 재생
-                            unlockAudio().then(() => {
-                                audio.play().catch(e => console.error('Final playback fail:', e));
-                            });
-                        });
+                // Chrome 버그 대응: 약간의 지연 후 발화
+                setTimeout(() => {
+                    // 음성 목록 재확인 (Chrome에서 가끔 사라짐)
+                    if (!selectedVoice) {
+                        const voices = speechSynthesis.getVoices();
+                        selectedVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('en-US'))
+                            || voices.find(v => v.lang === 'en-US')
+                            || voices.find(v => v.lang.includes('en'));
                     }
-                } catch (e) {
-                    console.error('Play error:', e);
-                }
-            } else {
-                console.error('Audio object not found');
+
+                    const utterance = new SpeechSynthesisUtterance(word);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1.0;
+                    utterance.volume = 1.0;
+
+                    if (selectedVoice) {
+                        utterance.voice = selectedVoice;
+                    }
+
+                    utterance.onstart = () => console.log('Speaking:', word);
+                    utterance.onend = () => console.log('Finished speaking:', word);
+                    utterance.onerror = (e) => {
+                        // interrupted는 cancel()로 인한 정상 동작, 무시
+                        if (e.error === 'interrupted' || e.error === 'canceled') {
+                            return;
+                        }
+                        console.error('Speech error:', e.error, e);
+                        // 실제 에러만 재시도 (최대 2회)
+                        if (retryCount < 2) {
+                            console.log('Retrying speak...', retryCount + 1);
+                            setTimeout(() => speakWord(word, retryCount + 1), 200);
+                        }
+                    };
+
+                    speechSynthesis.speak(utterance);
+                }, 100); // 100ms 지연
+            } catch (e) {
+                console.error('SpeechSynthesis error:', e);
             }
         }
 
