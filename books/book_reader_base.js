@@ -1,10 +1,8 @@
 /**
  * Book Reader Base Library
  * Shared JavaScript for all book reader pages
+ * Uses Google Translate TTS for consistent audio (identical to english_quiz.html)
  */
-
-// Google TTS API Key
-const GOOGLE_TTS_API_KEY = "AIzaSyBMKc1I-gTN9YfuFxCIBzZQIQ8-HThqx4A";
 
 class BookReader {
   constructor(bookData) {
@@ -13,9 +11,14 @@ class BookReader {
     this.currentSentence = 0;
     this.currentWord = 0;
     this.isPlaying = false;
-    this.speed = 1.0;
+    this.speed = 0.9; // 기본 속도 0.9 (초등학생용)
     this.showKorean = true;
     this.isFlipped = false;
+
+    // Web Audio API & Cache State
+    this.audioContext = null;
+    this.audioUnlocked = false;
+    this.audioCache = new Map(); // word/sentence -> Audio object
 
     // Load saved progress
     this.loadProgress();
@@ -32,6 +35,124 @@ class BookReader {
     this.setupReviewMode();
     this.setupSpeedControl();
     this.updateProgress();
+
+    // Unlock audio on first user interaction
+    ['click', 'touchstart', 'keydown'].forEach(event => {
+      document.body.addEventListener(event, () => this.unlockAudio(), { once: true });
+    });
+  }
+
+  // ==================== Audio Engine (iOS Compatible) ====================
+
+  // Audio Context Singleton
+  getAudioContext() {
+    if (!this.audioContext) {
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return this.audioContext;
+  }
+
+  // Unlock Audio (Required for iOS)
+  async unlockAudio() {
+    if (this.audioUnlocked) return;
+
+    const ctx = this.getAudioContext();
+
+    // Resume if suspended
+    if (ctx.state === 'suspended') {
+      try {
+        await ctx.resume();
+      } catch (e) {
+        console.log('AudioContext resume failed:', e);
+      }
+    }
+
+    // 1. Play silent buffer
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    try {
+      source.start(0);
+    } catch (e) { }
+
+    // 2. Keep-Alive Oscillator
+    try {
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
+      oscillator.type = 'square';
+      oscillator.frequency.value = 0.01; // Low frequency
+      gainNode.gain.value = 0.0001; // Silent
+
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      oscillator.start();
+      this.audioUnlocked = true;
+      console.log('Audio engine unlocked & Keep-Alive active');
+    } catch (err) {
+      console.log('Keep-alive setup failed:', err);
+      this.audioUnlocked = true; // Assume unlocked anyway
+    }
+  }
+
+  // Preload Audio
+  preloadAudio(text) {
+    if (!text) return;
+    if (this.audioCache.has(text)) return;
+
+    // Google Translate TTS URL
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`;
+
+    const audio = new Audio(url);
+    audio.preload = 'auto';
+    audio.load();
+
+    this.audioCache.set(text, audio);
+  }
+
+  // Play Audio
+  async playAudio(text) {
+    await this.unlockAudio();
+
+    // Cancel/Pause any currently playing audio if we had a global reference (optional)
+    // For now, simpler implementation:
+
+    if (!this.audioCache.has(text)) {
+      this.preloadAudio(text);
+    }
+
+    const audio = this.audioCache.get(text);
+
+    return new Promise((resolve, reject) => {
+      if (!audio) {
+        resolve();
+        return;
+      }
+
+      try {
+        audio.currentTime = 0;
+        audio.playbackRate = this.speed;
+
+        audio.onended = () => resolve();
+        audio.onerror = (e) => {
+          console.error('Audio playback error:', e);
+          resolve();
+        };
+
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log('Playback failed:', error);
+            resolve();
+          });
+        }
+      } catch (e) {
+        console.error('Play execution error:', e);
+        resolve();
+      }
+    });
   }
 
   // ==================== Stars Animation ====================
@@ -88,6 +209,9 @@ class BookReader {
     const container = document.getElementById('sentences-container');
 
     sentences.forEach((sentence, index) => {
+      // Preload audio for sentences
+      this.preloadAudio(sentence.en);
+
       const card = document.createElement('div');
       card.className = 'sentence-card';
       card.dataset.index = index;
@@ -131,48 +255,14 @@ class BookReader {
     document.querySelectorAll('.sentence-card').forEach(c => c.classList.remove('playing'));
     card.classList.add('playing');
 
-    // Play TTS
+    // Play Audio
     this.isPlaying = true;
-    await this.speakText(sentence.en);
+    await this.playAudio(sentence.en);
     this.isPlaying = false;
 
     // Update progress
     this.updateReadProgress(index);
     this.saveProgress();
-  }
-
-  async speakText(text) {
-    try {
-      const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${GOOGLE_TTS_API_KEY}`;
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          input: { text: text },
-          voice: {
-            languageCode: 'en-US',
-            name: 'en-US-Neural2-F',
-            ssmlGender: 'FEMALE'
-          },
-          audioConfig: {
-            audioEncoding: 'MP3',
-            speakingRate: this.speed
-          }
-        })
-      });
-
-      const data = await response.json();
-      if (data.audioContent) {
-        const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
-        await audio.play();
-        await new Promise(resolve => {
-          audio.onended = resolve;
-        });
-      }
-    } catch (error) {
-      console.error('TTS Error:', error);
-    }
   }
 
   toggleKorean() {
@@ -229,8 +319,8 @@ class BookReader {
     const knowBtn = document.getElementById('know-btn');
     const studyBtn = document.getElementById('study-btn');
 
-    if (knowBtn) knowBtn.addEventListener('click', () => this.answerWord(true));
-    if (studyBtn) studyBtn.addEventListener('click', () => this.answerWord(false));
+    if (knowBtn) knowBtn.addEventListener('click', (e) => { e.stopPropagation(); this.answerWord(true); });
+    if (studyBtn) studyBtn.addEventListener('click', (e) => { e.stopPropagation(); this.answerWord(false); });
   }
 
   showNextWord() {
@@ -244,6 +334,9 @@ class BookReader {
 
     this.currentWord = 0;
     this.currentWordData = wordsToReview[0];
+    // Preload audio for the word
+    this.preloadAudio(this.currentWordData.word);
+
     this.renderFlashcard();
   }
 
@@ -289,7 +382,7 @@ class BookReader {
     document.getElementById('flashcard').classList.add('flipped');
 
     // Play pronunciation
-    this.speakText(this.currentWordData.word);
+    this.playAudio(this.currentWordData.word);
   }
 
   answerWord(knew) {
@@ -326,11 +419,15 @@ class BookReader {
     this.saveProgress();
 
     // Move to next word
+    // Recalculate remaining list
     const wordsToReview = this.getWordsToReview();
-    this.currentWord++;
+    // Since we answered one, if it was 'knew' and pushed to future, it's gone from list.
+    // If it was 'study', it might stay or be pushed slightly.
+    // For simplicity, just reload the next one from the fresh list.
 
-    if (this.currentWord < wordsToReview.length) {
-      this.currentWordData = wordsToReview[this.currentWord];
+    if (wordsToReview.length > 0) {
+      this.currentWordData = wordsToReview[0];
+      this.preloadAudio(this.currentWordData.word);
       this.renderFlashcard();
     } else {
       this.showWordComplete();
@@ -363,10 +460,17 @@ class BookReader {
     const wordsToReview = this.getWordsToReview();
 
     // Update stats
-    document.getElementById('total-sentences').textContent = this.bookData.story.length;
-    document.getElementById('completed-sentences').textContent = (this.progress.lastReadSentence || 0) + 1;
-    document.getElementById('mastered-words').textContent = masteredWords.length;
-    document.getElementById('total-words').textContent = totalWords;
+    const totalSentencesEl = document.getElementById('total-sentences');
+    if (totalSentencesEl) totalSentencesEl.textContent = this.bookData.story.length;
+
+    const completedSentencesEl = document.getElementById('completed-sentences');
+    if (completedSentencesEl) completedSentencesEl.textContent = (this.progress.lastReadSentence || 0) + 1;
+
+    const masteredWordsEl = document.getElementById('mastered-words');
+    if (masteredWordsEl) masteredWordsEl.textContent = masteredWords.length;
+
+    const totalWordsEl = document.getElementById('total-words');
+    if (totalWordsEl) totalWordsEl.textContent = totalWords;
 
     // Star rating
     const percentage = totalWords > 0 ? (masteredWords.length / totalWords) * 100 : 0;
@@ -377,26 +481,31 @@ class BookReader {
     else if (percentage >= 30) stars = '⭐⭐☆☆☆';
     else if (percentage > 0) stars = '⭐☆☆☆☆';
 
-    document.querySelector('.star-rating').textContent = stars;
+    const starRatingEl = document.querySelector('.star-rating');
+    if (starRatingEl) starRatingEl.textContent = stars;
 
     // Mastered words list
     const masteredList = document.getElementById('mastered-words-list');
-    if (masteredWords.length > 0) {
-      masteredList.innerHTML = masteredWords.map(w =>
-        `<span class="word-tag mastered">${w.word}</span>`
-      ).join('');
-    } else {
-      masteredList.innerHTML = '<div class="empty-message">아직 학습한 단어가 없어요</div>';
+    if (masteredList) {
+      if (masteredWords.length > 0) {
+        masteredList.innerHTML = masteredWords.map(w =>
+          `<span class="word-tag mastered">${w.word}</span>`
+        ).join('');
+      } else {
+        masteredList.innerHTML = '<div class="empty-message">아직 학습한 단어가 없어요</div>';
+      }
     }
 
     // Review words list
     const reviewList = document.getElementById('review-words-list');
-    if (wordsToReview.length > 0) {
-      reviewList.innerHTML = wordsToReview.map(w =>
-        `<span class="word-tag review">${w.word}</span>`
-      ).join('');
-    } else {
-      reviewList.innerHTML = '<div class="empty-message">복습할 단어가 없어요! 🎉</div>';
+    if (reviewList) {
+      if (wordsToReview.length > 0) {
+        reviewList.innerHTML = wordsToReview.map(w =>
+          `<span class="word-tag review">${w.word}</span>`
+        ).join('');
+      } else {
+        reviewList.innerHTML = '<div class="empty-message">복습할 단어가 없어요! 🎉</div>';
+      }
     }
   }
 
