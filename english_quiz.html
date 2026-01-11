@@ -1050,21 +1050,7 @@
 
         // 오디오 미리 로드 (Pre-loading)
         // 오디오 미리 로드 (Pre-loading with Google Translate TTS)
-        function preloadAudio(word) {
-            if (!word) return;
-            if (audioCache.has(word)) return; // 이미 캐시됨
 
-            console.log('Pre-loading audio for:', word);
-
-            // Google Translate TTS URL (Unofficial)
-            const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(word)}`;
-
-            const audio = new Audio(url);
-            audio.preload = 'auto'; // 자동 로드
-            audio.load();
-
-            audioCache.set(word, audio);
-        }
 
         // 퀴즈 시작
         async function startQuiz(type = 1) {
@@ -1104,7 +1090,7 @@
             }
 
             // UI 업데이트
-            preloadAudio(currentWord.word); // ★ 미리 로드
+            // preloadAudio(currentWord.word); // ★ 미리 로드 (삭제됨)
             document.getElementById('questionNumber').textContent = questionNumber;
             document.getElementById('resultButtons').classList.remove('show');
 
@@ -1195,49 +1181,38 @@
         // Google Cloud TTS API Key removed
 
 
-        // 단어 발음 (Web Audio API 사용)
-        // 단어 발음 (HTML5 Audio + Keep-Alive)
-        async function playWord() {
+        // 단어 발음 (Web Speech API 사용 - iOS 호환성 개선)
+        function playWord() {
             if (listenCount <= 0) return;
 
-            // 먼저 오디오 엔진 워밍업 (모바일 필수)
-            await unlockAudio();
+            // iOS에서는 비동기 처리 없이 사용자의 클릭 이벤트 내에서 즉시 호출해야 함
 
+            // TTS 지원 여부 확인
+            if (!window.speechSynthesis) {
+                alert("이 브라우저는 음성 재생을 지원하지 않습니다.");
+                return;
+            }
+
+            // 발화 생성
+            const utterance = new SpeechSynthesisUtterance(currentWord.word);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9; // 속도 조절 (0.1 ~ 10)
+
+            // 음성 설정 (initVoices에서 찾은 Google 음성 또는 기기 기본 영어 음성)
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+
+            // 재생 시작
+            window.speechSynthesis.cancel(); // 큐 초기화 (연타 방지)
+            window.speechSynthesis.speak(utterance);
+
+            // UI 업데이트
             listenCount--;
             document.getElementById('listenCount').textContent = `남은 듣기 횟수: ${listenCount}회`;
 
             if (listenCount <= 0) {
                 document.getElementById('listenBtn').disabled = true;
-            }
-
-            // 1. 캐시 확인 및 로드
-            if (!audioCache.has(currentWord.word)) {
-                preloadAudio(currentWord.word);
-            }
-
-            // 2. 재생
-            const audio = audioCache.get(currentWord.word);
-            if (audio) {
-                try {
-                    audio.currentTime = 0;
-                    audio.playbackRate = 0.9; // 속도 조절
-
-                    const playPromise = audio.play();
-
-                    if (playPromise !== undefined) {
-                        playPromise.catch(error => {
-                            console.log('Playback failed, trying resume:', error);
-                            // 혹시 모르니 다시 unlock 시도 후 재생
-                            unlockAudio().then(() => {
-                                audio.play().catch(e => console.error('Final playback fail:', e));
-                            });
-                        });
-                    }
-                } catch (e) {
-                    console.error('Play error:', e);
-                }
-            } else {
-                console.error('Audio object not found');
             }
         }
 
@@ -1473,7 +1448,7 @@
                 .then(data => {
                     if (data.result === 'success') {
                         // alert(`적립 완료! 현재 잔액: ${Number(data.newBalance).toLocaleString()} Point`);
-                        showSuccessModal(`적립 완료!<br>현재 잔액: <span style="color:#4CAF50">${Number(data.newBalance).toLocaleString()}</span> Point`);
+                        showSuccessModal(`적립 포인트는 <strong style="color:#4CAF50; font-size:1.4em;">${pendingPoints}</strong>점이예요. 율이 언니!<br><br><span style="font-size:0.9em; color:#777;">-백합이가-</span><br><br>현재 통장 잔액 : <strong style="color:#FF9800;">${Number(data.newBalance).toLocaleString()}</strong> 원`);
 
                         pendingPoints = 0;
                         savePendingPoints();
