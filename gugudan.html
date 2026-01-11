@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>구구콘말고 구구단(basic)</title>
+    <!-- <link rel="manifest" href="manifest.json"> -->
+    <!-- <link rel="apple-touch-icon" href="icon-192.png"> -->
+    <meta name="theme-color" content="#FF9800">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #FF9800 0%, #FF5722 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: white;
+        }
+
+        /* 배경 애니메이션 (english_quiz와 유사) */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-number {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.3;
+            color: rgba(255, 255, 255, 0.5);
+            animation: floatUp 10s infinite linear;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateY(-10vh);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 상단 네비게이션 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            padding: 10px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+
+        .point-badge {
+            background: rgba(255, 255, 255, 0.9);
+            color: #E65100;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+        }
+
+        /* 메인 메뉴 */
+        .home-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 20px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .menu-btn {
+            width: 100%;
+            max-width: 300px;
+            padding: 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #BF360C;
+            background: white;
+            box-shadow: 0 6px 0 #D84315, 0 10px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.1s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .menu-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #D84315, 0 0px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 퀴즈 화면 */
+        .quiz-screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            color: #333;
+        }
+
+        .question-text {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #E65100;
+            margin-bottom: 10px;
+        }
+
+        .question-desc {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 20px;
+            border-radius: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #E65100;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .choice-btn:hover {
+            transform: scale(1.02);
+            background: white;
+        }
+
+        .choice-btn.correct {
+            background: #4CAF50;
+            color: white;
+            animation: pulse-green 0.5s;
+        }
+
+        .choice-btn.wrong {
+            background: #F44336;
+            color: white;
+            animation: shake 0.4s;
+        }
+
+        /* 포인트 확인 화면 */
+        .points-screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .big-number {
+            font-size: 5rem;
+            font-weight: 900;
+            margin: 20px 0;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .save-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 6px 0 #2E7D32, 0 10px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.1s;
+            margin-top: 20px;
+        }
+
+        .save-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 #2E7D32, 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 15px;
+            border: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        @keyframes pulse-green {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            }
+
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+
+        /* 성공 모달 (도마뱀) */
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .success-content {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            text-align: center;
+            max-width: 85%;
+            width: 350px;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-modal.show .success-content {
+            transform: scale(1);
+        }
+
+        .success-image {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            animation: bounceIn 0.8s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            80% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .success-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .success-btn {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .success-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 반짝이는 효과 */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ffd700;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(400px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation" id="bgAnimation"></div>
+
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <button class="back-btn" onclick="goHome()">🏠 홈으로</button>
+            <div class="point-badge">
+                <span>💰</span><span id="sessionPoints">0</span>
+            </div>
+        </div>
+
+        <!-- 홈 화면 -->
+        <div class="home-screen" id="homeScreen">
+            <h1 class="title">구구콘 말고<br>구구단! 🍦</h1>
+            <button class="menu-btn" onclick="startQuiz('solve')">
+                <span>✖️</span> 구구단 풀기
+            </button>
+            <button class="menu-btn" onclick="startQuiz('make')">
+                <span>🔨</span> 구구단 만들기
+            </button>
+            <button class="menu-btn" onclick="showPointsScreen()">
+                <span>💰</span> 적립포인트 확인
+            </button>
+        </div>
+
+        <!-- 퀴즈 화면 -->
+        <div class="quiz-screen" id="quizScreen">
+            <div class="question-card">
+                <div class="question-text" id="questionText"></div>
+                <div class="question-desc" id="questionDesc"></div>
+            </div>
+            <div class="choices-grid" id="choicesGrid"></div>
+
+            <div class="result-actions" style="display:none;" id="quizActions">
+                <button class="action-btn" onclick="nextQuestion()">다음 문제 ▶</button>
+                <button class="action-btn" style="background: rgba(255,255,255,0.4);" onclick="stopQuiz()">그만하기
+                    ⏹</button>
+            </div>
+        </div>
+
+        <!-- 포인트 화면 -->
+        <div class="points-screen" id="pointsScreen">
+            <h2>모은 포인트</h2>
+            <div class="big-number" id="displayPoints">0</div>
+            <p>열심히 공부했네요! 👍</p>
+
+            <button class="save-btn" onclick="savePoints()">💰 적립하기</button>
+
+            <div id="balanceInfo" style="margin-top: 20px; display: none;">
+                <p>현재 통장 잔액: <span id="currentBalance" style="font-weight:bold; color: yellow;">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- 성공 모달 -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <img src="gecko_success.png" alt="Success Gecko" class="success-image">
+            <div class="success-title">최고예요! 👍</div>
+            <div class="success-message" id="successMessage">적립 완료!</div>
+            <button class="success-btn" onclick="closeSuccessModal()">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // ======= 설정 =======
+        // code.gs (gecko_code.txt)의 배포 URL을 입력해야 합니다.
+        // 현재는 예시 URL입니다. 사용자가 올바른 URL로 교체해야 합니다.
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKsnNwSizn1kaeGbYtBoPUVzc28H2UlSpD2rvEixBS-aCLpYCDLYh08Y8uN4wG11O4WA/exec'; // PLACEHOLDER
+
+        // ======= 상태 =======
+        let currentMode = ''; // 'solve' or 'make'
+        let currentQuestion = null;
+        let sessionPoints = 0;
+        let pendingPoints = 0; // 아직 적립하지 않은 포인트 (이전 세션 포함 가능하도록 localStorage 사용 고려)
+
+        // localStorage 키
+        const KEY_PENDING_POINTS = 'gugudan_pending_points';
+
+        // ======= 초기화 =======
+        document.onload = init();
+
+        function init() {
+            createFloatingNumbers();
+            loadPendingPoints();
+            updatePointDisplay();
+        }
+
+        function createFloatingNumbers() {
+            const bg = document.getElementById('bgAnimation');
+            for (let i = 0; i < 15; i++) {
+                const el = document.createElement('div');
+                el.className = 'floating-number';
+                el.innerText = Math.floor(Math.random() * 9 + 1) + '×' + Math.floor(Math.random() * 9 + 1);
+                el.style.left = Math.random() * 100 + '%';
+                el.style.animationDuration = (8 + Math.random() * 10) + 's';
+                el.style.animationDelay = (Math.random() * 5) + 's';
+                bg.appendChild(el);
+            }
+        }
+
+        function loadPendingPoints() {
+            const saved = localStorage.getItem(KEY_PENDING_POINTS);
+            if (saved) {
+                pendingPoints = parseInt(saved);
+            }
+        }
+
+        function savePendingPoints() {
+            localStorage.setItem(KEY_PENDING_POINTS, pendingPoints);
+            updatePointDisplay();
+        }
+
+        function updatePointDisplay() {
+            document.getElementById('sessionPoints').innerText = pendingPoints;
+        }
+
+        // ======= 네비게이션 =======
+        function goHome() {
+            document.getElementById('homeScreen').style.display = 'flex';
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('pointsScreen').style.display = 'none';
+        }
+
+        function showPointsScreen() {
+            document.getElementById('homeScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('pointsScreen').style.display = 'flex';
+
+            document.getElementById('displayPoints').innerText = pendingPoints;
+            document.getElementById('balanceInfo').style.display = 'none';
+        }
+
+        // ======= 퀴즈 로직 =======
+        function startQuiz(mode) {
+            currentMode = mode;
+            document.getElementById('homeScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'flex';
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            document.getElementById('quizActions').style.display = 'none';
+
+            if (currentMode === 'solve') {
+                generateSolveQuestion();
+            } else {
+                generateMakeQuestion();
+            }
+        }
+
+        function stopQuiz() {
+            alert(`${sessionPoints} gecko point 가 적립되었습니다.`); // 이번 세션 획득 포인트 안내
+            sessionPoints = 0; // 세션 포인트 초기화 (이미 pendingPoints에 합산됨)
+            goHome();
+        }
+
+        function generateSolveQuestion() {
+            // 2~9단 (문제 단순화 위해 1단 제외 가능하나 요청은 1*1~10*10)
+            const a = Math.floor(Math.random() * 10) + 1; // 1~10
+            const b = Math.floor(Math.random() * 10) + 1; // 1~10
+            const ans = a * b;
+
+            currentQuestion = {
+                text: `${a} × ${b} = ?`,
+                answer: ans,
+                type: 'solve'
+            };
+
+            // 오답 생성 (정답 근처 값)
+            let wrong1 = ans + (Math.floor(Math.random() * 5) + 1);
+            let wrong2 = ans - (Math.floor(Math.random() * 5) + 1);
+            if (wrong2 < 1) wrong2 = ans + 10;
+            if (wrong1 === ans) wrong1 += 3;
+            if (wrong2 === ans) wrong2 -= 3;
+            if (wrong1 === wrong2) wrong2 += 2;
+
+            renderQuestion(currentQuestion.text, [ans, wrong1, wrong2]);
+        }
+
+        function generateMakeQuestion() {
+            // 결과값을 주고 인수를 찾는 문제 (예: 63 -> 7,9)
+            // 소수가 아닌 수 위주로 선정
+            const candidates = [];
+            for (let i = 2; i <= 9; i++) {
+                for (let j = 2; j <= 9; j++) {
+                    candidates.push([i, j]);
+                }
+            }
+            const pick = candidates[Math.floor(Math.random() * candidates.length)];
+            const a = pick[0];
+            const b = pick[1];
+            const product = a * b;
+
+            currentQuestion = {
+                text: `${product}`,
+                desc: `어떤 두 수를 곱하면 ${product}이 될까요?`,
+                answer: `${a}, ${b}`, // 표시용
+                check: (val) => {
+                    // "7, 9" 와 "9, 7" 모두 정답 처리 필요하나 버튼 텍스트로 비교하면 간단
+                    return val === `${a}, ${b}` || val === `${b}, ${a}`;
+                }
+            };
+
+            // 오답 생성
+            // 다른 곱셈 조합 찾기 (오답으로)
+            let wrong1_a = a + 1;
+            let wrong1_b = b > 2 ? b - 1 : b + 2;
+            let wrong2_a = a > 2 ? a - 1 : a + 2;
+            let wrong2_b = b + 1;
+
+            renderQuestion(currentQuestion.text, [`${a}, ${b}`, `${wrong1_a}, ${wrong1_b}`, `${wrong2_a}, ${wrong2_b}`], currentQuestion.desc);
+        }
+
+        function renderQuestion(text, choices, desc = "") {
+            document.getElementById('questionText').innerText = text;
+            document.getElementById('questionDesc').innerText = desc || "정답을 골라보세요!";
+
+            const grid = document.getElementById('choicesGrid');
+            grid.innerHTML = '';
+
+            // 섞기
+            choices.sort(() => Math.random() - 0.5);
+
+            choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerText = choice;
+                btn.onclick = () => checkAnswer(btn, choice);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(btn, value) {
+            // 중복 클릭 방지
+            const btns = document.querySelectorAll('.choice-btn');
+            btns.forEach(b => b.disabled = true);
+
+            let isCorrect = false;
+
+            if (currentMode === 'solve') {
+                isCorrect = (value === currentQuestion.answer);
+            } else {
+                isCorrect = (value === currentQuestion.answer); // 텍스트 매칭 (단순화)
+                // 실제로는 순서 바뀐 경우도 고려해야 하지만, 생성 시 정답 문자열 하나만 넣었으므로 일치 여부만 봄
+                // 오답 생성 시 정답 문자열과 겹치지 않게 주의했음
+            }
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                showToast("정답입니다! 🎉 (+1 Point)");
+
+                // 포인트 적립
+                sessionPoints++;
+                pendingPoints++;
+                savePendingPoints();
+
+                // 다음 버튼 표시
+                document.getElementById('quizActions').style.display = 'flex';
+            } else {
+                btn.classList.add('wrong');
+                showToast("틀렸습니다. 😅");
+                // 틀려도 다음 버튼 표시 (그만하기 가능)
+                document.getElementById('quizActions').style.display = 'flex';
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        // ======= 서버 통신 =======
+        function savePoints() {
+            if (pendingPoints === 0) {
+                alert("적립할 포인트가 없습니다.");
+                return;
+            }
+
+            if (!confirm(`${pendingPoints} 포인트를 적립하시겠습니까?`)) return;
+
+            const btn = document.querySelector('.save-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "적립 중...";
+            btn.disabled = true;
+
+            // GAS로 전송 (gecko_code.txt 방식)
+            // doPost(e) -> e.parameter.type, e.parameter.amount, e.parameter.desc
+            const formData = new FormData();
+            formData.append('type', 'earn');
+            formData.append('amount', pendingPoints);
+            formData.append('desc', '구구단 학습 적립');
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        // alert(`적립 완료! 현재 잔액: ${data.newBalance} 포인트`);
+                        showSuccessModal(`적립 완료!<br>현재 잔액: <span style="color:#4CAF50">${Number(data.newBalance).toLocaleString()}</span> Point`);
+                        pendingPoints = 0;
+                        savePendingPoints();
+
+                        document.getElementById('displayPoints').innerText = 0;
+                        document.getElementById('currentBalance').innerText = Number(data.newBalance).toLocaleString() + ' Point';
+                        document.getElementById('balanceInfo').style.display = 'block';
+                    } else {
+                        alert("오류가 발생했습니다: " + JSON.stringify(data));
+                    }
+                })
+                .catch(err => {
+                    alert("네트워크 오류: " + err);
+                })
+                .finally(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                });
+        }
+
+        // 성공 모달 함수
+        function showSuccessModal(msg) {
+            const modal = document.getElementById('successModal');
+            const msgEl = document.getElementById('successMessage');
+            msgEl.innerHTML = msg;
+
+            modal.style.display = 'flex';
+            // 비동기로 클래스 추가하여 애니메이션 트리거
+            setTimeout(() => {
+                modal.classList.add('show');
+                createConfetti(); // 폭죽 효과
+            }, 10);
+        }
+
+        function closeSuccessModal() {
+            const modal = document.getElementById('successModal');
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        function createConfetti() {
+            const modal = document.querySelector('.success-content');
+            for (let i = 0; i < 30; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + '%';
+                c.style.backgroundColor = ['#FFD700', '#FF5722', '#4CAF50', '#2196F3'][Math.floor(Math.random() * 4)];
+                c.style.animationDuration = (1 + Math.random() * 2) + 's';
+                c.style.top = -10 + 'px';
+                modal.appendChild(c);
+
+                // 청소
+                setTimeout(() => c.remove(), 3000);
+            }
+        }
+    </script>
+</body>
+
+</html>
