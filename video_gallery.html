@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>율이의 상상 창고</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            min-height: 100vh;
+            color: #333;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 헤더 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .home-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            padding: 10px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            font-weight: bold;
+        }
+
+        /* 업로드 섹션 */
+        .upload-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .upload-card.collapsed {
+            padding: 15px 20px;
+            cursor: pointer;
+        }
+
+        .upload-card.collapsed .upload-form {
+            display: none;
+        }
+
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .upload-card.collapsed .upload-header {
+            margin-bottom: 0;
+        }
+
+        .upload-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #6a11cb;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 12px;
+        }
+
+        .upload-btn {
+            width: 100%;
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .upload-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .upload-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* 비디오 그리드 */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+
+        .video-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .video-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .thumbnail {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            background: black;
+        }
+
+        .video-info {
+            padding: 10px;
+        }
+
+        .video-date {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .video-caption {
+            font-size: 0.95rem;
+            font-weight: bold;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* 비디오 모달 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        video {
+            width: 100%;
+            max-height: 70vh;
+            border-radius: 10px;
+            outline: none;
+            background: black;
+        }
+
+        .modal-caption {
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .modal-date {
+            color: #aaa;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+        }
+
+        /* 로딩 스피너 */
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: #6a11cb;
+            font-weight: bold;
+        }
+
+        .loading.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">율이의 상상 창고 🎬</h1>
+            <button class="home-btn" onclick="location.href='index.html'">🏠 홈으로</button>
+        </header>
+
+        <!-- 업로드 카드 -->
+        <div class="upload-card" id="uploadCard">
+            <div class="upload-header" onclick="toggleUploadForm()">
+                <div class="upload-title">✨ 새로운 영상 기록하기</div>
+                <div style="font-size: 1.5rem;">+</div>
+            </div>
+
+            <div class="upload-form">
+                <div class="form-group">
+                    <label for="videoFile">동영상 선택 (MP4)</label>
+                    <input type="file" id="videoFile" accept="video/mp4,video/quicktime" onchange="previewFile()">
+                    <p style="font-size: 0.8rem; color: #888; margin-top: 5px;">* iCloud Drive나 파일 앱에서 가져올 수 있어요.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="caption">어떤 순간인가요?</label>
+                    <textarea id="caption" rows="2" placeholder="이 영상에 대한 느낌이나 설명을 적어주세요."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">날짜</label>
+                    <input type="date" id="date">
+                </div>
+
+                <div class="loading" id="uploadLoading">영상 저장 중... 잠시만 기다려주세요 💾</div>
+                <button class="upload-btn" onclick="saveVideo()" id="saveBtn">저장하기</button>
+            </div>
+        </div>
+
+        <!-- 비디오 목록 -->
+        <div id="videoGrid" class="video-grid">
+            <!-- 동적으로 채워짐 -->
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <h3>아직 저장된 영상이 없어요! 😅</h3>
+            <p>위의 '+' 버튼을 눌러 첫 영상을 올려보세요.</p>
+        </div>
+    </div>
+
+    <!-- 비디오 모달 -->
+    <div class="modal" id="videoModal">
+        <button class="close-modal" onclick="closeModal()">×</button>
+        <div class="modal-content">
+            <video id="modalVideo" controls playsinline></video>
+            <div class="modal-caption" id="modalCaption"></div>
+            <div class="modal-date" id="modalDate"></div>
+        </div>
+    </div>
+
+    <script>
+        // IndexedDB 설정
+        const DB_NAME = 'YulVideoDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'videos';
+
+        let db;
+
+        // 초기화
+        window.onload = () => {
+            initDB();
+            document.getElementById('date').valueAsDate = new Date();
+        };
+
+        // DB 초기화
+        function initDB() {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+            request.onerror = (event) => {
+                console.error("Database error: " + event.target.errorCode);
+                alert("저장소를 여는데 실패했습니다 ㅜㅜ");
+            };
+
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                loadVideos();
+            };
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                const objectStore = db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+                objectStore.createIndex("date", "date", { unique: false });
+            };
+        }
+
+        // 비디오 저장
+        async function saveVideo() {
+            const fileInput = document.getElementById('videoFile');
+            const captionInput = document.getElementById('caption');
+            const dateInput = document.getElementById('date');
+            const saveBtn = document.getElementById('saveBtn');
+            const loading = document.getElementById('uploadLoading');
+
+            if (fileInput.files.length === 0) {
+                alert("동영상을 선택해주세요!");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const caption = captionInput.value;
+            const date = dateInput.value;
+
+            // 로딩 시작
+            saveBtn.disabled = true;
+            loading.classList.add('active');
+
+            try {
+                // 썸네일 생성 (선택사항, 용량 문제로 일단 생략하거나 추후 구현. 여기서는 비디오 태그로 대체 가능하나 성능상 이미지 추출이 좋음)
+                // 현재는 비디오 파일을 통째로 저장
+
+                const videoData = {
+                    file: file,
+                    caption: caption,
+                    date: date,
+                    created: new Date().getTime()
+                };
+
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const objectStore = transaction.objectStore(STORE_NAME);
+                const request = objectStore.add(videoData);
+
+                request.onsuccess = () => {
+                    // 성공 처리
+                    saveBtn.disabled = false;
+                    loading.classList.remove('active');
+
+                    // 폼 초기화
+                    fileInput.value = '';
+                    captionInput.value = '';
+                    toggleUploadForm(); // 폼 닫기
+
+                    alert("저장 완료! 🎉");
+                    loadVideos(); // 목록 갱신
+                };
+
+                request.onerror = () => {
+                    alert("저장 실패... 용량이 너무 큰가봐요 😭");
+                    saveBtn.disabled = false;
+                    loading.classList.remove('active');
+                };
+
+            } catch (error) {
+                console.error(error);
+                alert("오류가 발생했습니다.");
+                saveBtn.disabled = false;
+                loading.classList.remove('active');
+            }
+        }
+
+        // 비디오 목록 로드
+        function loadVideos() {
+            const grid = document.getElementById('videoGrid');
+            const emptyState = document.getElementById('emptyState');
+            grid.innerHTML = '';
+
+            const objectStore = db.transaction(STORE_NAME).objectStore(STORE_NAME);
+            const request = objectStore.getAll(); // 날짜순 정렬하려면 openCursor 사용 권장하지만 간단히 getAll 후 정렬
+
+            request.onsuccess = (event) => {
+                const videos = event.target.result;
+
+                if (videos.length === 0) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+
+                // 날짜 내림차순 정렬 (최신순)
+                videos.sort((a, b) => b.date.localeCompare(a.date) || b.created - a.created);
+
+                videos.forEach(video => {
+                    const item = document.createElement('div');
+                    item.className = 'video-item';
+
+                    // 비디오 URL 생성
+                    const videoURL = URL.createObjectURL(video.file);
+
+                    item.onclick = (e) => {
+                        if (e.target.className !== 'delete-btn') {
+                            openModal(videoURL, video.caption, video.date);
+                        }
+                    };
+
+                    item.innerHTML = `
+                        <button class="delete-btn" onclick="deleteVideo(${video.id})">×</button>
+                        <video class="thumbnail" src="${videoURL}#t=1.0" preload="metadata"></video>
+                        <div class="video-info">
+                            <div class="video-date">${video.date}</div>
+                            <div class="video-caption">${video.caption || '제목 없음'}</div>
+                        </div>
+                    `;
+
+                    grid.appendChild(item);
+                });
+            };
+        }
+
+        // 비디오 삭제
+        function deleteVideo(id) {
+            if (confirm("정말 이 영상을 삭제할까요?")) {
+                const request = db.transaction([STORE_NAME], "readwrite")
+                    .objectStore(STORE_NAME)
+                    .delete(id);
+
+                request.onsuccess = () => {
+                    loadVideos();
+                };
+            }
+        }
+
+        // 모달 열기
+        function openModal(url, caption, date) {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('modalVideo');
+            const captionEl = document.getElementById('modalCaption');
+            const dateEl = document.getElementById('modalDate');
+
+            video.src = url;
+            captionEl.textContent = caption;
+            dateEl.textContent = date;
+
+            modal.classList.add('active');
+            video.play();
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('modalVideo');
+
+            video.pause();
+            video.src = '';
+            modal.classList.remove('active');
+        }
+
+        // UI 유틸리티
+        function toggleUploadForm() {
+            const card = document.getElementById('uploadCard');
+            card.classList.toggle('collapsed');
+        }
+
+        function previewFile() {
+            // 파일 선택 시 간단한 피드백 (필요 시 구현)
+        }
+    </script>
+</body>
+
+</html>
