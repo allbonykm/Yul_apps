@@ -1079,7 +1079,16 @@
 
             if (dueReview.length > 0) {
                 // 복습할 단어가 있으면 복습 먼저
-                currentWord = dueReview[Math.floor(Math.random() * dueReview.length)];
+                const reviewWord = dueReview[Math.floor(Math.random() * dueReview.length)];
+                // ★ reviewList에는 meaning이 없으므로 wordBank에서 찾아 병합
+                const wordBankMatch = wordBank.find(w => w.word === reviewWord.word);
+                if (wordBankMatch) {
+                    currentWord = { ...reviewWord, meaning: wordBankMatch.meaning };
+                } else {
+                    // wordBank에 없는 단어면 건너뛰고 다른 단어 선택
+                    console.warn('워드뱅크에 없는 단어:', reviewWord.word);
+                    currentWord = wordBank[Math.floor(Math.random() * wordBank.length)];
+                }
             } else if (wordBank.length > 0) {
                 // 없으면 랜덤 단어
                 currentWord = wordBank[Math.floor(Math.random() * wordBank.length)];
@@ -1505,5 +1514,3 @@
 </body>
 
 </html>
-
-
