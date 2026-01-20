@@ -1,7 +1,7 @@
 /**
  * Book Reader Base Library
  * Shared JavaScript for all book reader pages
- * Uses Google Translate TTS for consistent audio (identical to english_quiz.html)
+ * Uses Web Speech API (speechSynthesis) for reliable audio playback
  */
 
 class BookReader {
@@ -15,13 +15,16 @@ class BookReader {
     this.showKorean = true;
     this.isFlipped = false;
 
-    // Web Audio API & Cache State
+    // Web Speech API State
     this.audioContext = null;
     this.audioUnlocked = false;
-    this.audioCache = new Map(); // word/sentence -> Audio object
+    this.selectedVoice = null; // TTS voice
 
     // Load saved progress
     this.loadProgress();
+
+    // Initialize voices
+    this.initVoices();
 
     // Initialize
     this.init();
@@ -40,6 +43,25 @@ class BookReader {
     ['click', 'touchstart', 'keydown'].forEach(event => {
       document.body.addEventListener(event, () => this.unlockAudio(), { once: true });
     });
+  }
+
+  // Initialize TTS Voices
+  initVoices() {
+    const loadVoices = () => {
+      const voices = speechSynthesis.getVoices();
+      this.selectedVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('en-US'))
+        || voices.find(v => v.lang === 'en-US')
+        || voices.find(v => v.lang.includes('en'));
+      if (this.selectedVoice) {
+        console.log('Selected TTS voice:', this.selectedVoice.name);
+      }
+    };
+
+    if (speechSynthesis.getVoices().length > 0) {
+      loadVoices();
+    } else {
+      speechSynthesis.addEventListener('voiceschanged', loadVoices, { once: true });
+    }
   }
 
   // ==================== Audio Engine (iOS Compatible) ====================
@@ -97,61 +119,42 @@ class BookReader {
     }
   }
 
-  // Preload Audio
+  // Preload Audio (No-op for speechSynthesis, kept for API compatibility)
   preloadAudio(text) {
-    if (!text) return;
-    if (this.audioCache.has(text)) return;
-
-    // Google Translate TTS URL
-    const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`;
-
-    const audio = new Audio(url);
-    audio.preload = 'auto';
-    audio.load();
-
-    this.audioCache.set(text, audio);
+    // Web Speech API doesn't require preloading
+    // This method is kept for backward compatibility with existing code
   }
 
-  // Play Audio
+  // Play Audio using Web Speech API (speechSynthesis)
   async playAudio(text) {
     await this.unlockAudio();
 
-    // Cancel/Pause any currently playing audio if we had a global reference (optional)
-    // For now, simpler implementation:
-
-    if (!this.audioCache.has(text)) {
-      this.preloadAudio(text);
+    // TTS 지원 여부 확인
+    if (!window.speechSynthesis) {
+      console.warn('This browser does not support speech synthesis');
+      return Promise.resolve();
     }
 
-    const audio = this.audioCache.get(text);
+    return new Promise((resolve) => {
+      // 기존 발화 취소
+      window.speechSynthesis.cancel();
 
-    return new Promise((resolve, reject) => {
-      if (!audio) {
-        resolve();
-        return;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = this.speed;
+
+      // 음성 설정
+      if (this.selectedVoice) {
+        utterance.voice = this.selectedVoice;
       }
 
-      try {
-        audio.currentTime = 0;
-        audio.playbackRate = this.speed;
-
-        audio.onended = () => resolve();
-        audio.onerror = (e) => {
-          console.error('Audio playback error:', e);
-          resolve();
-        };
-
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.log('Playback failed:', error);
-            resolve();
-          });
-        }
-      } catch (e) {
-        console.error('Play execution error:', e);
+      utterance.onend = () => resolve();
+      utterance.onerror = (e) => {
+        console.error('Speech synthesis error:', e);
         resolve();
-      }
+      };
+
+      window.speechSynthesis.speak(utterance);
     });
   }
 
