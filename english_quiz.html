@@ -586,125 +586,6 @@
                 padding-bottom: max(20px, env(safe-area-inset-bottom));
             }
         }
-
-        /* 성공 모달 (도마뱀) */
-        .success-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .success-modal.show {
-            display: flex;
-            opacity: 1;
-        }
-
-        .success-content {
-            background: white;
-            border-radius: 30px;
-            padding: 30px;
-            text-align: center;
-            max-width: 85%;
-            width: 350px;
-            transform: scale(0.8);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .success-modal.show .success-content {
-            transform: scale(1);
-        }
-
-        .success-image {
-            width: 180px;
-            height: 180px;
-            object-fit: contain;
-            margin-bottom: 20px;
-            animation: bounceIn 0.8s ease;
-        }
-
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-
-            60% {
-                transform: scale(1.1);
-                opacity: 1;
-            }
-
-            80% {
-                transform: scale(0.9);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .success-title {
-            font-size: 1.8rem;
-            font-weight: 900;
-            color: #4CAF50;
-            margin-bottom: 10px;
-        }
-
-        .success-message {
-            font-size: 1.2rem;
-            color: #555;
-            margin-bottom: 25px;
-            font-weight: bold;
-        }
-
-        .success-btn {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
-            transition: transform 0.2s;
-        }
-
-        .success-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* 반짝이는 효과 */
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #ffd700;
-            animation: confetti-fall 3s linear infinite;
-        }
-
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(400px) rotate(720deg);
-                opacity: 0;
-            }
-        }
     </style>
 </head>
 
@@ -721,9 +602,6 @@
             <h1 class="home-title">율이야! 한 번 맞혀봐!</h1>
             <p class="home-subtitle">Hey Yul! Guess it once!</p>
             <div class="home-emoji">🎯</div>
-            <div class="point-badge" id="pointBadge"
-                style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; color: white; margin-bottom: 20px; font-weight: bold;">
-                💰 0</div>
             <div class="quiz-type-buttons">
                 <button class="quiz-type-btn" onclick="startQuiz(1)">
                     <span class="type-icon">🔊</span>
@@ -736,14 +614,14 @@
                     <span class="type-desc">영어 발음을 듣고 뜻 선택</span>
                 </button>
                 <button class="quiz-type-btn" onclick="startQuiz(3)">
-                    <span class="type-icon"></span>
+                    <span class="type-icon">�</span>
                     <span class="type-title">단어보고 뜻 맞추기</span>
                     <span class="type-desc">영어 단어를 보고 뜻 선택</span>
                 </button>
             </div>
         </div>
 
-        <button class="stats-btn" id="statsBtn" onclick="showStats()">📊 통계 및 포인트</button>
+        <button class="stats-btn" id="statsBtn" onclick="showStats()">📊 통계 보기</button>
 
         <!-- ============ 퀴즈 화면 ============ -->
         <div class="quiz-screen" id="quizScreen">
@@ -809,16 +687,6 @@
                         <p class="stat-value" id="totalWords">0개</p>
                     </div>
                 </div>
-                <div class="stat-item"
-                    style="border-top: 2px dashed rgba(0,0,0,0.1); margin-top: 10px; padding-top: 20px;">
-                    <span class="stat-icon">💰</span>
-                    <div class="stat-info">
-                        <p class="stat-label">모은 포인트</p>
-                        <p class="stat-value" id="statsPoints" style="color: #FF9800;">0 Point</p>
-                    </div>
-                    <button onclick="savePoints()"
-                        style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;">적립</button>
-                </div>
             </div>
 
             <button class="close-stats-btn" onclick="closeStats()">← 돌아가기</button>
@@ -836,21 +704,9 @@
     <!-- 토스트 메시지 -->
     <div class="toast" id="toast"></div>
 
-    <!-- 성공 모달 -->
-    <div class="success-modal" id="successModal">
-        <div class="success-content">
-            <img src="BH_IMG.jpg" alt="Success Gecko" class="success-image">
-            <div class="success-title">최고예요! 👍</div>
-            <div class="success-message" id="successMessage">적립 완료!</div>
-            <button class="success-btn" onclick="closeSuccessModal()">확인</button>
-        </div>
-    </div>
-
     <script>
         // Google Apps Script Web App URL (Yul_apps 공용)
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx52V-hRy06fBecGAbVZUUoTejy1Mil1SOmXdkOrdnKknUUcD8ur0yxIS_eQ_gfHpZq/exec';
-        // 포인트 적립용 스크립트 (구구단 앱괴 동일)
-        const POINT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKsnNwSizn1kaeGbYtBoPUVzc28H2UlSpD2rvEixBS-aCLpYCDLYh08Y8uN4wG11O4WA/exec';
 
         // 상태 변수
         let wordBank = [];          // 단어뱅크
@@ -861,15 +717,13 @@
         let listenCount = 3;        // 남은 듣기 횟수
         let wasCorrectFirst = true; // 첫 시도에 맞췄는지
         let todayStats = { total: 0, correct: 0 }; // 오늘 통계
-        let pendingPoints = 0;      // 미적립 포인트
         let selectedVoice = null;   // TTS 음성
         let quizType = 1;           // 퀴즈 유형 (1: 듣고 단어, 2: 듣고 뜻, 3: 단어보고 뜻)
-
-        // Web Audio API 상태 변수
-        let audioContext = null;    // 오디오 컨텍스트
+        let audioContext = null;    // 모바일 오디오 컨텍스트
         let audioUnlocked = false;  // 오디오 잠금 해제 여부
-        let audioCache = new Map(); // 오디오 버퍼 캐시 (단어 -> AudioBuffer)
-        let activeAudioSource = null; // 현재 재생 중인 소스 (GC 방지용)
+        let reusableAudio = null;   // iOS용 재사용 오디오 객체
+        let pendingAudioContent = null; // 대기중인 오디오 콘텐츠
+        let isFirstPlay = true;     // 첫 번째 재생 여부
 
         // 초기화
         document.addEventListener('DOMContentLoaded', () => {
@@ -877,30 +731,7 @@
             initVoices();
             loadData();
             loadTodayStats();
-            loadPendingPoints();
-            updatePointBadge();
         });
-
-        // 포인트 로드
-        function loadPendingPoints() {
-            const saved = localStorage.getItem('english_quiz_points');
-            if (saved) pendingPoints = parseInt(saved);
-        }
-
-        // 포인트 저장 (로컬)
-        function savePendingPoints() {
-            localStorage.setItem('english_quiz_points', pendingPoints);
-            updatePointBadge();
-        }
-
-        // 포인트 UI 업데이트
-        function updatePointBadge() {
-            const badge = document.getElementById('pointBadge');
-            if (badge) badge.innerHTML = `💰 ${pendingPoints}`;
-
-            const statsPoints = document.getElementById('statsPoints');
-            if (statsPoints) statsPoints.textContent = `${pendingPoints} Point`;
-        }
 
         // 배경 애니메이션
         function initBackground() {
@@ -919,19 +750,34 @@
         function initVoices() {
             const loadVoices = () => {
                 const voices = speechSynthesis.getVoices();
-                selectedVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('en-US'))
-                    || voices.find(v => v.lang === 'en-US')
-                    || voices.find(v => v.lang.includes('en'));
+
+                // 고품질 미국식 영어 음성 우선순위
+                const priorities = [
+                    v => v.name.includes('Aria') && v.name.includes('Natural'), // Edge Natural Aria
+                    v => v.name.includes('Google US English'),                   // Chrome Google US
+                    v => v.name.includes('Guy') && v.name.includes('Natural'),  // Edge Natural Guy
+                    v => v.name.includes('Google') && v.lang.includes('en-US'),  // Generic Google US
+                    v => v.lang === 'en-US' && v.name.includes('Online'),        // 기타 온라인 음성
+                ];
+
+                for (const check of priorities) {
+                    selectedVoice = voices.find(check);
+                    if (selectedVoice) break;
+                }
+
                 if (selectedVoice) {
-                    console.log('Selected TTS voice:', selectedVoice.name);
+                    console.log('High-quality TTS voice selected:', selectedVoice.name);
+                } else {
+                    console.warn('High-quality American English TTS voice not found.');
                 }
             };
 
             if (speechSynthesis.getVoices().length > 0) {
                 loadVoices();
-            } else {
-                speechSynthesis.addEventListener('voiceschanged', loadVoices, { once: true });
             }
+
+            // 음성이 늦게 로드되거나 변경되는 경우 대비
+            speechSynthesis.addEventListener('voiceschanged', loadVoices);
         }
 
         // 데이터 로드 (Google Sheets)
@@ -995,62 +841,47 @@
             return now.toISOString().split('T')[0];
         }
 
-        // 오디오 컨텍스트 가져오기 (Singleton)
-        function getAudioContext() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // iOS용 재사용 오디오 객체 생성 및 활성화
+        function initReusableAudio() {
+            if (!reusableAudio) {
+                reusableAudio = new Audio();
+                reusableAudio.setAttribute('playsinline', '');
+                reusableAudio.setAttribute('webkit-playsinline', '');
             }
-            return audioContext;
+            return reusableAudio;
         }
 
         // 모바일 오디오 잠금 해제 (사용자 제스처 필요)
         async function unlockAudio() {
             if (audioUnlocked) return;
 
-            const ctx = getAudioContext();
-
-            // 부드러운 시작을 위해 resume 확인
-            if (ctx.state === 'suspended') {
-                try {
-                    await ctx.resume();
-                } catch (e) {
-                    console.log('AudioContext resume failed:', e);
+            // AudioContext 생성 및 resume
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
                 }
+            } catch (e) {
+                console.log('AudioContext not supported');
             }
 
-            // 1. 초기화용 무음 버퍼 재생
-            const buffer = ctx.createBuffer(1, 1, 22050);
-            const source = ctx.createBufferSource();
-            source.buffer = buffer;
-            source.connect(ctx.destination);
+            // 재사용 오디오 객체 생성 및 무음 재생으로 활성화
+            const audio = initReusableAudio();
+            audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA';
+            audio.volume = 0.01;
+
             try {
-                source.start(0);
-            } catch (e) { }
-
-            // 2. Keep-Alive: 무음 오실레이터 루프 (iOS 엔진 Suspend 방지)
-            try {
-                const oscillator = ctx.createOscillator();
-                const gainNode = ctx.createGain();
-
-                oscillator.type = 'square';
-                oscillator.frequency.value = 0.01; // 거의 들리지 않는 저주파
-                gainNode.gain.value = 0.0001; // 거의 무음
-
-                oscillator.connect(gainNode);
-                gainNode.connect(ctx.destination);
-
-                oscillator.start();
+                await audio.play();
+                audio.pause();
+                audio.currentTime = 0;
+                audio.volume = 1;
                 audioUnlocked = true;
-                console.log('Audio engine unlocked & Keep-Alive active');
+                console.log('Audio unlocked successfully (iOS)');
             } catch (err) {
-                console.log('Keep-alive setup failed:', err);
-                audioUnlocked = true;
+                console.log('Audio unlock attempt:', err.message);
+                // 실패해도 진행 - 수동 듣기 버튼은 작동함
             }
         }
-
-        // 오디오 미리 로드 (Pre-loading)
-        // 오디오 미리 로드 (Pre-loading with Google Translate TTS)
-
 
         // 퀴즈 시작
         async function startQuiz(type = 1) {
@@ -1072,23 +903,13 @@
             questionNumber++;
             listenCount = 3;
             wasCorrectFirst = true;
-            // currentAudioBuffer = null; // 오디오 버퍼 캐시 초기화
 
             // 문제 선택 (복습 우선)
             const dueReview = getDueReviewWords();
 
             if (dueReview.length > 0) {
                 // 복습할 단어가 있으면 복습 먼저
-                const reviewWord = dueReview[Math.floor(Math.random() * dueReview.length)];
-                // ★ reviewList에는 meaning이 없으므로 wordBank에서 찾아 병합
-                const wordBankMatch = wordBank.find(w => w.word === reviewWord.word);
-                if (wordBankMatch) {
-                    currentWord = { ...reviewWord, meaning: wordBankMatch.meaning };
-                } else {
-                    // wordBank에 없는 단어면 건너뛰고 다른 단어 선택
-                    console.warn('워드뱅크에 없는 단어:', reviewWord.word);
-                    currentWord = wordBank[Math.floor(Math.random() * wordBank.length)];
-                }
+                currentWord = dueReview[Math.floor(Math.random() * dueReview.length)];
             } else if (wordBank.length > 0) {
                 // 없으면 랜덤 단어
                 currentWord = wordBank[Math.floor(Math.random() * wordBank.length)];
@@ -1099,7 +920,6 @@
             }
 
             // UI 업데이트
-            // preloadAudio(currentWord.word); // ★ 미리 로드 (삭제됨)
             document.getElementById('questionNumber').textContent = questionNumber;
             document.getElementById('resultButtons').classList.remove('show');
 
@@ -1131,8 +951,8 @@
                     quizTypeLabel.textContent = '🎧 듣고 뜻을 맞추세요';
                 }
 
-                // 자동 재생 없음 (사용자가 준비되면 버튼 클릭)
-                // setTimeout(() => playWord(), 500);
+                // 자동 재생
+                setTimeout(() => playWord(), 500);
             }
 
             // 선택지 생성
@@ -1187,45 +1007,36 @@
             });
         }
 
-        // Google Cloud TTS API Key removed
-
-
-        // 단어 발음 (Web Speech API 사용 - iOS 호환성 개선)
-        function playWord() {
+        // 단어 발음 (브라우저 내장 speechSynthesis 사용 - Edge Natural/Google US 우선)
+        async function playWord() {
             if (listenCount <= 0) return;
 
-            // iOS에서는 비동기 처리 없이 사용자의 클릭 이벤트 내에서 즉시 호출해야 함
-
-            // TTS 지원 여부 확인
-            if (!window.speechSynthesis) {
-                alert("이 브라우저는 음성 재생을 지원하지 않습니다.");
-                return;
-            }
-
-            // 발화 생성
-            const utterance = new SpeechSynthesisUtterance(currentWord.word);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.9; // 속도 조절 (0.1 ~ 10)
-
-            // 음성 설정 (initVoices에서 찾은 Google 음성 또는 기기 기본 영어 음성)
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
-            }
-
-            // 재생 시작
-            window.speechSynthesis.cancel(); // 큐 초기화 (연타 방지)
-            window.speechSynthesis.speak(utterance);
-
-            // UI 업데이트
             listenCount--;
             document.getElementById('listenCount').textContent = `남은 듣기 횟수: ${listenCount}회`;
 
             if (listenCount <= 0) {
                 document.getElementById('listenBtn').disabled = true;
             }
+
+            // 고품질 브라우저 TTS 사용
+            if (!selectedVoice) {
+                console.warn('High-quality voice not available. Skipping speech.');
+                return;
+            }
+
+            speechSynthesis.cancel();
+
+            const textToSpeak = currentWord.word;
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9; // 학습용으로 약간 느리게
+            utterance.voice = selectedVoice;
+
+            utterance.onstart = () => console.log('Playing:', textToSpeak, 'with', selectedVoice.name);
+            utterance.onerror = (e) => console.error('TTS Error:', e);
+
+            speechSynthesis.speak(utterance);
         }
-
-
 
         // 정답 확인
         function checkAnswer(btn, selectedWord) {
@@ -1240,21 +1051,15 @@
                 todayStats.total++;
                 if (wasCorrectFirst) {
                     todayStats.correct++;
-
-                    // 포인트 적립 (첫 시도 정답만)
-                    pendingPoints++;
-                    savePendingPoints();
-
                     handleCorrectFirst();
-                    showToast('정답! 🎉 (+1 Point)');
                 } else {
                     handleCorrectAfterWrong();
-                    showToast('정답! 🎉');
                 }
                 saveTodayStats();
 
                 // 결과 버튼 표시
                 document.getElementById('resultButtons').classList.add('show');
+                showToast('정답! 🎉');
 
             } else {
                 // 오답
@@ -1430,85 +1235,6 @@
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 2000);
-        }
-
-        // 포인트 서버 적립
-        function savePoints() {
-            if (pendingPoints === 0) {
-                alert("적립할 포인트가 없습니다.");
-                return;
-            }
-
-            if (!confirm(`${pendingPoints} 포인트를 적립하시겠습니까?`)) return;
-
-            // FormData 사용
-            const formData = new FormData();
-            formData.append('type', 'earn');
-            formData.append('amount', pendingPoints);
-            formData.append('desc', '영어 퀴즈 적립');
-
-            showLoading(true);
-
-            fetch(POINT_SCRIPT_URL, {
-                method: 'POST',
-                body: formData
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.result === 'success') {
-                        // alert(`적립 완료! 현재 잔액: ${Number(data.newBalance).toLocaleString()} Point`);
-                        showSuccessModal(`적립 포인트는 <strong style="color:#4CAF50; font-size:1.4em;">${pendingPoints}</strong>점이예요. <br>율이 언니!<br><br><span style="font-size:0.9em; color:#777;">-백합이가-</span><br><br>현재 통장 잔액 : <strong style="color:#FF9800;">${Number(data.newBalance).toLocaleString()}</strong> 원`);
-
-                        pendingPoints = 0;
-                        savePendingPoints();
-                    } else {
-                        alert("오류가 발생했습니다: " + JSON.stringify(data));
-                    }
-                })
-                .catch(err => {
-                    alert("네트워크 오류: " + err);
-                })
-                .finally(() => {
-                    showLoading(false);
-                });
-        }
-
-        // 성공 모달 함수
-        function showSuccessModal(msg) {
-            const modal = document.getElementById('successModal');
-            const msgEl = document.getElementById('successMessage');
-            msgEl.innerHTML = msg;
-
-            modal.style.display = 'flex';
-            // 비동기로 클래스 추가하여 애니메이션 트리거
-            setTimeout(() => {
-                modal.classList.add('show');
-                createConfetti(); // 폭죽 효과
-            }, 10);
-        }
-
-        function closeSuccessModal() {
-            const modal = document.getElementById('successModal');
-            modal.classList.remove('show');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
-
-        function createConfetti() {
-            const modal = document.querySelector('.success-content');
-            for (let i = 0; i < 30; i++) {
-                const c = document.createElement('div');
-                c.className = 'confetti';
-                c.style.left = Math.random() * 100 + '%';
-                c.style.backgroundColor = ['#FFD700', '#FF5722', '#4CAF50', '#2196F3'][Math.floor(Math.random() * 4)];
-                c.style.animationDuration = (1 + Math.random() * 2) + 's';
-                c.style.top = -10 + 'px';
-                modal.appendChild(c);
-
-                // 청소
-                setTimeout(() => c.remove(), 3000);
-            }
         }
     </script>
 </body>

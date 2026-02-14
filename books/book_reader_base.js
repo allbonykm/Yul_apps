@@ -1,7 +1,7 @@
 /**
  * Book Reader Base Library
  * Shared JavaScript for all book reader pages
- * Uses Web Speech API (speechSynthesis) for reliable audio playback
+ * Uses Web Speech API for TTS (no API key required)
  */
 
 class BookReader {
@@ -14,11 +14,7 @@ class BookReader {
     this.speed = 0.9; // 기본 속도 0.9 (초등학생용)
     this.showKorean = true;
     this.isFlipped = false;
-
-    // Web Speech API State
-    this.audioContext = null;
-    this.audioUnlocked = false;
-    this.selectedVoice = null; // TTS voice
+    this.selectedVoice = null;
 
     // Load saved progress
     this.loadProgress();
@@ -30,6 +26,41 @@ class BookReader {
     this.init();
   }
 
+  // Initialize TTS voices
+  initVoices() {
+    const loadVoices = () => {
+      const voices = speechSynthesis.getVoices();
+
+      // High-quality American English voices priority
+      const priorities = [
+        v => v.name.includes('Aria') && v.name.includes('Natural'), // Edge Natural Aria
+        v => v.name.includes('Google US English'),                   // Chrome Google US
+        v => v.name.includes('Guy') && v.name.includes('Natural'),  // Edge Natural Guy
+        v => v.name.includes('Google') && v.lang.includes('en-US'),  // Generic Google US
+        v => v.lang === 'en-US' && v.name.includes('Online'),        // Other Online voices
+      ];
+
+      for (const check of priorities) {
+        this.selectedVoice = voices.find(check);
+        if (this.selectedVoice) break;
+      }
+
+      if (this.selectedVoice) {
+        console.log('High-quality TTS voice selected:', this.selectedVoice.name);
+      } else {
+        console.warn('High-quality American English TTS voice not found.');
+      }
+    };
+
+    // Voices may load asynchronously
+    if (speechSynthesis.getVoices().length > 0) {
+      loadVoices();
+    }
+
+    // Always attach listener as voices can change or load late
+    speechSynthesis.addEventListener('voiceschanged', loadVoices);
+  }
+
   init() {
     this.createStars();
     this.setupTabs();
@@ -38,124 +69,6 @@ class BookReader {
     this.setupReviewMode();
     this.setupSpeedControl();
     this.updateProgress();
-
-    // Unlock audio on first user interaction
-    ['click', 'touchstart', 'keydown'].forEach(event => {
-      document.body.addEventListener(event, () => this.unlockAudio(), { once: true });
-    });
-  }
-
-  // Initialize TTS Voices
-  initVoices() {
-    const loadVoices = () => {
-      const voices = speechSynthesis.getVoices();
-      this.selectedVoice = voices.find(v => v.name.includes('Google') && v.lang.includes('en-US'))
-        || voices.find(v => v.lang === 'en-US')
-        || voices.find(v => v.lang.includes('en'));
-      if (this.selectedVoice) {
-        console.log('Selected TTS voice:', this.selectedVoice.name);
-      }
-    };
-
-    if (speechSynthesis.getVoices().length > 0) {
-      loadVoices();
-    } else {
-      speechSynthesis.addEventListener('voiceschanged', loadVoices, { once: true });
-    }
-  }
-
-  // ==================== Audio Engine (iOS Compatible) ====================
-
-  // Audio Context Singleton
-  getAudioContext() {
-    if (!this.audioContext) {
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    return this.audioContext;
-  }
-
-  // Unlock Audio (Required for iOS)
-  async unlockAudio() {
-    if (this.audioUnlocked) return;
-
-    const ctx = this.getAudioContext();
-
-    // Resume if suspended
-    if (ctx.state === 'suspended') {
-      try {
-        await ctx.resume();
-      } catch (e) {
-        console.log('AudioContext resume failed:', e);
-      }
-    }
-
-    // 1. Play silent buffer
-    const buffer = ctx.createBuffer(1, 1, 22050);
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.connect(ctx.destination);
-    try {
-      source.start(0);
-    } catch (e) { }
-
-    // 2. Keep-Alive Oscillator
-    try {
-      const oscillator = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-
-      oscillator.type = 'square';
-      oscillator.frequency.value = 0.01; // Low frequency
-      gainNode.gain.value = 0.0001; // Silent
-
-      oscillator.connect(gainNode);
-      gainNode.connect(ctx.destination);
-
-      oscillator.start();
-      this.audioUnlocked = true;
-      console.log('Audio engine unlocked & Keep-Alive active');
-    } catch (err) {
-      console.log('Keep-alive setup failed:', err);
-      this.audioUnlocked = true; // Assume unlocked anyway
-    }
-  }
-
-  // Preload Audio (No-op for speechSynthesis, kept for API compatibility)
-  preloadAudio(text) {
-    // Web Speech API doesn't require preloading
-    // This method is kept for backward compatibility with existing code
-  }
-
-  // Play Audio using Web Speech API (speechSynthesis)
-  async playAudio(text) {
-    await this.unlockAudio();
-
-    // TTS 지원 여부 확인
-    if (!window.speechSynthesis) {
-      console.warn('This browser does not support speech synthesis');
-      return Promise.resolve();
-    }
-
-    return new Promise((resolve) => {
-      // 기존 발화 취소
-      window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = this.speed;
-
-      // 음성 설정
-      if (this.selectedVoice) {
-        utterance.voice = this.selectedVoice;
-      }
-
-      utterance.onend = () => resolve();
-      utterance.onerror = (e) => {
-        console.error('Speech synthesis error:', e);
-        resolve();
-      };
-
-      window.speechSynthesis.speak(utterance);
-    });
   }
 
   // ==================== Stars Animation ====================
@@ -212,9 +125,6 @@ class BookReader {
     const container = document.getElementById('sentences-container');
 
     sentences.forEach((sentence, index) => {
-      // Preload audio for sentences
-      this.preloadAudio(sentence.en);
-
       const card = document.createElement('div');
       card.className = 'sentence-card';
       card.dataset.index = index;
@@ -258,14 +168,46 @@ class BookReader {
     document.querySelectorAll('.sentence-card').forEach(c => c.classList.remove('playing'));
     card.classList.add('playing');
 
-    // Play Audio
+    // Play TTS
     this.isPlaying = true;
-    await this.playAudio(sentence.en);
+    await this.speakText(sentence.en);
     this.isPlaying = false;
 
     // Update progress
     this.updateReadProgress(index);
     this.saveProgress();
+  }
+
+  async speakText(text) {
+    return new Promise((resolve, reject) => {
+      try {
+        if (!this.selectedVoice) {
+          console.warn('High-quality voice not available. Skipping speech.');
+          resolve();
+          return;
+        }
+
+        // Cancel any ongoing speech
+        speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = this.speed;
+        utterance.pitch = 1.0;
+        utterance.voice = this.selectedVoice;
+
+        utterance.onend = () => resolve();
+        utterance.onerror = (e) => {
+          console.error('TTS Error:', e);
+          resolve();
+        };
+
+        speechSynthesis.speak(utterance);
+      } catch (error) {
+        console.error('TTS Error:', error);
+        resolve();
+      }
+    });
   }
 
   toggleKorean() {
@@ -322,8 +264,8 @@ class BookReader {
     const knowBtn = document.getElementById('know-btn');
     const studyBtn = document.getElementById('study-btn');
 
-    if (knowBtn) knowBtn.addEventListener('click', (e) => { e.stopPropagation(); this.answerWord(true); });
-    if (studyBtn) studyBtn.addEventListener('click', (e) => { e.stopPropagation(); this.answerWord(false); });
+    if (knowBtn) knowBtn.addEventListener('click', () => this.answerWord(true));
+    if (studyBtn) studyBtn.addEventListener('click', () => this.answerWord(false));
   }
 
   showNextWord() {
@@ -337,9 +279,6 @@ class BookReader {
 
     this.currentWord = 0;
     this.currentWordData = wordsToReview[0];
-    // Preload audio for the word
-    this.preloadAudio(this.currentWordData.word);
-
     this.renderFlashcard();
   }
 
@@ -385,7 +324,7 @@ class BookReader {
     document.getElementById('flashcard').classList.add('flipped');
 
     // Play pronunciation
-    this.playAudio(this.currentWordData.word);
+    this.speakText(this.currentWordData.word);
   }
 
   answerWord(knew) {
@@ -422,15 +361,11 @@ class BookReader {
     this.saveProgress();
 
     // Move to next word
-    // Recalculate remaining list
     const wordsToReview = this.getWordsToReview();
-    // Since we answered one, if it was 'knew' and pushed to future, it's gone from list.
-    // If it was 'study', it might stay or be pushed slightly.
-    // For simplicity, just reload the next one from the fresh list.
+    this.currentWord++;
 
-    if (wordsToReview.length > 0) {
-      this.currentWordData = wordsToReview[0];
-      this.preloadAudio(this.currentWordData.word);
+    if (this.currentWord < wordsToReview.length) {
+      this.currentWordData = wordsToReview[this.currentWord];
       this.renderFlashcard();
     } else {
       this.showWordComplete();
@@ -463,17 +398,10 @@ class BookReader {
     const wordsToReview = this.getWordsToReview();
 
     // Update stats
-    const totalSentencesEl = document.getElementById('total-sentences');
-    if (totalSentencesEl) totalSentencesEl.textContent = this.bookData.story.length;
-
-    const completedSentencesEl = document.getElementById('completed-sentences');
-    if (completedSentencesEl) completedSentencesEl.textContent = (this.progress.lastReadSentence || 0) + 1;
-
-    const masteredWordsEl = document.getElementById('mastered-words');
-    if (masteredWordsEl) masteredWordsEl.textContent = masteredWords.length;
-
-    const totalWordsEl = document.getElementById('total-words');
-    if (totalWordsEl) totalWordsEl.textContent = totalWords;
+    document.getElementById('total-sentences').textContent = this.bookData.story.length;
+    document.getElementById('completed-sentences').textContent = (this.progress.lastReadSentence || 0) + 1;
+    document.getElementById('mastered-words').textContent = masteredWords.length;
+    document.getElementById('total-words').textContent = totalWords;
 
     // Star rating
     const percentage = totalWords > 0 ? (masteredWords.length / totalWords) * 100 : 0;
@@ -484,31 +412,26 @@ class BookReader {
     else if (percentage >= 30) stars = '⭐⭐☆☆☆';
     else if (percentage > 0) stars = '⭐☆☆☆☆';
 
-    const starRatingEl = document.querySelector('.star-rating');
-    if (starRatingEl) starRatingEl.textContent = stars;
+    document.querySelector('.star-rating').textContent = stars;
 
     // Mastered words list
     const masteredList = document.getElementById('mastered-words-list');
-    if (masteredList) {
-      if (masteredWords.length > 0) {
-        masteredList.innerHTML = masteredWords.map(w =>
-          `<span class="word-tag mastered">${w.word}</span>`
-        ).join('');
-      } else {
-        masteredList.innerHTML = '<div class="empty-message">아직 학습한 단어가 없어요</div>';
-      }
+    if (masteredWords.length > 0) {
+      masteredList.innerHTML = masteredWords.map(w =>
+        `<span class="word-tag mastered">${w.word}</span>`
+      ).join('');
+    } else {
+      masteredList.innerHTML = '<div class="empty-message">아직 학습한 단어가 없어요</div>';
     }
 
     // Review words list
     const reviewList = document.getElementById('review-words-list');
-    if (reviewList) {
-      if (wordsToReview.length > 0) {
-        reviewList.innerHTML = wordsToReview.map(w =>
-          `<span class="word-tag review">${w.word}</span>`
-        ).join('');
-      } else {
-        reviewList.innerHTML = '<div class="empty-message">복습할 단어가 없어요! 🎉</div>';
-      }
+    if (wordsToReview.length > 0) {
+      reviewList.innerHTML = wordsToReview.map(w =>
+        `<span class="word-tag review">${w.word}</span>`
+      ).join('');
+    } else {
+      reviewList.innerHTML = '<div class="empty-message">복습할 단어가 없어요! 🎉</div>';
     }
   }
 
