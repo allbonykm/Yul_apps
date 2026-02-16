@@ -337,7 +337,7 @@
   <div id="chat-container">
     <div
       style="text-align:center; margin-top:20px; color:#555; font-size:0.8rem; background: rgba(255,255,255,0.5); padding: 5px; border-radius: 10px; display:inline-block; margin: 20px auto;">
-      ☁️ 대화 내용을 불러오고 있어요... 🚀
+      ☁️ 대화 내용을 불러오고 있어요... (v2.1) 🚀
     </div>
   </div>
 
@@ -683,6 +683,15 @@
             scrollToBottom();
           }
         }
+      }, (error) => {
+        // [ERROR HANDLER]
+        console.error("Firestore Error:", error);
+        alert("데이터 로딩 오류: " + error.message);
+        chatContainer.innerHTML = `<div style="padding:20px; text-align:center; color:red;">
+            <h3>😢 오류가 발생했어요</h3>
+            <p>${error.message}</p>
+            <p>잠시 후 다시 시도해 주세요.</p>
+          </div>`;
       });
 
     // 2. 스크롤 이벤트 (상단 도달 시 과거 데이터 로드)
