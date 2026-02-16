@@ -750,6 +750,10 @@
         function initVoices() {
             const loadVoices = () => {
                 const voices = speechSynthesis.getVoices();
+                if (voices.length === 0) return;
+
+                console.log('Available voices:', voices.length);
+                // voices.forEach(v => console.log(` - ${v.name} (${v.lang})${v.default ? ' [DEFAULT]' : ''}`));
 
                 // 고품질 미국식 영어 음성 우선순위
                 const priorities = [
@@ -757,7 +761,9 @@
                     v => v.name.includes('Google US English'),                   // Chrome Google US
                     v => v.name.includes('Guy') && v.name.includes('Natural'),  // Edge Natural Guy
                     v => v.name.includes('Google') && v.lang.includes('en-US'),  // Generic Google US
-                    v => v.lang === 'en-US' && v.name.includes('Online'),        // 기타 온라인 음성
+                    v => v.lang.includes('en-US') && v.name.includes('Online'),  // 기타 온라인 음성
+                    v => v.lang.includes('en-US'),                               // 일반 en-US (iOS Samantha 등)
+                    v => v.lang.startsWith('en'),                                // 모든 영어
                 ];
 
                 for (const check of priorities) {
@@ -766,9 +772,9 @@
                 }
 
                 if (selectedVoice) {
-                    console.log('High-quality TTS voice selected:', selectedVoice.name);
+                    console.log('TTS voice selected:', selectedVoice.name);
                 } else {
-                    console.warn('High-quality American English TTS voice not found.');
+                    console.warn('No English TTS voice found.');
                 }
             };
 
@@ -855,7 +861,9 @@
         async function unlockAudio() {
             if (audioUnlocked) return;
 
-            // AudioContext 생성 및 resume
+            console.log('Attempting to unlock audio for iOS...');
+
+            // 1. AudioContext 생성 및 resume
             try {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioContext.state === 'suspended') {
@@ -865,7 +873,7 @@
                 console.log('AudioContext not supported');
             }
 
-            // 재사용 오디오 객체 생성 및 무음 재생으로 활성화
+            // 2. 재사용 오디오 객체 생성 및 무음 재생으로 활성화
             const audio = initReusableAudio();
             audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAA';
             audio.volume = 0.01;
@@ -875,12 +883,23 @@
                 audio.pause();
                 audio.currentTime = 0;
                 audio.volume = 1;
-                audioUnlocked = true;
-                console.log('Audio unlocked successfully (iOS)');
+                console.log('HTML Audio unlocked successfully');
             } catch (err) {
-                console.log('Audio unlock attempt:', err.message);
-                // 실패해도 진행 - 수동 듣기 버튼은 작동함
+                console.log('HTML Audio unlock failed:', err.message);
             }
+
+            // 3. TTS (SpeechSynthesis) 잠금 해제 - 빈 문장 재생
+            try {
+                speechSynthesis.cancel();
+                const silentUtterance = new SpeechSynthesisUtterance(' ');
+                silentUtterance.volume = 0;
+                speechSynthesis.speak(silentUtterance);
+                console.log('SpeechSynthesis unlocked successfully');
+            } catch (err) {
+                console.log('SpeechSynthesis unlock failed:', err.message);
+            }
+
+            audioUnlocked = true;
         }
 
         // 퀴즈 시작
@@ -1011,6 +1030,9 @@
         async function playWord() {
             if (listenCount <= 0) return;
 
+            // iOS에서 오디오가 잠겨있을 수 있으므로 다시 한번 체크
+            if (!audioUnlocked) await unlockAudio();
+
             listenCount--;
             document.getElementById('listenCount').textContent = `남은 듣기 횟수: ${listenCount}회`;
 
@@ -1018,9 +1040,29 @@
                 document.getElementById('listenBtn').disabled = true;
             }
 
-            // 고품질 브라우저 TTS 사용
+            // 음성이 선택되지 않은 경우 재시도
             if (!selectedVoice) {
-                console.warn('High-quality voice not available. Skipping speech.');
+                console.log('Retrying voice selection...');
+                const voices = speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    const priorities = [
+                        v => v.name.includes('Aria') && v.name.includes('Natural'),
+                        v => v.name.includes('Google US English'),
+                        v => v.name.includes('Guy') && v.name.includes('Natural'),
+                        v => v.name.includes('Google') && v.lang.includes('en-US'),
+                        v => v.lang.includes('en-US') && v.name.includes('Online'),
+                        v => v.lang.includes('en-US'),
+                        v => v.lang.startsWith('en'),
+                    ];
+                    for (const check of priorities) {
+                        selectedVoice = voices.find(check);
+                        if (selectedVoice) break;
+                    }
+                }
+            }
+
+            if (!selectedVoice) {
+                console.warn('No English voice available for TTS.');
                 return;
             }
 
@@ -1035,7 +1077,10 @@
             utterance.onstart = () => console.log('Playing:', textToSpeak, 'with', selectedVoice.name);
             utterance.onerror = (e) => console.error('TTS Error:', e);
 
-            speechSynthesis.speak(utterance);
+            // iOS Safari 대응: 약간의 딜레이 후 재생
+            setTimeout(() => {
+                speechSynthesis.speak(utterance);
+            }, 50);
         }
 
         // 정답 확인

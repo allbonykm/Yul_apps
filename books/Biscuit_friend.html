@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -40,11 +41,11 @@
     <div id="read-tab" class="tab-content active">
       <div class="read-mode">
         <div id="sentences-container"></div>
-        
+
         <div class="controls">
           <button class="control-btn" id="toggle-korean">한글 숨기기</button>
         </div>
-        
+
         <div class="progress-bar">
           <div class="progress-fill" style="width: 0%"></div>
         </div>
@@ -56,14 +57,14 @@
     <div id="words-tab" class="tab-content">
       <div class="word-mode">
         <div class="card-counter" id="card-counter">1 / 20 단어</div>
-        
+
         <div class="flashcard-container">
           <div class="flashcard" id="flashcard">
             <div class="word-front" id="word-front">
               <div class="word-text" id="word-text"></div>
               <div class="tap-hint">탭하여 뜻 보기</div>
             </div>
-            
+
             <div class="word-back" id="word-back">
               <div class="word-text" id="word-text-back"></div>
               <div class="word-meaning" id="word-meaning"></div>
@@ -71,7 +72,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="answer-buttons">
           <button class="answer-btn know" id="know-btn">😊 알아요!</button>
           <button class="answer-btn study" id="study-btn">🤔 더 볼래요</button>
@@ -119,6 +120,7 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script src="book_reader_base.js"></script>
   <script>
     // Book Data
@@ -127,357 +129,357 @@
       title: "Biscuit Finds a friend",
       description: "찾았다! 오리 친구",
       story: [
-  {
-    "en": "Woof! Woof!",
-    "ko": "멍멍! 멍멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "What has Biscuit found?",
-    "ko": "비스킷이 무엇을 찾았나요?",
-    "highlightWords": []
-  },
-  {
-    "en": "Is it a ball?",
-    "ko": "그것은 공인가요?",
-    "highlightWords": [
-      "ball"
-    ]
-  },
-  {
-    "en": "Woof!",
-    "ko": "멍멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Is it a bone?",
-    "ko": "그것은 뼈다귀인가요?",
-    "highlightWords": [
-      "bone"
-    ]
-  },
-  {
-    "en": "Woof!",
-    "ko": "멍멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Quack!",
-    "ko": "꽥꽥!",
-    "highlightWords": []
-  },
-  {
-    "en": "It is a little duck.",
-    "ko": "그것은 작은 오리예요.",
-    "highlightWords": [
-      "little"
-    ]
-  },
-  {
-    "en": "The little duck is lost.",
-    "ko": "작은 오리가 길을 잃었어요.",
-    "highlightWords": [
-      "little",
-      "lost"
-    ]
-  },
-  {
-    "en": "Woof! Woof!",
-    "ko": "멍멍! 멍멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "We will bring the little duck back to the pond.",
-    "ko": "우리는 작은 오리를 다시 연못으로 데려다줄 거예요.",
-    "highlightWords": [
-      "little",
-      "bring",
-      "pond"
-    ]
-  },
-  {
-    "en": "Woof! Woof!",
-    "ko": "멍멍! 멍멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Here, little duck.",
-    "ko": "여기야, 작은 오리야.",
-    "highlightWords": [
-      "little"
-    ]
-  },
-  {
-    "en": "Here is the pond.",
-    "ko": "여기가 연못이란다.",
-    "highlightWords": [
-      "pond"
-    ]
-  },
-  {
-    "en": "Here are your mother and your father.",
-    "ko": "여기 네 엄마와 아빠가 계셔.",
-    "highlightWords": [
-      "mother",
-      "father"
-    ]
-  },
-  {
-    "en": "Quack!",
-    "ko": "꽥꽥!",
-    "highlightWords": []
-  },
-  {
-    "en": "Here are your brothers and your sisters.",
-    "ko": "여기 네 남자 형제들과 여자 형제들도 있단다.",
-    "highlightWords": []
-  },
-  {
-    "en": "Quack! Quack!",
-    "ko": "꽥꽥! 꽥꽥!",
-    "highlightWords": []
-  },
-  {
-    "en": "The ducks say thank you.",
-    "ko": "오리들이 고맙다고 말해요.",
-    "highlightWords": [
-      "say"
-    ]
-  },
-  {
-    "en": "Thank you for finding the little duck.",
-    "ko": "작은 오리를 찾아줘서 고마워.",
-    "highlightWords": [
-      "little"
-    ]
-  },
-  {
-    "en": "Quack!",
-    "ko": "꽥꽥!",
-    "highlightWords": []
-  },
-  {
-    "en": "The little duck wants to play.",
-    "ko": "작은 오리는 놀고 싶어 해요.",
-    "highlightWords": [
-      "little",
-      "play"
-    ]
-  },
-  {
-    "en": "Quack!",
-    "ko": "꽥꽥!",
-    "highlightWords": []
-  },
-  {
-    "en": "Woof!",
-    "ko": "멍멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Quack!",
-    "ko": "꽥꽥!",
-    "highlightWords": []
-  },
-  {
-    "en": "Woof!",
-    "ko": "멍멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Splash!",
-    "ko": "첨벙!",
-    "highlightWords": []
-  },
-  {
-    "en": "Biscuit fell into the pond!",
-    "ko": "비스킷이 연못에 빠졌어요!",
-    "highlightWords": [
-      "pond"
-    ]
-  },
-  {
-    "en": "Silly Biscuit.",
-    "ko": "엉뚱한 비스킷.",
-    "highlightWords": [
-      "silly"
-    ]
-  },
-  {
-    "en": "You are all wet!",
-    "ko": "너 온통 다 젖었구나!",
-    "highlightWords": [
-      "wet"
-    ]
-  },
-  {
-    "en": "Woof!",
-    "ko": "멍멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Oh no, Biscuit.",
-    "ko": "오, 안 돼, 비스킷.",
-    "highlightWords": []
-  },
-  {
-    "en": "Not a big shake!",
-    "ko": "몸을 세게 흔들면 안 돼!",
-    "highlightWords": [
-      "big"
-    ]
-  },
-  {
-    "en": "Woof!",
-    "ko": "멍멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Time to go home, Biscuit.",
-    "ko": "집에 갈 시간이야, 비스킷.",
-    "highlightWords": [
-      "home"
-    ]
-  },
-  {
-    "en": "Quack!",
-    "ko": "꽥꽥!",
-    "highlightWords": []
-  },
-  {
-    "en": "Quack!",
-    "ko": "꽥꽥!",
-    "highlightWords": []
-  },
-  {
-    "en": "Say good-bye, Biscuit.",
-    "ko": "작별 인사를 하렴, 비스킷.",
-    "highlightWords": [
-      "say"
-    ]
-  },
-  {
-    "en": "Woof! Woof!",
-    "ko": "멍멍! 멍멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Good-bye, little duck.",
-    "ko": "안녕, 작은 오리야.",
-    "highlightWords": [
-      "little"
-    ]
-  },
-  {
-    "en": "Biscuit has found a new friend.",
-    "ko": "비스킷은 새 친구를 찾았어요.",
-    "highlightWords": [
-      "new"
-    ]
-  }
-],
+        {
+          "en": "Woof! Woof!",
+          "ko": "멍멍! 멍멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "What has Biscuit found?",
+          "ko": "비스킷이 무엇을 찾았나요?",
+          "highlightWords": []
+        },
+        {
+          "en": "Is it a ball?",
+          "ko": "그것은 공인가요?",
+          "highlightWords": [
+            "ball"
+          ]
+        },
+        {
+          "en": "Woof!",
+          "ko": "멍멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Is it a bone?",
+          "ko": "그것은 뼈다귀인가요?",
+          "highlightWords": [
+            "bone"
+          ]
+        },
+        {
+          "en": "Woof!",
+          "ko": "멍멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Quack!",
+          "ko": "꽥꽥!",
+          "highlightWords": []
+        },
+        {
+          "en": "It is a little duck.",
+          "ko": "그것은 작은 오리예요.",
+          "highlightWords": [
+            "little"
+          ]
+        },
+        {
+          "en": "The little duck is lost.",
+          "ko": "작은 오리가 길을 잃었어요.",
+          "highlightWords": [
+            "little",
+            "lost"
+          ]
+        },
+        {
+          "en": "Woof! Woof!",
+          "ko": "멍멍! 멍멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "We will bring the little duck back to the pond.",
+          "ko": "우리는 작은 오리를 다시 연못으로 데려다줄 거예요.",
+          "highlightWords": [
+            "little",
+            "bring",
+            "pond"
+          ]
+        },
+        {
+          "en": "Woof! Woof!",
+          "ko": "멍멍! 멍멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Here, little duck.",
+          "ko": "여기야, 작은 오리야.",
+          "highlightWords": [
+            "little"
+          ]
+        },
+        {
+          "en": "Here is the pond.",
+          "ko": "여기가 연못이란다.",
+          "highlightWords": [
+            "pond"
+          ]
+        },
+        {
+          "en": "Here are your mother and your father.",
+          "ko": "여기 네 엄마와 아빠가 계셔.",
+          "highlightWords": [
+            "mother",
+            "father"
+          ]
+        },
+        {
+          "en": "Quack!",
+          "ko": "꽥꽥!",
+          "highlightWords": []
+        },
+        {
+          "en": "Here are your brothers and your sisters.",
+          "ko": "여기 네 남자 형제들과 여자 형제들도 있단다.",
+          "highlightWords": []
+        },
+        {
+          "en": "Quack! Quack!",
+          "ko": "꽥꽥! 꽥꽥!",
+          "highlightWords": []
+        },
+        {
+          "en": "The ducks say thank you.",
+          "ko": "오리들이 고맙다고 말해요.",
+          "highlightWords": [
+            "say"
+          ]
+        },
+        {
+          "en": "Thank you for finding the little duck.",
+          "ko": "작은 오리를 찾아줘서 고마워.",
+          "highlightWords": [
+            "little"
+          ]
+        },
+        {
+          "en": "Quack!",
+          "ko": "꽥꽥!",
+          "highlightWords": []
+        },
+        {
+          "en": "The little duck wants to play.",
+          "ko": "작은 오리는 놀고 싶어 해요.",
+          "highlightWords": [
+            "little",
+            "play"
+          ]
+        },
+        {
+          "en": "Quack!",
+          "ko": "꽥꽥!",
+          "highlightWords": []
+        },
+        {
+          "en": "Woof!",
+          "ko": "멍멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Quack!",
+          "ko": "꽥꽥!",
+          "highlightWords": []
+        },
+        {
+          "en": "Woof!",
+          "ko": "멍멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Splash!",
+          "ko": "첨벙!",
+          "highlightWords": []
+        },
+        {
+          "en": "Biscuit fell into the pond!",
+          "ko": "비스킷이 연못에 빠졌어요!",
+          "highlightWords": [
+            "pond"
+          ]
+        },
+        {
+          "en": "Silly Biscuit.",
+          "ko": "엉뚱한 비스킷.",
+          "highlightWords": [
+            "silly"
+          ]
+        },
+        {
+          "en": "You are all wet!",
+          "ko": "너 온통 다 젖었구나!",
+          "highlightWords": [
+            "wet"
+          ]
+        },
+        {
+          "en": "Woof!",
+          "ko": "멍멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Oh no, Biscuit.",
+          "ko": "오, 안 돼, 비스킷.",
+          "highlightWords": []
+        },
+        {
+          "en": "Not a big shake!",
+          "ko": "몸을 세게 흔들면 안 돼!",
+          "highlightWords": [
+            "big"
+          ]
+        },
+        {
+          "en": "Woof!",
+          "ko": "멍멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Time to go home, Biscuit.",
+          "ko": "집에 갈 시간이야, 비스킷.",
+          "highlightWords": [
+            "home"
+          ]
+        },
+        {
+          "en": "Quack!",
+          "ko": "꽥꽥!",
+          "highlightWords": []
+        },
+        {
+          "en": "Quack!",
+          "ko": "꽥꽥!",
+          "highlightWords": []
+        },
+        {
+          "en": "Say good-bye, Biscuit.",
+          "ko": "작별 인사를 하렴, 비스킷.",
+          "highlightWords": [
+            "say"
+          ]
+        },
+        {
+          "en": "Woof! Woof!",
+          "ko": "멍멍! 멍멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Good-bye, little duck.",
+          "ko": "안녕, 작은 오리야.",
+          "highlightWords": [
+            "little"
+          ]
+        },
+        {
+          "en": "Biscuit has found a new friend.",
+          "ko": "비스킷은 새 친구를 찾았어요.",
+          "highlightWords": [
+            "new"
+          ]
+        }
+      ],
       vocabulary: [
-  {
-    "word": "find",
-    "meaning": "찾다",
-    "example": "What has Biscuit found?"
-  },
-  {
-    "word": "ball",
-    "meaning": "공",
-    "example": "Is it a ball?"
-  },
-  {
-    "word": "bone",
-    "meaning": "뼈다귀",
-    "example": "Is it a bone?"
-  },
-  {
-    "word": "little",
-    "meaning": "작은",
-    "example": "It is a little duck."
-  },
-  {
-    "word": "lost",
-    "meaning": "길을 잃은",
-    "example": "The little duck is lost."
-  },
-  {
-    "word": "bring",
-    "meaning": "데려오다",
-    "example": "We will bring the little duck back to the pond."
-  },
-  {
-    "word": "pond",
-    "meaning": "연못",
-    "example": "Here is the pond."
-  },
-  {
-    "word": "mother",
-    "meaning": "엄마",
-    "example": "Here are your mother and your father."
-  },
-  {
-    "word": "father",
-    "meaning": "아빠",
-    "example": "Here are your mother and your father."
-  },
-  {
-    "word": "brother",
-    "meaning": "형제",
-    "example": "Here are your brothers and your sisters."
-  },
-  {
-    "word": "sister",
-    "meaning": "자매",
-    "example": "Here are your brothers and your sisters."
-  },
-  {
-    "word": "say",
-    "meaning": "말하다",
-    "example": "The ducks say thank you."
-  },
-  {
-    "word": "want",
-    "meaning": "원하다",
-    "example": "The little duck wants to play."
-  },
-  {
-    "word": "play",
-    "meaning": "놀다",
-    "example": "The little duck wants to play."
-  },
-  {
-    "word": "fall",
-    "meaning": "떨어지다(빠지다)",
-    "example": "Biscuit fell into the pond!"
-  },
-  {
-    "word": "silly",
-    "meaning": "엉뚱한(어리석은)",
-    "example": "Silly Biscuit."
-  },
-  {
-    "word": "wet",
-    "meaning": "젖은",
-    "example": "You are all wet!"
-  },
-  {
-    "word": "big",
-    "meaning": "큰",
-    "example": "Not a big shake!"
-  },
-  {
-    "word": "home",
-    "meaning": "집",
-    "example": "Time to go home, Biscuit."
-  },
-  {
-    "word": "new",
-    "meaning": "새로운",
-    "example": "Biscuit has found a new friend."
-  }
-]
+        {
+          "word": "find",
+          "meaning": "찾다",
+          "example": "What has Biscuit found?"
+        },
+        {
+          "word": "ball",
+          "meaning": "공",
+          "example": "Is it a ball?"
+        },
+        {
+          "word": "bone",
+          "meaning": "뼈다귀",
+          "example": "Is it a bone?"
+        },
+        {
+          "word": "little",
+          "meaning": "작은",
+          "example": "It is a little duck."
+        },
+        {
+          "word": "lost",
+          "meaning": "길을 잃은",
+          "example": "The little duck is lost."
+        },
+        {
+          "word": "bring",
+          "meaning": "데려오다",
+          "example": "We will bring the little duck back to the pond."
+        },
+        {
+          "word": "pond",
+          "meaning": "연못",
+          "example": "Here is the pond."
+        },
+        {
+          "word": "mother",
+          "meaning": "엄마",
+          "example": "Here are your mother and your father."
+        },
+        {
+          "word": "father",
+          "meaning": "아빠",
+          "example": "Here are your mother and your father."
+        },
+        {
+          "word": "brother",
+          "meaning": "형제",
+          "example": "Here are your brothers and your sisters."
+        },
+        {
+          "word": "sister",
+          "meaning": "자매",
+          "example": "Here are your brothers and your sisters."
+        },
+        {
+          "word": "say",
+          "meaning": "말하다",
+          "example": "The ducks say thank you."
+        },
+        {
+          "word": "want",
+          "meaning": "원하다",
+          "example": "The little duck wants to play."
+        },
+        {
+          "word": "play",
+          "meaning": "놀다",
+          "example": "The little duck wants to play."
+        },
+        {
+          "word": "fall",
+          "meaning": "떨어지다(빠지다)",
+          "example": "Biscuit fell into the pond!"
+        },
+        {
+          "word": "silly",
+          "meaning": "엉뚱한(어리석은)",
+          "example": "Silly Biscuit."
+        },
+        {
+          "word": "wet",
+          "meaning": "젖은",
+          "example": "You are all wet!"
+        },
+        {
+          "word": "big",
+          "meaning": "큰",
+          "example": "Not a big shake!"
+        },
+        {
+          "word": "home",
+          "meaning": "집",
+          "example": "Time to go home, Biscuit."
+        },
+        {
+          "word": "new",
+          "meaning": "새로운",
+          "example": "Biscuit has found a new friend."
+        }
+      ]
     };
 
     // Initialize book reader

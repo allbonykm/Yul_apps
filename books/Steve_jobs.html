@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -40,11 +41,11 @@
     <div id="read-tab" class="tab-content active">
       <div class="read-mode">
         <div id="sentences-container"></div>
-        
+
         <div class="controls">
           <button class="control-btn" id="toggle-korean">한글 숨기기</button>
         </div>
-        
+
         <div class="progress-bar">
           <div class="progress-fill" style="width: 0%"></div>
         </div>
@@ -56,14 +57,14 @@
     <div id="words-tab" class="tab-content">
       <div class="word-mode">
         <div class="card-counter" id="card-counter">1 / 26 단어</div>
-        
+
         <div class="flashcard-container">
           <div class="flashcard" id="flashcard">
             <div class="word-front" id="word-front">
               <div class="word-text" id="word-text"></div>
               <div class="tap-hint">탭하여 뜻 보기</div>
             </div>
-            
+
             <div class="word-back" id="word-back">
               <div class="word-text" id="word-text-back"></div>
               <div class="word-meaning" id="word-meaning"></div>
@@ -71,7 +72,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="answer-buttons">
           <button class="answer-btn know" id="know-btn">😊 알아요!</button>
           <button class="answer-btn study" id="study-btn">🤔 더 볼래요</button>
@@ -119,6 +120,7 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script src="book_reader_base.js"></script>
   <script>
     // Book Data
@@ -127,488 +129,488 @@
       title: "Steve Jobs in Stanford",
       description: "스탠포드대학에서 스티브잡스가",
       story: [
-  {
-    "en": "My third story is about death.",
-    "ko": "제 세 번째 이야기는 죽음에 관한 것입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "When I was 17, I read a quote that went something like, “If you live each day as if it was your last, someday you’ll most certainly be right.”",
-    "ko": "제가 17살 때, \"매일을 인생의 마지막 날인 것처럼 산다면, 언젠가는 틀림없이 맞는 날이 올 것이다\"라는 문구를 읽은 적이 있습니다.",
-    "highlightWords": [
-      "live",
-      "day",
-      "last"
-    ]
-  },
-  {
-    "en": "It made an impression on me.",
-    "ko": "그 말은 저에게 깊은 인상을 주었습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "And since then, for the past 33 years, I have looked in the mirror every morning and asked myself, “If today were the last day of my life, would I wanna do what I am about to do today?”",
-    "ko": "그 후 33년 동안, 저는 매일 아침 거울을 보며 자신에게 물었습니다. \"오늘이 내 인생의 마지막 날이라면, 오늘 내가 하려는 일을 하고 싶을까?\"",
-    "highlightWords": [
-      "day",
-      "last",
-      "morning"
-    ]
-  },
-  {
-    "en": "And whenever the answer has been no for too many days in a row, I know I need to change something.",
-    "ko": "그리고 그 대답이 며칠 연속으로 '아니오'라면, 저는 무언가를 바꿔야 한다는 것을 알게 됩니다.",
-    "highlightWords": [
-      "know"
-    ]
-  },
-  {
-    "en": "Remembering that I’ll be dead soon is the most important tool I’ve ever encountered to help me make the big choices in life.",
-    "ko": "곧 죽을 것이라는 사실을 기억하는 것은 제가 인생에서 중요한 선택을 하는 데 도움을 준 가장 중요한 도구입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "Because almost everything, all external expectations, all pride, all fear of embarrassment or failure—these things just fall away in the face of death, leaving only what is truly important.",
-    "ko": "왜냐하면 거의 모든 것들, 즉 모든 외부의 기대, 자존심, 수치심이나 실패에 대한 두려움 등은 죽음 앞에서는 모두 사라지고 오직 진정으로 중요한 것만 남기 때문입니다.",
-    "highlightWords": [
-      "face"
-    ]
-  },
-  {
-    "en": "Remembering that you are going to die is the best way I know to avoid the trap of thinking you have something to lose.",
-    "ko": "당신이 죽을 것이라는 사실을 기억하는 것은 잃을 것이 있다는 생각의 함정을 피하는 가장 좋은 방법입니다.",
-    "highlightWords": [
-      "know",
-      "die"
-    ]
-  },
-  {
-    "en": "You are already naked.",
-    "ko": "당신은 이미 알몸입니다. (잃을 게 없습니다.)",
-    "highlightWords": []
-  },
-  {
-    "en": "There is no reason not to follow your heart.",
-    "ko": "당신의 마음을 따르지 않을 이유는 없습니다.",
-    "highlightWords": [
-      "heart"
-    ]
-  },
-  {
-    "en": "About a year ago, I was diagnosed with cancer.",
-    "ko": "약 1년 전, 저는 암 진단을 받았습니다.",
-    "highlightWords": [
-      "year"
-    ]
-  },
-  {
-    "en": "I had a scan at 7:30 in the morning, and it clearly showed a tumor on my pancreas.",
-    "ko": "아침 7시 30분에 검사를 받았는데, 췌장에 종양이 있는 것이 뚜렷하게 보였습니다.",
-    "highlightWords": [
-      "morning"
-    ]
-  },
-  {
-    "en": "I didn’t even know what a pancreas was.",
-    "ko": "저는 췌장이 무엇인지조차 몰랐습니다.",
-    "highlightWords": [
-      "know"
-    ]
-  },
-  {
-    "en": "The doctors told me this was almost certainly a type of cancer that is incurable, and that I should expect to live no longer than three to six months.",
-    "ko": "의사들은 이것이 치료 불가능한 종류의 암일 가능성이 매우 높으며, 제가 3개월에서 6개월 이상 살지 못할 것이라고 말했습니다.",
-    "highlightWords": [
-      "live"
-    ]
-  },
-  {
-    "en": "My doctor advised me to go home and get my affairs in order, which is doctors’ code for “Prepare to die.”",
-    "ko": "의사는 집에 가서 신변 정리를 하라고 조언했는데, 이는 \"죽음을 준비하라\"는 의사들의 암호입니다.",
-    "highlightWords": [
-      "home",
-      "die"
-    ]
-  },
-  {
-    "en": "It means to try and tell your kids everything you thought you’d have the next ten years to tell them in just a few months.",
-    "ko": "그것은 앞으로 10년 동안 아이들에게 해줄 수 있을 것이라 생각했던 모든 이야기를 단 몇 달 안에 다 하라는 뜻입니다.",
-    "highlightWords": [
-      "tell"
-    ]
-  },
-  {
-    "en": "It means to make sure everything is buttoned up so that it will be as easy as possible for your family.",
-    "ko": "그것은 가족들을 위해 모든 것을 가능한 한 쉽게 처리할 수 있도록 확실히 매듭지으라는 뜻입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "It means to say your goodbyes.",
-    "ko": "그것은 작별 인사를 하라는 뜻입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "I lived with that diagnosis all day.",
-    "ko": "저는 하루 종일 그 진단을 안고 살았습니다.",
-    "highlightWords": [
-      "day"
-    ]
-  },
-  {
-    "en": "Later that evening I had a biopsy, where they stuck an endoscope down my throat, through my stomach, and into my intestines, put a needle into my pancreas, and got a few cells from the tumor.",
-    "ko": "그날 저녁 늦게 조직 검사를 받았는데, 목구멍으로 내시경을 넣어 위와 장을 통과해 췌장에 바늘을 찔러 종양에서 세포를 채취했습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "I was sedated, but my wife, who was there, told me that when they viewed the cells under a microscope, the doctors started crying because it turned out to be a very rare form of pancreatic cancer that is curable with surgery.",
-    "ko": "저는 진정제를 맞고 있었지만, 그 자리에 있던 아내가 말해주길, 의사들이 현미경으로 세포를 확인하고 울기 시작했다고 합니다. 수술로 치료할 수 있는 아주 희귀한 형태의 췌장암이었기 때문입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "I had the surgery, and thankfully I’m fine now.",
-    "ko": "저는 수술을 받았고, 감사하게도 지금은 건강합니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "This was the closest I’ve been to facing death, and I hope it’s the closest I get for a few more decades.",
-    "ko": "이것이 제가 죽음에 가장 가까이 갔던 경험이었고, 앞으로 몇 십 년 동안은 이보다 더 가까이 가지 않기를 바랍니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "Having lived through it, I can now say this to you with a bit more certainty than when death was a useful but purely intellectual concept.",
-    "ko": "이 일을 겪고 나니, 죽음이 유용하지만 순전히 머리로만 이해하던 개념이었을 때보다 좀 더 확신을 가지고 말씀드릴 수 있습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "No one wants to die.",
-    "ko": "아무도 죽기를 원하지 않습니다.",
-    "highlightWords": [
-      "die"
-    ]
-  },
-  {
-    "en": "Even people who want to go to heaven don’t want to die to get there.",
-    "ko": "천국에 가고 싶어 하는 사람들조차 그곳에 가기 위해 죽고 싶어 하지는 않습니다.",
-    "highlightWords": [
-      "die",
-      "heaven"
-    ]
-  },
-  {
-    "en": "And yet, death is the destination we all share.",
-    "ko": "그럼에도 불구하고, 죽음은 우리 모두가 공유하는 도착지입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "No one has ever escaped it.",
-    "ko": "아무도 그것을 피할 수는 없었습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "And that is as it should be, because death is very likely the single best invention of life.",
-    "ko": "그리고 그래야만 합니다. 왜냐하면 죽음은 삶이 만든 최고의 발명품일 가능성이 매우 높기 때문입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "It’s life’s change agent.",
-    "ko": "그것은 삶의 변화를 만드는 동력입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "It clears out the old to make way for the new.",
-    "ko": "그것은 새로운 것을 위해 낡은 것을 걷어냅니다.",
-    "highlightWords": [
-      "old",
-      "new"
-    ]
-  },
-  {
-    "en": "Right now, the new is you.",
-    "ko": "바로 지금, 그 새로운 것은 여러분입니다.",
-    "highlightWords": [
-      "new"
-    ]
-  },
-  {
-    "en": "But someday, not too long from now, you will gradually become the old and be cleared away.",
-    "ko": "하지만 언젠가, 그리 머지않은 미래에, 여러분도 점차 낡은 것이 되어 사라지게 될 것입니다.",
-    "highlightWords": [
-      "old"
-    ]
-  },
-  {
-    "en": "Sorry to be so dramatic, but it’s quite true.",
-    "ko": "너무 극적으로 들릴지 모르겠지만, 이것은 매우 사실입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "Your time is limited, so don’t waste it living someone else’s life.",
-    "ko": "여러분의 시간은 제한되어 있으니, 다른 사람의 인생을 사느라 낭비하지 마십시오.",
-    "highlightWords": [
-      "waste"
-    ]
-  },
-  {
-    "en": "Don’t be trapped by dogma, which is living with the results of other people’s thinking.",
-    "ko": "도그마(독단)에 갇히지 마십시오. 그것은 다른 사람들의 생각의 결과물에 맞춰 사는 것입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "Don’t let the noise of others’ opinions drown out your own inner voice.",
-    "ko": "타인의 견해라는 소음이 여러분 내면의 목소리를 잠식하게 두지 마십시오.",
-    "highlightWords": []
-  },
-  {
-    "en": "And most important, have the courage to follow your heart and intuition.",
-    "ko": "그리고 가장 중요한 것은, 여러분의 마음과 직관을 따를 용기를 가지는 것입니다.",
-    "highlightWords": [
-      "heart"
-    ]
-  },
-  {
-    "en": "They somehow already know what you truly want to become.",
-    "ko": "그것들은 여러분이 진정으로 무엇이 되고 싶은지 이미 알고 있습니다.",
-    "highlightWords": [
-      "know"
-    ]
-  },
-  {
-    "en": "Everything else is secondary.",
-    "ko": "그 외의 모든 것은 부차적인 것입니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "When I was young, there was an amazing publication called The Whole Earth Catalog, which was one of the bibles of my generation.",
-    "ko": "제가 젊었을 때, 제 세대의 성경과도 같았던 '지구 백과(The Whole Earth Catalog)'라는 놀라운 책이 있었습니다.",
-    "highlightWords": [
-      "young"
-    ]
-  },
-  {
-    "en": "It was created by a fellow named Stewart Brand, not far from here in Menlo Park.",
-    "ko": "이곳 멘로 파크에서 멀지 않은 곳에 사는 스튜어트 브랜드라는 분이 만든 책이었습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "And he brought it to life with his poetic touch.",
-    "ko": "그는 시적인 감각으로 그 책에 생명을 불어넣었습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "This was in the late sixties, before personal computers and desktop publishing, so it was all made with typewriters, scissors, and Polaroid cameras.",
-    "ko": "그땐 PC나 전자 출판이 나오기 전인 60년대 후반이었기에, 타자기와 가위, 폴라로이드 카메라로 모든 것을 제작했습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "It was sort of like Google in paperback form, 35 years before Google came along.",
-    "ko": "구글이 등장하기 35년 전, 종이책 형태의 구글과 같았습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "It was idealistic, overflowing with neat tools and great notions.",
-    "ko": "그 책은 이상적이었고, 훌륭한 도구와 위대한 개념들로 넘쳐났습니다.",
-    "highlightWords": [
-      "great"
-    ]
-  },
-  {
-    "en": "Stewart and his team put out several issues of The Whole Earth Catalog.",
-    "ko": "스튜어트와 그의 팀은 '지구 백과'를 몇 호에 걸쳐 발행했습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "And then, when it had run its course, they put out a final issue.",
-    "ko": "그리고 그 수명을 다했을 때, 그들은 마지막 호를 냈습니다.",
-    "highlightWords": [
-      "run"
-    ]
-  },
-  {
-    "en": "It was the mid-1970s, and I was your age.",
-    "ko": "그때가 1970년대 중반이었고, 저는 여러분 나이였습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "On the back cover of their final issue was a photograph of an early-morning country road—the kind you might find yourself hitchhiking on if you were so adventurous.",
-    "ko": "마지막 호의 뒤표지에는 이른 아침 시골길 사진이 실려 있었습니다. 여러분이 모험심이 강하다면 히치하이킹을 할 법한 그런 길 말입니다.",
-    "highlightWords": [
-      "morning",
-      "road"
-    ]
-  },
-  {
-    "en": "Beneath it were the words “Stay hungry. Stay foolish.”",
-    "ko": "그 사진 아래에는 \"항상 갈망하라. 항상 우직하라.\"라는 말이 있었습니다.",
-    "highlightWords": [
-      "stay"
-    ]
-  },
-  {
-    "en": "It was their farewell message as they signed off.",
-    "ko": "그것은 그들이 일을 마치며 남긴 작별 인사였습니다.",
-    "highlightWords": []
-  },
-  {
-    "en": "“Stay hungry. Stay foolish.” And I have always wished that for myself.",
-    "ko": "\"항상 갈망하라. 항상 우직하라.\" 저는 언제나 제 자신이 그러기를 바랐습니다.",
-    "highlightWords": [
-      "stay"
-    ]
-  },
-  {
-    "en": "And now, as you graduate to begin anew, I wish that for you.",
-    "ko": "그리고 이제, 새로운 시작을 위해 졸업하는 여러분에게도 같은 바람을 갖습니다.",
-    "highlightWords": [
-      "wish"
-    ]
-  },
-  {
-    "en": "Stay hungry. Stay foolish.",
-    "ko": "항상 갈망하십시오. 항상 우직하십시오.",
-    "highlightWords": [
-      "stay"
-    ]
-  },
-  {
-    "en": "Thank you all very much.",
-    "ko": "대단히 감사합니다.",
-    "highlightWords": [
-      "thank"
-    ]
-  }
-],
+        {
+          "en": "My third story is about death.",
+          "ko": "제 세 번째 이야기는 죽음에 관한 것입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "When I was 17, I read a quote that went something like, “If you live each day as if it was your last, someday you’ll most certainly be right.”",
+          "ko": "제가 17살 때, \"매일을 인생의 마지막 날인 것처럼 산다면, 언젠가는 틀림없이 맞는 날이 올 것이다\"라는 문구를 읽은 적이 있습니다.",
+          "highlightWords": [
+            "live",
+            "day",
+            "last"
+          ]
+        },
+        {
+          "en": "It made an impression on me.",
+          "ko": "그 말은 저에게 깊은 인상을 주었습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "And since then, for the past 33 years, I have looked in the mirror every morning and asked myself, “If today were the last day of my life, would I wanna do what I am about to do today?”",
+          "ko": "그 후 33년 동안, 저는 매일 아침 거울을 보며 자신에게 물었습니다. \"오늘이 내 인생의 마지막 날이라면, 오늘 내가 하려는 일을 하고 싶을까?\"",
+          "highlightWords": [
+            "day",
+            "last",
+            "morning"
+          ]
+        },
+        {
+          "en": "And whenever the answer has been no for too many days in a row, I know I need to change something.",
+          "ko": "그리고 그 대답이 며칠 연속으로 '아니오'라면, 저는 무언가를 바꿔야 한다는 것을 알게 됩니다.",
+          "highlightWords": [
+            "know"
+          ]
+        },
+        {
+          "en": "Remembering that I’ll be dead soon is the most important tool I’ve ever encountered to help me make the big choices in life.",
+          "ko": "곧 죽을 것이라는 사실을 기억하는 것은 제가 인생에서 중요한 선택을 하는 데 도움을 준 가장 중요한 도구입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "Because almost everything, all external expectations, all pride, all fear of embarrassment or failure—these things just fall away in the face of death, leaving only what is truly important.",
+          "ko": "왜냐하면 거의 모든 것들, 즉 모든 외부의 기대, 자존심, 수치심이나 실패에 대한 두려움 등은 죽음 앞에서는 모두 사라지고 오직 진정으로 중요한 것만 남기 때문입니다.",
+          "highlightWords": [
+            "face"
+          ]
+        },
+        {
+          "en": "Remembering that you are going to die is the best way I know to avoid the trap of thinking you have something to lose.",
+          "ko": "당신이 죽을 것이라는 사실을 기억하는 것은 잃을 것이 있다는 생각의 함정을 피하는 가장 좋은 방법입니다.",
+          "highlightWords": [
+            "know",
+            "die"
+          ]
+        },
+        {
+          "en": "You are already naked.",
+          "ko": "당신은 이미 알몸입니다. (잃을 게 없습니다.)",
+          "highlightWords": []
+        },
+        {
+          "en": "There is no reason not to follow your heart.",
+          "ko": "당신의 마음을 따르지 않을 이유는 없습니다.",
+          "highlightWords": [
+            "heart"
+          ]
+        },
+        {
+          "en": "About a year ago, I was diagnosed with cancer.",
+          "ko": "약 1년 전, 저는 암 진단을 받았습니다.",
+          "highlightWords": [
+            "year"
+          ]
+        },
+        {
+          "en": "I had a scan at 7:30 in the morning, and it clearly showed a tumor on my pancreas.",
+          "ko": "아침 7시 30분에 검사를 받았는데, 췌장에 종양이 있는 것이 뚜렷하게 보였습니다.",
+          "highlightWords": [
+            "morning"
+          ]
+        },
+        {
+          "en": "I didn’t even know what a pancreas was.",
+          "ko": "저는 췌장이 무엇인지조차 몰랐습니다.",
+          "highlightWords": [
+            "know"
+          ]
+        },
+        {
+          "en": "The doctors told me this was almost certainly a type of cancer that is incurable, and that I should expect to live no longer than three to six months.",
+          "ko": "의사들은 이것이 치료 불가능한 종류의 암일 가능성이 매우 높으며, 제가 3개월에서 6개월 이상 살지 못할 것이라고 말했습니다.",
+          "highlightWords": [
+            "live"
+          ]
+        },
+        {
+          "en": "My doctor advised me to go home and get my affairs in order, which is doctors’ code for “Prepare to die.”",
+          "ko": "의사는 집에 가서 신변 정리를 하라고 조언했는데, 이는 \"죽음을 준비하라\"는 의사들의 암호입니다.",
+          "highlightWords": [
+            "home",
+            "die"
+          ]
+        },
+        {
+          "en": "It means to try and tell your kids everything you thought you’d have the next ten years to tell them in just a few months.",
+          "ko": "그것은 앞으로 10년 동안 아이들에게 해줄 수 있을 것이라 생각했던 모든 이야기를 단 몇 달 안에 다 하라는 뜻입니다.",
+          "highlightWords": [
+            "tell"
+          ]
+        },
+        {
+          "en": "It means to make sure everything is buttoned up so that it will be as easy as possible for your family.",
+          "ko": "그것은 가족들을 위해 모든 것을 가능한 한 쉽게 처리할 수 있도록 확실히 매듭지으라는 뜻입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "It means to say your goodbyes.",
+          "ko": "그것은 작별 인사를 하라는 뜻입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "I lived with that diagnosis all day.",
+          "ko": "저는 하루 종일 그 진단을 안고 살았습니다.",
+          "highlightWords": [
+            "day"
+          ]
+        },
+        {
+          "en": "Later that evening I had a biopsy, where they stuck an endoscope down my throat, through my stomach, and into my intestines, put a needle into my pancreas, and got a few cells from the tumor.",
+          "ko": "그날 저녁 늦게 조직 검사를 받았는데, 목구멍으로 내시경을 넣어 위와 장을 통과해 췌장에 바늘을 찔러 종양에서 세포를 채취했습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "I was sedated, but my wife, who was there, told me that when they viewed the cells under a microscope, the doctors started crying because it turned out to be a very rare form of pancreatic cancer that is curable with surgery.",
+          "ko": "저는 진정제를 맞고 있었지만, 그 자리에 있던 아내가 말해주길, 의사들이 현미경으로 세포를 확인하고 울기 시작했다고 합니다. 수술로 치료할 수 있는 아주 희귀한 형태의 췌장암이었기 때문입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "I had the surgery, and thankfully I’m fine now.",
+          "ko": "저는 수술을 받았고, 감사하게도 지금은 건강합니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "This was the closest I’ve been to facing death, and I hope it’s the closest I get for a few more decades.",
+          "ko": "이것이 제가 죽음에 가장 가까이 갔던 경험이었고, 앞으로 몇 십 년 동안은 이보다 더 가까이 가지 않기를 바랍니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "Having lived through it, I can now say this to you with a bit more certainty than when death was a useful but purely intellectual concept.",
+          "ko": "이 일을 겪고 나니, 죽음이 유용하지만 순전히 머리로만 이해하던 개념이었을 때보다 좀 더 확신을 가지고 말씀드릴 수 있습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "No one wants to die.",
+          "ko": "아무도 죽기를 원하지 않습니다.",
+          "highlightWords": [
+            "die"
+          ]
+        },
+        {
+          "en": "Even people who want to go to heaven don’t want to die to get there.",
+          "ko": "천국에 가고 싶어 하는 사람들조차 그곳에 가기 위해 죽고 싶어 하지는 않습니다.",
+          "highlightWords": [
+            "die",
+            "heaven"
+          ]
+        },
+        {
+          "en": "And yet, death is the destination we all share.",
+          "ko": "그럼에도 불구하고, 죽음은 우리 모두가 공유하는 도착지입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "No one has ever escaped it.",
+          "ko": "아무도 그것을 피할 수는 없었습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "And that is as it should be, because death is very likely the single best invention of life.",
+          "ko": "그리고 그래야만 합니다. 왜냐하면 죽음은 삶이 만든 최고의 발명품일 가능성이 매우 높기 때문입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "It’s life’s change agent.",
+          "ko": "그것은 삶의 변화를 만드는 동력입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "It clears out the old to make way for the new.",
+          "ko": "그것은 새로운 것을 위해 낡은 것을 걷어냅니다.",
+          "highlightWords": [
+            "old",
+            "new"
+          ]
+        },
+        {
+          "en": "Right now, the new is you.",
+          "ko": "바로 지금, 그 새로운 것은 여러분입니다.",
+          "highlightWords": [
+            "new"
+          ]
+        },
+        {
+          "en": "But someday, not too long from now, you will gradually become the old and be cleared away.",
+          "ko": "하지만 언젠가, 그리 머지않은 미래에, 여러분도 점차 낡은 것이 되어 사라지게 될 것입니다.",
+          "highlightWords": [
+            "old"
+          ]
+        },
+        {
+          "en": "Sorry to be so dramatic, but it’s quite true.",
+          "ko": "너무 극적으로 들릴지 모르겠지만, 이것은 매우 사실입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "Your time is limited, so don’t waste it living someone else’s life.",
+          "ko": "여러분의 시간은 제한되어 있으니, 다른 사람의 인생을 사느라 낭비하지 마십시오.",
+          "highlightWords": [
+            "waste"
+          ]
+        },
+        {
+          "en": "Don’t be trapped by dogma, which is living with the results of other people’s thinking.",
+          "ko": "도그마(독단)에 갇히지 마십시오. 그것은 다른 사람들의 생각의 결과물에 맞춰 사는 것입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "Don’t let the noise of others’ opinions drown out your own inner voice.",
+          "ko": "타인의 견해라는 소음이 여러분 내면의 목소리를 잠식하게 두지 마십시오.",
+          "highlightWords": []
+        },
+        {
+          "en": "And most important, have the courage to follow your heart and intuition.",
+          "ko": "그리고 가장 중요한 것은, 여러분의 마음과 직관을 따를 용기를 가지는 것입니다.",
+          "highlightWords": [
+            "heart"
+          ]
+        },
+        {
+          "en": "They somehow already know what you truly want to become.",
+          "ko": "그것들은 여러분이 진정으로 무엇이 되고 싶은지 이미 알고 있습니다.",
+          "highlightWords": [
+            "know"
+          ]
+        },
+        {
+          "en": "Everything else is secondary.",
+          "ko": "그 외의 모든 것은 부차적인 것입니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "When I was young, there was an amazing publication called The Whole Earth Catalog, which was one of the bibles of my generation.",
+          "ko": "제가 젊었을 때, 제 세대의 성경과도 같았던 '지구 백과(The Whole Earth Catalog)'라는 놀라운 책이 있었습니다.",
+          "highlightWords": [
+            "young"
+          ]
+        },
+        {
+          "en": "It was created by a fellow named Stewart Brand, not far from here in Menlo Park.",
+          "ko": "이곳 멘로 파크에서 멀지 않은 곳에 사는 스튜어트 브랜드라는 분이 만든 책이었습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "And he brought it to life with his poetic touch.",
+          "ko": "그는 시적인 감각으로 그 책에 생명을 불어넣었습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "This was in the late sixties, before personal computers and desktop publishing, so it was all made with typewriters, scissors, and Polaroid cameras.",
+          "ko": "그땐 PC나 전자 출판이 나오기 전인 60년대 후반이었기에, 타자기와 가위, 폴라로이드 카메라로 모든 것을 제작했습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "It was sort of like Google in paperback form, 35 years before Google came along.",
+          "ko": "구글이 등장하기 35년 전, 종이책 형태의 구글과 같았습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "It was idealistic, overflowing with neat tools and great notions.",
+          "ko": "그 책은 이상적이었고, 훌륭한 도구와 위대한 개념들로 넘쳐났습니다.",
+          "highlightWords": [
+            "great"
+          ]
+        },
+        {
+          "en": "Stewart and his team put out several issues of The Whole Earth Catalog.",
+          "ko": "스튜어트와 그의 팀은 '지구 백과'를 몇 호에 걸쳐 발행했습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "And then, when it had run its course, they put out a final issue.",
+          "ko": "그리고 그 수명을 다했을 때, 그들은 마지막 호를 냈습니다.",
+          "highlightWords": [
+            "run"
+          ]
+        },
+        {
+          "en": "It was the mid-1970s, and I was your age.",
+          "ko": "그때가 1970년대 중반이었고, 저는 여러분 나이였습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "On the back cover of their final issue was a photograph of an early-morning country road—the kind you might find yourself hitchhiking on if you were so adventurous.",
+          "ko": "마지막 호의 뒤표지에는 이른 아침 시골길 사진이 실려 있었습니다. 여러분이 모험심이 강하다면 히치하이킹을 할 법한 그런 길 말입니다.",
+          "highlightWords": [
+            "morning",
+            "road"
+          ]
+        },
+        {
+          "en": "Beneath it were the words “Stay hungry. Stay foolish.”",
+          "ko": "그 사진 아래에는 \"항상 갈망하라. 항상 우직하라.\"라는 말이 있었습니다.",
+          "highlightWords": [
+            "stay"
+          ]
+        },
+        {
+          "en": "It was their farewell message as they signed off.",
+          "ko": "그것은 그들이 일을 마치며 남긴 작별 인사였습니다.",
+          "highlightWords": []
+        },
+        {
+          "en": "“Stay hungry. Stay foolish.” And I have always wished that for myself.",
+          "ko": "\"항상 갈망하라. 항상 우직하라.\" 저는 언제나 제 자신이 그러기를 바랐습니다.",
+          "highlightWords": [
+            "stay"
+          ]
+        },
+        {
+          "en": "And now, as you graduate to begin anew, I wish that for you.",
+          "ko": "그리고 이제, 새로운 시작을 위해 졸업하는 여러분에게도 같은 바람을 갖습니다.",
+          "highlightWords": [
+            "wish"
+          ]
+        },
+        {
+          "en": "Stay hungry. Stay foolish.",
+          "ko": "항상 갈망하십시오. 항상 우직하십시오.",
+          "highlightWords": [
+            "stay"
+          ]
+        },
+        {
+          "en": "Thank you all very much.",
+          "ko": "대단히 감사합니다.",
+          "highlightWords": [
+            "thank"
+          ]
+        }
+      ],
       vocabulary: [
-  {
-    "word": "live",
-    "meaning": "살다",
-    "example": "I live in a big house."
-  },
-  {
-    "word": "day",
-    "meaning": "날, 하루",
-    "example": "Have a nice day!"
-  },
-  {
-    "word": "last",
-    "meaning": "마지막의",
-    "example": "This is the last cookie."
-  },
-  {
-    "word": "morning",
-    "meaning": "아침",
-    "example": "I eat an apple in the morning."
-  },
-  {
-    "word": "look",
-    "meaning": "보다",
-    "example": "Look at the blue sky."
-  },
-  {
-    "word": "ask",
-    "meaning": "묻다",
-    "example": "Ask your mom for help."
-  },
-  {
-    "word": "know",
-    "meaning": "알다",
-    "example": "I know your name."
-  },
-  {
-    "word": "face",
-    "meaning": "얼굴",
-    "example": "Wash your face clearly."
-  },
-  {
-    "word": "heart",
-    "meaning": "심장, 마음",
-    "example": "I love you with all my heart."
-  },
-  {
-    "word": "year",
-    "meaning": "년, 해",
-    "example": "Happy New Year!"
-  },
-  {
-    "word": "home",
-    "meaning": "집",
-    "example": "I want to go home."
-  },
-  {
-    "word": "tell",
-    "meaning": "말하다",
-    "example": "Tell me a story."
-  },
-  {
-    "word": "cry",
-    "meaning": "울다",
-    "example": "Don't cry, baby."
-  },
-  {
-    "word": "thank",
-    "meaning": "감사하다",
-    "example": "Thank you very much."
-  },
-  {
-    "word": "die",
-    "meaning": "죽다",
-    "example": "Flowers die without water."
-  },
-  {
-    "word": "heaven",
-    "meaning": "천국, 하늘",
-    "example": "The bird flies in the heaven."
-  },
-  {
-    "word": "old",
-    "meaning": "늙은, 오래된",
-    "example": "My bike is old."
-  },
-  {
-    "word": "new",
-    "meaning": "새로운",
-    "example": "I have a new bag."
-  },
-  {
-    "word": "waste",
-    "meaning": "낭비하다",
-    "example": "Don't waste water."
-  },
-  {
-    "word": "young",
-    "meaning": "젊은, 어린",
-    "example": "When I was young, I liked candy."
-  },
-  {
-    "word": "book",
-    "meaning": "책",
-    "example": "I read a funny book."
-  },
-  {
-    "word": "great",
-    "meaning": "훌륭한",
-    "example": "You did a great job!"
-  },
-  {
-    "word": "run",
-    "meaning": "달리다",
-    "example": "Run fast to win."
-  },
-  {
-    "word": "road",
-    "meaning": "길, 도로",
-    "example": "Look both ways before crossing the road."
-  },
-  {
-    "word": "stay",
-    "meaning": "머무르다, 유지하다",
-    "example": "Stay happy and healthy."
-  },
-  {
-    "word": "wish",
-    "meaning": "바라다",
-    "example": "I wish upon a star."
-  }
-]
+        {
+          "word": "live",
+          "meaning": "살다",
+          "example": "I live in a big house."
+        },
+        {
+          "word": "day",
+          "meaning": "날, 하루",
+          "example": "Have a nice day!"
+        },
+        {
+          "word": "last",
+          "meaning": "마지막의",
+          "example": "This is the last cookie."
+        },
+        {
+          "word": "morning",
+          "meaning": "아침",
+          "example": "I eat an apple in the morning."
+        },
+        {
+          "word": "look",
+          "meaning": "보다",
+          "example": "Look at the blue sky."
+        },
+        {
+          "word": "ask",
+          "meaning": "묻다",
+          "example": "Ask your mom for help."
+        },
+        {
+          "word": "know",
+          "meaning": "알다",
+          "example": "I know your name."
+        },
+        {
+          "word": "face",
+          "meaning": "얼굴",
+          "example": "Wash your face clearly."
+        },
+        {
+          "word": "heart",
+          "meaning": "심장, 마음",
+          "example": "I love you with all my heart."
+        },
+        {
+          "word": "year",
+          "meaning": "년, 해",
+          "example": "Happy New Year!"
+        },
+        {
+          "word": "home",
+          "meaning": "집",
+          "example": "I want to go home."
+        },
+        {
+          "word": "tell",
+          "meaning": "말하다",
+          "example": "Tell me a story."
+        },
+        {
+          "word": "cry",
+          "meaning": "울다",
+          "example": "Don't cry, baby."
+        },
+        {
+          "word": "thank",
+          "meaning": "감사하다",
+          "example": "Thank you very much."
+        },
+        {
+          "word": "die",
+          "meaning": "죽다",
+          "example": "Flowers die without water."
+        },
+        {
+          "word": "heaven",
+          "meaning": "천국, 하늘",
+          "example": "The bird flies in the heaven."
+        },
+        {
+          "word": "old",
+          "meaning": "늙은, 오래된",
+          "example": "My bike is old."
+        },
+        {
+          "word": "new",
+          "meaning": "새로운",
+          "example": "I have a new bag."
+        },
+        {
+          "word": "waste",
+          "meaning": "낭비하다",
+          "example": "Don't waste water."
+        },
+        {
+          "word": "young",
+          "meaning": "젊은, 어린",
+          "example": "When I was young, I liked candy."
+        },
+        {
+          "word": "book",
+          "meaning": "책",
+          "example": "I read a funny book."
+        },
+        {
+          "word": "great",
+          "meaning": "훌륭한",
+          "example": "You did a great job!"
+        },
+        {
+          "word": "run",
+          "meaning": "달리다",
+          "example": "Run fast to win."
+        },
+        {
+          "word": "road",
+          "meaning": "길, 도로",
+          "example": "Look both ways before crossing the road."
+        },
+        {
+          "word": "stay",
+          "meaning": "머무르다, 유지하다",
+          "example": "Stay happy and healthy."
+        },
+        {
+          "word": "wish",
+          "meaning": "바라다",
+          "example": "I wish upon a star."
+        }
+      ]
     };
 
     // Initialize book reader

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -40,11 +41,11 @@
     <div id="read-tab" class="tab-content active">
       <div class="read-mode">
         <div id="sentences-container"></div>
-        
+
         <div class="controls">
           <button class="control-btn" id="toggle-korean">한글 숨기기</button>
         </div>
-        
+
         <div class="progress-bar">
           <div class="progress-fill" style="width: 0%"></div>
         </div>
@@ -56,14 +57,14 @@
     <div id="words-tab" class="tab-content">
       <div class="word-mode">
         <div class="card-counter" id="card-counter">1 / 19 단어</div>
-        
+
         <div class="flashcard-container">
           <div class="flashcard" id="flashcard">
             <div class="word-front" id="word-front">
               <div class="word-text" id="word-text"></div>
               <div class="tap-hint">탭하여 뜻 보기</div>
             </div>
-            
+
             <div class="word-back" id="word-back">
               <div class="word-text" id="word-text-back"></div>
               <div class="word-meaning" id="word-meaning"></div>
@@ -71,7 +72,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="answer-buttons">
           <button class="answer-btn know" id="know-btn">😊 알아요!</button>
           <button class="answer-btn study" id="study-btn">🤔 더 볼래요</button>
@@ -119,6 +120,7 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script src="book_reader_base.js"></script>
   <script>
     // Book Data
@@ -127,394 +129,394 @@
       title: "Biscuit and the Little Pup",
       description: "비스킷과 아기강아지",
       story: [
-  {
-    "en": "Biscuit and the Little Pup",
-    "ko": "비스킷과 어린 강아지",
-    "highlightWords": [
-      "little",
-      "pup"
-    ]
-  },
-  {
-    "en": "Here, Biscuit.",
-    "ko": "여기야, 비스킷.",
-    "highlightWords": []
-  },
-  {
-    "en": "It's time to play.",
-    "ko": "놀 시간이야.",
-    "highlightWords": [
-      "time",
-      "play"
-    ]
-  },
-  {
-    "en": "Woof, woof!",
-    "ko": "멍, 멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "You found your ball, Biscuit.",
-    "ko": "공을 찾았구나, 비스킷.",
-    "highlightWords": [
-      "ball"
-    ]
-  },
-  {
-    "en": "Arf!",
-    "ko": "앙!",
-    "highlightWords": []
-  },
-  {
-    "en": "You found a little pup, too.",
-    "ko": "어린 강아지도 찾았구나.",
-    "highlightWords": [
-      "little",
-      "pup"
-    ]
-  },
-  {
-    "en": "Woof, woof!",
-    "ko": "멍, 멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Come out, little pup.",
-    "ko": "밖으로 나와, 어린 강아지야.",
-    "highlightWords": [
-      "little",
-      "pup",
-      "come"
-    ]
-  },
-  {
-    "en": "What is your name?",
-    "ko": "네 이름은 뭐니?",
-    "highlightWords": [
-      "name"
-    ]
-  },
-  {
-    "en": "Woof, woof!",
-    "ko": "멍, 멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Come out, little pup.",
-    "ko": "밖으로 나와, 어린 강아지야.",
-    "highlightWords": [
-      "little",
-      "pup",
-      "come"
-    ]
-  },
-  {
-    "en": "Biscuit wants to play!",
-    "ko": "비스킷은 놀고 싶어 해!",
-    "highlightWords": [
-      "play"
-    ]
-  },
-  {
-    "en": "Woof, woof!",
-    "ko": "멍, 멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Arf!",
-    "ko": "앙!",
-    "highlightWords": []
-  },
-  {
-    "en": "The little pup does not want to come out.",
-    "ko": "어린 강아지는 나오고 싶어 하지 않는구나.",
-    "highlightWords": [
-      "little",
-      "pup",
-      "come",
-      "want"
-    ]
-  },
-  {
-    "en": "Here, little pup.",
-    "ko": "자, 어린 강아지야.",
-    "highlightWords": [
-      "little",
-      "pup"
-    ]
-  },
-  {
-    "en": "Biscuit has a ball.",
-    "ko": "비스킷에게 공이 있어.",
-    "highlightWords": [
-      "ball"
-    ]
-  },
-  {
-    "en": "Woof, woof!",
-    "ko": "멍, 멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Biscuit has a bone.",
-    "ko": "비스킷에게 뼈다귀가 있어.",
-    "highlightWords": [
-      "bone"
-    ]
-  },
-  {
-    "en": "Woof, woof!",
-    "ko": "멍, 멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Won’t you come out, little pup?",
-    "ko": "나오지 않을 거니, 어린 강아지야?",
-    "highlightWords": [
-      "little",
-      "pup",
-      "come"
-    ]
-  },
-  {
-    "en": "Arf! Arf!",
-    "ko": "앙! 앙!",
-    "highlightWords": []
-  },
-  {
-    "en": "The little pup does not want to come out yet.",
-    "ko": "어린 강아지는 아직 나오고 싶지 않은가 봐.",
-    "highlightWords": [
-      "little",
-      "pup",
-      "come",
-      "want"
-    ]
-  },
-  {
-    "en": "What will we do now?",
-    "ko": "이제 우리 뭐 할까?",
-    "highlightWords": [
-      "now"
-    ]
-  },
-  {
-    "en": "Woof!",
-    "ko": "멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Wait, Biscuit.",
-    "ko": "기다려, 비스킷.",
-    "highlightWords": [
-      "wait"
-    ]
-  },
-  {
-    "en": "Where are you going?",
-    "ko": "너 어디 가는 거니?",
-    "highlightWords": []
-  },
-  {
-    "en": "Woof, woof!",
-    "ko": "멍, 멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Silly puppy!",
-    "ko": "엉뚱한 강아지 같으니라고!",
-    "highlightWords": [
-      "silly"
-    ]
-  },
-  {
-    "en": "It’s not time for you to hide.",
-    "ko": "네가 숨을 시간은 아닌데.",
-    "highlightWords": [
-      "time",
-      "hide"
-    ]
-  },
-  {
-    "en": "Arf! Arf! Arf! Arf!",
-    "ko": "앙! 앙! 앙! 앙!",
-    "highlightWords": []
-  },
-  {
-    "en": "Woof, woof!",
-    "ko": "멍, 멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Oh, Biscuit!",
-    "ko": "오, 비스킷.",
-    "highlightWords": []
-  },
-  {
-    "en": "Here comes the little pup!",
-    "ko": "여기 어린 강아지가 나오네!",
-    "highlightWords": [
-      "little",
-      "pup"
-    ]
-  },
-  {
-    "en": "Woof, woof!",
-    "ko": "멍, 멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Arf! Arf!",
-    "ko": "앙! 앙!",
-    "highlightWords": []
-  },
-  {
-    "en": "Funny puppies!",
-    "ko": "재미있는 강아지들이네!",
-    "highlightWords": [
-      "funny"
-    ]
-  },
-  {
-    "en": "You both want to play.",
-    "ko": "너희 둘 다 놀고 싶구나.",
-    "highlightWords": [
-      "play",
-      "want",
-      "both"
-    ]
-  },
-  {
-    "en": "You want to play hide-and-seek!",
-    "ko": "너희는 숨바꼭질을 하고 싶구나!",
-    "highlightWords": [
-      "play",
-      "want",
-      "hide"
-    ]
-  },
-  {
-    "en": "Woof, woof!",
-    "ko": "멍, 멍!",
-    "highlightWords": []
-  },
-  {
-    "en": "Ready or not, sweet puppies, we found both of you!",
-    "ko": "준비됐든 안 됐든, 귀여운 강아지들아, 우리가 너희 둘 다 찾았다!",
-    "highlightWords": [
-      "both",
-      "ready",
-      "sweet"
-    ]
-  },
-  {
-    "en": "Arf! Arf!",
-    "ko": "앙! 앙!",
-    "highlightWords": []
-  },
-  {
-    "en": "Woof!",
-    "ko": "멍!",
-    "highlightWords": []
-  }
-],
+        {
+          "en": "Biscuit and the Little Pup",
+          "ko": "비스킷과 어린 강아지",
+          "highlightWords": [
+            "little",
+            "pup"
+          ]
+        },
+        {
+          "en": "Here, Biscuit.",
+          "ko": "여기야, 비스킷.",
+          "highlightWords": []
+        },
+        {
+          "en": "It's time to play.",
+          "ko": "놀 시간이야.",
+          "highlightWords": [
+            "time",
+            "play"
+          ]
+        },
+        {
+          "en": "Woof, woof!",
+          "ko": "멍, 멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "You found your ball, Biscuit.",
+          "ko": "공을 찾았구나, 비스킷.",
+          "highlightWords": [
+            "ball"
+          ]
+        },
+        {
+          "en": "Arf!",
+          "ko": "앙!",
+          "highlightWords": []
+        },
+        {
+          "en": "You found a little pup, too.",
+          "ko": "어린 강아지도 찾았구나.",
+          "highlightWords": [
+            "little",
+            "pup"
+          ]
+        },
+        {
+          "en": "Woof, woof!",
+          "ko": "멍, 멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Come out, little pup.",
+          "ko": "밖으로 나와, 어린 강아지야.",
+          "highlightWords": [
+            "little",
+            "pup",
+            "come"
+          ]
+        },
+        {
+          "en": "What is your name?",
+          "ko": "네 이름은 뭐니?",
+          "highlightWords": [
+            "name"
+          ]
+        },
+        {
+          "en": "Woof, woof!",
+          "ko": "멍, 멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Come out, little pup.",
+          "ko": "밖으로 나와, 어린 강아지야.",
+          "highlightWords": [
+            "little",
+            "pup",
+            "come"
+          ]
+        },
+        {
+          "en": "Biscuit wants to play!",
+          "ko": "비스킷은 놀고 싶어 해!",
+          "highlightWords": [
+            "play"
+          ]
+        },
+        {
+          "en": "Woof, woof!",
+          "ko": "멍, 멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Arf!",
+          "ko": "앙!",
+          "highlightWords": []
+        },
+        {
+          "en": "The little pup does not want to come out.",
+          "ko": "어린 강아지는 나오고 싶어 하지 않는구나.",
+          "highlightWords": [
+            "little",
+            "pup",
+            "come",
+            "want"
+          ]
+        },
+        {
+          "en": "Here, little pup.",
+          "ko": "자, 어린 강아지야.",
+          "highlightWords": [
+            "little",
+            "pup"
+          ]
+        },
+        {
+          "en": "Biscuit has a ball.",
+          "ko": "비스킷에게 공이 있어.",
+          "highlightWords": [
+            "ball"
+          ]
+        },
+        {
+          "en": "Woof, woof!",
+          "ko": "멍, 멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Biscuit has a bone.",
+          "ko": "비스킷에게 뼈다귀가 있어.",
+          "highlightWords": [
+            "bone"
+          ]
+        },
+        {
+          "en": "Woof, woof!",
+          "ko": "멍, 멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Won’t you come out, little pup?",
+          "ko": "나오지 않을 거니, 어린 강아지야?",
+          "highlightWords": [
+            "little",
+            "pup",
+            "come"
+          ]
+        },
+        {
+          "en": "Arf! Arf!",
+          "ko": "앙! 앙!",
+          "highlightWords": []
+        },
+        {
+          "en": "The little pup does not want to come out yet.",
+          "ko": "어린 강아지는 아직 나오고 싶지 않은가 봐.",
+          "highlightWords": [
+            "little",
+            "pup",
+            "come",
+            "want"
+          ]
+        },
+        {
+          "en": "What will we do now?",
+          "ko": "이제 우리 뭐 할까?",
+          "highlightWords": [
+            "now"
+          ]
+        },
+        {
+          "en": "Woof!",
+          "ko": "멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Wait, Biscuit.",
+          "ko": "기다려, 비스킷.",
+          "highlightWords": [
+            "wait"
+          ]
+        },
+        {
+          "en": "Where are you going?",
+          "ko": "너 어디 가는 거니?",
+          "highlightWords": []
+        },
+        {
+          "en": "Woof, woof!",
+          "ko": "멍, 멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Silly puppy!",
+          "ko": "엉뚱한 강아지 같으니라고!",
+          "highlightWords": [
+            "silly"
+          ]
+        },
+        {
+          "en": "It’s not time for you to hide.",
+          "ko": "네가 숨을 시간은 아닌데.",
+          "highlightWords": [
+            "time",
+            "hide"
+          ]
+        },
+        {
+          "en": "Arf! Arf! Arf! Arf!",
+          "ko": "앙! 앙! 앙! 앙!",
+          "highlightWords": []
+        },
+        {
+          "en": "Woof, woof!",
+          "ko": "멍, 멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Oh, Biscuit!",
+          "ko": "오, 비스킷.",
+          "highlightWords": []
+        },
+        {
+          "en": "Here comes the little pup!",
+          "ko": "여기 어린 강아지가 나오네!",
+          "highlightWords": [
+            "little",
+            "pup"
+          ]
+        },
+        {
+          "en": "Woof, woof!",
+          "ko": "멍, 멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Arf! Arf!",
+          "ko": "앙! 앙!",
+          "highlightWords": []
+        },
+        {
+          "en": "Funny puppies!",
+          "ko": "재미있는 강아지들이네!",
+          "highlightWords": [
+            "funny"
+          ]
+        },
+        {
+          "en": "You both want to play.",
+          "ko": "너희 둘 다 놀고 싶구나.",
+          "highlightWords": [
+            "play",
+            "want",
+            "both"
+          ]
+        },
+        {
+          "en": "You want to play hide-and-seek!",
+          "ko": "너희는 숨바꼭질을 하고 싶구나!",
+          "highlightWords": [
+            "play",
+            "want",
+            "hide"
+          ]
+        },
+        {
+          "en": "Woof, woof!",
+          "ko": "멍, 멍!",
+          "highlightWords": []
+        },
+        {
+          "en": "Ready or not, sweet puppies, we found both of you!",
+          "ko": "준비됐든 안 됐든, 귀여운 강아지들아, 우리가 너희 둘 다 찾았다!",
+          "highlightWords": [
+            "both",
+            "ready",
+            "sweet"
+          ]
+        },
+        {
+          "en": "Arf! Arf!",
+          "ko": "앙! 앙!",
+          "highlightWords": []
+        },
+        {
+          "en": "Woof!",
+          "ko": "멍!",
+          "highlightWords": []
+        }
+      ],
       vocabulary: [
-  {
-    "word": "little",
-    "meaning": "어린, 작은",
-    "example": "You found a little pup."
-  },
-  {
-    "word": "pup",
-    "meaning": "강아지",
-    "example": "Come out, little pup."
-  },
-  {
-    "word": "time",
-    "meaning": "시간",
-    "example": "It's time to play."
-  },
-  {
-    "word": "play",
-    "meaning": "놀다",
-    "example": "It's time to play."
-  },
-  {
-    "word": "find",
-    "meaning": "찾다",
-    "example": "You found your ball."
-  },
-  {
-    "word": "ball",
-    "meaning": "공",
-    "example": "Biscuit has a ball."
-  },
-  {
-    "word": "come",
-    "meaning": "오다, 나오다",
-    "example": "Come out, little pup."
-  },
-  {
-    "word": "name",
-    "meaning": "이름",
-    "example": "What is your name?"
-  },
-  {
-    "word": "want",
-    "meaning": "원하다",
-    "example": "Biscuit wants to play."
-  },
-  {
-    "word": "bone",
-    "meaning": "뼈, 뼈다귀",
-    "example": "Biscuit has a bone."
-  },
-  {
-    "word": "now",
-    "meaning": "지금, 이제",
-    "example": "What will we do now?"
-  },
-  {
-    "word": "wait",
-    "meaning": "기다리다",
-    "example": "Wait, Biscuit."
-  },
-  {
-    "word": "go",
-    "meaning": "가다",
-    "example": "Where are you going?"
-  },
-  {
-    "word": "silly",
-    "meaning": "어리석은, 바보 같은",
-    "example": "Silly puppy!"
-  },
-  {
-    "word": "hide",
-    "meaning": "숨다",
-    "example": "It’s not time for you to hide."
-  },
-  {
-    "word": "funny",
-    "meaning": "웃기는, 재미있는",
-    "example": "Funny puppies!"
-  },
-  {
-    "word": "both",
-    "meaning": "둘 다",
-    "example": "You both want to play."
-  },
-  {
-    "word": "ready",
-    "meaning": "준비된",
-    "example": "Ready or not, we found you!"
-  },
-  {
-    "word": "sweet",
-    "meaning": "달콤한, 귀여운",
-    "example": "Sweet puppies."
-  }
-]
+        {
+          "word": "little",
+          "meaning": "어린, 작은",
+          "example": "You found a little pup."
+        },
+        {
+          "word": "pup",
+          "meaning": "강아지",
+          "example": "Come out, little pup."
+        },
+        {
+          "word": "time",
+          "meaning": "시간",
+          "example": "It's time to play."
+        },
+        {
+          "word": "play",
+          "meaning": "놀다",
+          "example": "It's time to play."
+        },
+        {
+          "word": "find",
+          "meaning": "찾다",
+          "example": "You found your ball."
+        },
+        {
+          "word": "ball",
+          "meaning": "공",
+          "example": "Biscuit has a ball."
+        },
+        {
+          "word": "come",
+          "meaning": "오다, 나오다",
+          "example": "Come out, little pup."
+        },
+        {
+          "word": "name",
+          "meaning": "이름",
+          "example": "What is your name?"
+        },
+        {
+          "word": "want",
+          "meaning": "원하다",
+          "example": "Biscuit wants to play."
+        },
+        {
+          "word": "bone",
+          "meaning": "뼈, 뼈다귀",
+          "example": "Biscuit has a bone."
+        },
+        {
+          "word": "now",
+          "meaning": "지금, 이제",
+          "example": "What will we do now?"
+        },
+        {
+          "word": "wait",
+          "meaning": "기다리다",
+          "example": "Wait, Biscuit."
+        },
+        {
+          "word": "go",
+          "meaning": "가다",
+          "example": "Where are you going?"
+        },
+        {
+          "word": "silly",
+          "meaning": "어리석은, 바보 같은",
+          "example": "Silly puppy!"
+        },
+        {
+          "word": "hide",
+          "meaning": "숨다",
+          "example": "It’s not time for you to hide."
+        },
+        {
+          "word": "funny",
+          "meaning": "웃기는, 재미있는",
+          "example": "Funny puppies!"
+        },
+        {
+          "word": "both",
+          "meaning": "둘 다",
+          "example": "You both want to play."
+        },
+        {
+          "word": "ready",
+          "meaning": "준비된",
+          "example": "Ready or not, we found you!"
+        },
+        {
+          "word": "sweet",
+          "meaning": "달콤한, 귀여운",
+          "example": "Sweet puppies."
+        }
+      ]
     };
 
     // Initialize book reader

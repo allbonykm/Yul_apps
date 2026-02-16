@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -40,11 +41,11 @@
     <div id="read-tab" class="tab-content active">
       <div class="read-mode">
         <div id="sentences-container"></div>
-        
+
         <div class="controls">
           <button class="control-btn" id="toggle-korean">한글 숨기기</button>
         </div>
-        
+
         <div class="progress-bar">
           <div class="progress-fill" style="width: 0%"></div>
         </div>
@@ -56,14 +57,14 @@
     <div id="words-tab" class="tab-content">
       <div class="word-mode">
         <div class="card-counter" id="card-counter">1 / 15 단어</div>
-        
+
         <div class="flashcard-container">
           <div class="flashcard" id="flashcard">
             <div class="word-front" id="word-front">
               <div class="word-text" id="word-text"></div>
               <div class="tap-hint">탭하여 뜻 보기</div>
             </div>
-            
+
             <div class="word-back" id="word-back">
               <div class="word-text" id="word-text-back"></div>
               <div class="word-meaning" id="word-meaning"></div>
@@ -71,7 +72,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="answer-buttons">
           <button class="answer-btn know" id="know-btn">😊 알아요!</button>
           <button class="answer-btn study" id="study-btn">🤔 더 볼래요</button>
@@ -119,6 +120,7 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script src="book_reader_base.js"></script>
   <script>
     // Book Data
@@ -127,407 +129,407 @@
       title: "Pete : Snow Daze",
       description: "토브 읽기 자료",
       story: [
-  {
-    "en": "Pete the Cat wakes up and gets ready for school.",
-    "ko": "피트 더 캣이 일어나서 학교 갈 준비를 해요.",
-    "highlightWords": [
-      "ready"
-    ]
-  },
-  {
-    "en": "He has show-and-tell today.",
-    "ko": "그는 오늘 '보여주고 말하기' 시간이 있어요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“There is no school today,” says Pete's mom.",
-    "ko": "\"오늘은 학교에 가지 않는단다,\" 피트의 엄마가 말해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“It's a snow day.”",
-    "ko": "\"눈이 와서 쉬는 날이야.\"",
-    "highlightWords": []
-  },
-  {
-    "en": "“Hooray!” yells Pete.",
-    "ko": "\"만세!\" 피트가 소리쳐요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“Let's go sledding!” says Pete.",
-    "ko": "\"썰매 타러 가자!\" 피트가 말해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“Great idea,” says his brother, Bob.",
-    "ko": "\"좋은 생각이야,\" 그의 형 밥이 말해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "Pete puts on his hat, boots, and mittens.",
-    "ko": "피트는 모자, 부츠, 그리고 벙어리장갑을 착용해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“I'm ready to go!” he says.",
-    "ko": "\"나갈 준비 됐어!\" 그가 말해요.",
-    "highlightWords": [
-      "ready"
-    ]
-  },
-  {
-    "en": "On the way, Pete makes snowballs.",
-    "ko": "가는 길에, 피트는 눈뭉치를 만들어요.",
-    "highlightWords": []
-  },
-  {
-    "en": "He throws one at Bob.",
-    "ko": "그는 밥에게 하나를 던져요.",
-    "highlightWords": []
-  },
-  {
-    "en": "Bob throws one back.",
-    "ko": "밥도 다시 하나를 던져요.",
-    "highlightWords": []
-  },
-  {
-    "en": "Pete makes a snow cat.",
-    "ko": "피트는 눈 고양이를 만들어요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“Snow days are way more fun than school days,” he says.",
-    "ko": "\"눈 오는 날이 학교 가는 날보다 훨씬 더 재미있어,\" 그가 말해요.",
-    "highlightWords": [
-      "fun"
-    ]
-  },
-  {
-    "en": "“Sledding hill, here we come!” says Pete.",
-    "ko": "\"썰매 언덕아, 우리가 간다!\" 피트가 말해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "He can't wait to get there.",
-    "ko": "그는 빨리 거기에 가고 싶어서 참을 수가 없어요.",
-    "highlightWords": [
-      "wait"
-    ]
-  },
-  {
-    "en": "Pete waves to Callie.",
-    "ko": "피트가 캘리에게 손을 흔들어요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“Come sledding with us,” he says.",
-    "ko": "\"우리랑 같이 썰매 타러 가자,\" 그가 말해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "Crunch, crunch goes the snow as Pete, Bob, and Callie go up, up, up.",
-    "ko": "뽀드득, 뽀드득 눈 소리가 나며 피트, 밥, 캘리는 위로, 위로, 위로 올라가요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“Whee!” they yell as they go down, down, down.",
-    "ko": "\"야호!\" 그들은 아래로, 아래로, 아래로 내려가며 소리쳐요.",
-    "highlightWords": [
-      "yell"
-    ]
-  },
-  {
-    "en": "“I love snow days!” says Pete.",
-    "ko": "\"난 눈 오는 날이 정말 좋아!\" 피트가 말해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "On the way home, Pete and Bob stop at Trey's house.",
-    "ko": "집으로 가는 길에, 피트와 밥은 트레이의 집에 들러요.",
-    "highlightWords": []
-  },
-  {
-    "en": "The hot chocolate is yummy.",
-    "ko": "핫초코는 맛있어요.",
-    "highlightWords": [
-      "yummy"
-    ]
-  },
-  {
-    "en": "“What a fun day!” says Pete.",
-    "ko": "\"정말 재미있는 날이야!\" 피트가 말해요.",
-    "highlightWords": [
-      "fun"
-    ]
-  },
-  {
-    "en": "“Tomorrow at school, I'll tell my class all about it.”",
-    "ko": "\"내일 학교에서, 우리 반 친구들에게 전부 다 이야기해 줄 거야.\"",
-    "highlightWords": [
-      "tomorrow"
-    ]
-  },
-  {
-    "en": "Pete wakes up to more snow.",
-    "ko": "피트가 일어나 보니 눈이 더 와 있어요.",
-    "highlightWords": []
-  },
-  {
-    "en": "It's not a school day.",
-    "ko": "학교 가는 날이 아니에요.",
-    "highlightWords": []
-  },
-  {
-    "en": "It's another snow day!",
-    "ko": "또 눈 때문에 쉬는 날이에요!",
-    "highlightWords": []
-  },
-  {
-    "en": "Pete makes a snow fort.",
-    "ko": "피트는 눈 요새를 만들어요.",
-    "highlightWords": []
-  },
-  {
-    "en": "He throws snowballs.",
-    "ko": "그는 눈뭉치를 던져요.",
-    "highlightWords": []
-  },
-  {
-    "en": "He makes a snow dog.",
-    "ko": "그는 눈 강아지를 만들어요.",
-    "highlightWords": []
-  },
-  {
-    "en": "Then he has fun sledding.",
-    "ko": "그리고 그는 썰매를 타며 재미있게 놀아요.",
-    "highlightWords": [
-      "fun"
-    ]
-  },
-  {
-    "en": "He can't wait to tell his teacher about it.",
-    "ko": "그는 선생님께 이 이야기를 빨리 해드리고 싶어요.",
-    "highlightWords": [
-      "wait"
-    ]
-  },
-  {
-    "en": "But the next day is a snow day, too.",
-    "ko": "하지만 다음 날도 눈 때문에 쉬는 날이에요.",
-    "highlightWords": []
-  },
-  {
-    "en": "There's too much snow!",
-    "ko": "눈이 너무 많이 왔어요!",
-    "highlightWords": []
-  },
-  {
-    "en": "Pete and Bob can barely even open the front door.",
-    "ko": "피트와 밥은 현관문을 거의 열 수조차 없어요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“Before you go sledding, please shovel the walk,” says Mom.",
-    "ko": "\"썰매 타러 가기 전에, 길에 쌓인 눈을 좀 치우렴,\" 엄마가 말해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "But shoveling is hard work.",
-    "ko": "하지만 눈 치우기는 힘든 일이에요.",
-    "highlightWords": []
-  },
-  {
-    "en": "When Pete is done, he's too tired to go sledding.",
-    "ko": "피트가 다 끝냈을 때, 그는 너무 지쳐서 썰매를 타러 갈 수 없었어요.",
-    "highlightWords": [
-      "tired"
-    ]
-  },
-  {
-    "en": "Pete misses his teacher.",
-    "ko": "피트는 선생님이 그리워요.",
-    "highlightWords": []
-  },
-  {
-    "en": "He misses the other cats in his class.",
-    "ko": "그는 반의 다른 고양이 친구들도 그리워요.",
-    "highlightWords": []
-  },
-  {
-    "en": "Pete can't wait to go back to school tomorrow.",
-    "ko": "피트는 내일 학교에 빨리 돌아가고 싶어요.",
-    "highlightWords": [
-      "wait",
-      "tomorrow"
-    ]
-  },
-  {
-    "en": "But when Pete wakes up, it's snowing.",
-    "ko": "하지만 피트가 일어났을 때, 눈이 오고 있어요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“Oh no!” he says.",
-    "ko": "\"오, 안 돼!\" 그가 말해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“Not another snow day!”",
-    "ko": "\"또 눈 오는 날은 싫어!\"",
-    "highlightWords": []
-  },
-  {
-    "en": "Pete wants to go to school.",
-    "ko": "피트는 학교에 가고 싶어요.",
-    "highlightWords": []
-  },
-  {
-    "en": "So Pete plows the streets all by himself.",
-    "ko": "그래서 피트는 혼자서 거리의 눈을 치워요.",
-    "highlightWords": []
-  },
-  {
-    "en": "The other cats rush outside.",
-    "ko": "다른 고양이들이 밖으로 달려 나와요.",
-    "highlightWords": []
-  },
-  {
-    "en": "They help clear the snow.",
-    "ko": "그들은 눈 치우는 것을 도와요.",
-    "highlightWords": []
-  },
-  {
-    "en": "Everyone wants to go to school.",
-    "ko": "모두 학교에 가고 싶어 해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "The streets are clear and safe.",
-    "ko": "거리가 깨끗하고 안전해졌어요.",
-    "highlightWords": [
-      "safe"
-    ]
-  },
-  {
-    "en": "The bus can drive.",
-    "ko": "버스가 달릴 수 있어요.",
-    "highlightWords": [
-      "drive"
-    ]
-  },
-  {
-    "en": "School is open!",
-    "ko": "학교가 문을 열었어요!",
-    "highlightWords": []
-  },
-  {
-    "en": "All the kids are excited to see their teacher.",
-    "ko": "모든 아이들이 선생님을 보게 되어 신이 났어요.",
-    "highlightWords": [
-      "excited"
-    ]
-  },
-  {
-    "en": "He has a snow day show-and-tell.",
-    "ko": "그는 눈 오는 날에 대한 '보여주고 말하기' 시간을 가져요.",
-    "highlightWords": []
-  },
-  {
-    "en": "When it's Pete's turn, he tells everyone about the fun he had in the snow.",
-    "ko": "피트의 차례가 되었을 때, 그는 눈 속에서 겪은 재미있는 일들에 대해 모두에게 말해요.",
-    "highlightWords": [
-      "fun"
-    ]
-  },
-  {
-    "en": "“I love snow days,” says Pete.",
-    "ko": "\"난 눈 오는 날이 좋아,\" 피트가 말해요.",
-    "highlightWords": []
-  },
-  {
-    "en": "“But I love school best!”",
-    "ko": "\"하지만 학교가 제일 좋아!\"",
-    "highlightWords": []
-  }
-],
+        {
+          "en": "Pete the Cat wakes up and gets ready for school.",
+          "ko": "피트 더 캣이 일어나서 학교 갈 준비를 해요.",
+          "highlightWords": [
+            "ready"
+          ]
+        },
+        {
+          "en": "He has show-and-tell today.",
+          "ko": "그는 오늘 '보여주고 말하기' 시간이 있어요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“There is no school today,” says Pete's mom.",
+          "ko": "\"오늘은 학교에 가지 않는단다,\" 피트의 엄마가 말해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“It's a snow day.”",
+          "ko": "\"눈이 와서 쉬는 날이야.\"",
+          "highlightWords": []
+        },
+        {
+          "en": "“Hooray!” yells Pete.",
+          "ko": "\"만세!\" 피트가 소리쳐요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“Let's go sledding!” says Pete.",
+          "ko": "\"썰매 타러 가자!\" 피트가 말해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“Great idea,” says his brother, Bob.",
+          "ko": "\"좋은 생각이야,\" 그의 형 밥이 말해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "Pete puts on his hat, boots, and mittens.",
+          "ko": "피트는 모자, 부츠, 그리고 벙어리장갑을 착용해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“I'm ready to go!” he says.",
+          "ko": "\"나갈 준비 됐어!\" 그가 말해요.",
+          "highlightWords": [
+            "ready"
+          ]
+        },
+        {
+          "en": "On the way, Pete makes snowballs.",
+          "ko": "가는 길에, 피트는 눈뭉치를 만들어요.",
+          "highlightWords": []
+        },
+        {
+          "en": "He throws one at Bob.",
+          "ko": "그는 밥에게 하나를 던져요.",
+          "highlightWords": []
+        },
+        {
+          "en": "Bob throws one back.",
+          "ko": "밥도 다시 하나를 던져요.",
+          "highlightWords": []
+        },
+        {
+          "en": "Pete makes a snow cat.",
+          "ko": "피트는 눈 고양이를 만들어요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“Snow days are way more fun than school days,” he says.",
+          "ko": "\"눈 오는 날이 학교 가는 날보다 훨씬 더 재미있어,\" 그가 말해요.",
+          "highlightWords": [
+            "fun"
+          ]
+        },
+        {
+          "en": "“Sledding hill, here we come!” says Pete.",
+          "ko": "\"썰매 언덕아, 우리가 간다!\" 피트가 말해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "He can't wait to get there.",
+          "ko": "그는 빨리 거기에 가고 싶어서 참을 수가 없어요.",
+          "highlightWords": [
+            "wait"
+          ]
+        },
+        {
+          "en": "Pete waves to Callie.",
+          "ko": "피트가 캘리에게 손을 흔들어요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“Come sledding with us,” he says.",
+          "ko": "\"우리랑 같이 썰매 타러 가자,\" 그가 말해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "Crunch, crunch goes the snow as Pete, Bob, and Callie go up, up, up.",
+          "ko": "뽀드득, 뽀드득 눈 소리가 나며 피트, 밥, 캘리는 위로, 위로, 위로 올라가요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“Whee!” they yell as they go down, down, down.",
+          "ko": "\"야호!\" 그들은 아래로, 아래로, 아래로 내려가며 소리쳐요.",
+          "highlightWords": [
+            "yell"
+          ]
+        },
+        {
+          "en": "“I love snow days!” says Pete.",
+          "ko": "\"난 눈 오는 날이 정말 좋아!\" 피트가 말해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "On the way home, Pete and Bob stop at Trey's house.",
+          "ko": "집으로 가는 길에, 피트와 밥은 트레이의 집에 들러요.",
+          "highlightWords": []
+        },
+        {
+          "en": "The hot chocolate is yummy.",
+          "ko": "핫초코는 맛있어요.",
+          "highlightWords": [
+            "yummy"
+          ]
+        },
+        {
+          "en": "“What a fun day!” says Pete.",
+          "ko": "\"정말 재미있는 날이야!\" 피트가 말해요.",
+          "highlightWords": [
+            "fun"
+          ]
+        },
+        {
+          "en": "“Tomorrow at school, I'll tell my class all about it.”",
+          "ko": "\"내일 학교에서, 우리 반 친구들에게 전부 다 이야기해 줄 거야.\"",
+          "highlightWords": [
+            "tomorrow"
+          ]
+        },
+        {
+          "en": "Pete wakes up to more snow.",
+          "ko": "피트가 일어나 보니 눈이 더 와 있어요.",
+          "highlightWords": []
+        },
+        {
+          "en": "It's not a school day.",
+          "ko": "학교 가는 날이 아니에요.",
+          "highlightWords": []
+        },
+        {
+          "en": "It's another snow day!",
+          "ko": "또 눈 때문에 쉬는 날이에요!",
+          "highlightWords": []
+        },
+        {
+          "en": "Pete makes a snow fort.",
+          "ko": "피트는 눈 요새를 만들어요.",
+          "highlightWords": []
+        },
+        {
+          "en": "He throws snowballs.",
+          "ko": "그는 눈뭉치를 던져요.",
+          "highlightWords": []
+        },
+        {
+          "en": "He makes a snow dog.",
+          "ko": "그는 눈 강아지를 만들어요.",
+          "highlightWords": []
+        },
+        {
+          "en": "Then he has fun sledding.",
+          "ko": "그리고 그는 썰매를 타며 재미있게 놀아요.",
+          "highlightWords": [
+            "fun"
+          ]
+        },
+        {
+          "en": "He can't wait to tell his teacher about it.",
+          "ko": "그는 선생님께 이 이야기를 빨리 해드리고 싶어요.",
+          "highlightWords": [
+            "wait"
+          ]
+        },
+        {
+          "en": "But the next day is a snow day, too.",
+          "ko": "하지만 다음 날도 눈 때문에 쉬는 날이에요.",
+          "highlightWords": []
+        },
+        {
+          "en": "There's too much snow!",
+          "ko": "눈이 너무 많이 왔어요!",
+          "highlightWords": []
+        },
+        {
+          "en": "Pete and Bob can barely even open the front door.",
+          "ko": "피트와 밥은 현관문을 거의 열 수조차 없어요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“Before you go sledding, please shovel the walk,” says Mom.",
+          "ko": "\"썰매 타러 가기 전에, 길에 쌓인 눈을 좀 치우렴,\" 엄마가 말해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "But shoveling is hard work.",
+          "ko": "하지만 눈 치우기는 힘든 일이에요.",
+          "highlightWords": []
+        },
+        {
+          "en": "When Pete is done, he's too tired to go sledding.",
+          "ko": "피트가 다 끝냈을 때, 그는 너무 지쳐서 썰매를 타러 갈 수 없었어요.",
+          "highlightWords": [
+            "tired"
+          ]
+        },
+        {
+          "en": "Pete misses his teacher.",
+          "ko": "피트는 선생님이 그리워요.",
+          "highlightWords": []
+        },
+        {
+          "en": "He misses the other cats in his class.",
+          "ko": "그는 반의 다른 고양이 친구들도 그리워요.",
+          "highlightWords": []
+        },
+        {
+          "en": "Pete can't wait to go back to school tomorrow.",
+          "ko": "피트는 내일 학교에 빨리 돌아가고 싶어요.",
+          "highlightWords": [
+            "wait",
+            "tomorrow"
+          ]
+        },
+        {
+          "en": "But when Pete wakes up, it's snowing.",
+          "ko": "하지만 피트가 일어났을 때, 눈이 오고 있어요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“Oh no!” he says.",
+          "ko": "\"오, 안 돼!\" 그가 말해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“Not another snow day!”",
+          "ko": "\"또 눈 오는 날은 싫어!\"",
+          "highlightWords": []
+        },
+        {
+          "en": "Pete wants to go to school.",
+          "ko": "피트는 학교에 가고 싶어요.",
+          "highlightWords": []
+        },
+        {
+          "en": "So Pete plows the streets all by himself.",
+          "ko": "그래서 피트는 혼자서 거리의 눈을 치워요.",
+          "highlightWords": []
+        },
+        {
+          "en": "The other cats rush outside.",
+          "ko": "다른 고양이들이 밖으로 달려 나와요.",
+          "highlightWords": []
+        },
+        {
+          "en": "They help clear the snow.",
+          "ko": "그들은 눈 치우는 것을 도와요.",
+          "highlightWords": []
+        },
+        {
+          "en": "Everyone wants to go to school.",
+          "ko": "모두 학교에 가고 싶어 해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "The streets are clear and safe.",
+          "ko": "거리가 깨끗하고 안전해졌어요.",
+          "highlightWords": [
+            "safe"
+          ]
+        },
+        {
+          "en": "The bus can drive.",
+          "ko": "버스가 달릴 수 있어요.",
+          "highlightWords": [
+            "drive"
+          ]
+        },
+        {
+          "en": "School is open!",
+          "ko": "학교가 문을 열었어요!",
+          "highlightWords": []
+        },
+        {
+          "en": "All the kids are excited to see their teacher.",
+          "ko": "모든 아이들이 선생님을 보게 되어 신이 났어요.",
+          "highlightWords": [
+            "excited"
+          ]
+        },
+        {
+          "en": "He has a snow day show-and-tell.",
+          "ko": "그는 눈 오는 날에 대한 '보여주고 말하기' 시간을 가져요.",
+          "highlightWords": []
+        },
+        {
+          "en": "When it's Pete's turn, he tells everyone about the fun he had in the snow.",
+          "ko": "피트의 차례가 되었을 때, 그는 눈 속에서 겪은 재미있는 일들에 대해 모두에게 말해요.",
+          "highlightWords": [
+            "fun"
+          ]
+        },
+        {
+          "en": "“I love snow days,” says Pete.",
+          "ko": "\"난 눈 오는 날이 좋아,\" 피트가 말해요.",
+          "highlightWords": []
+        },
+        {
+          "en": "“But I love school best!”",
+          "ko": "\"하지만 학교가 제일 좋아!\"",
+          "highlightWords": []
+        }
+      ],
       vocabulary: [
-  {
-    "word": "ready",
-    "meaning": "준비된",
-    "example": "I am ready to go."
-  },
-  {
-    "word": "yell",
-    "meaning": "소리치다",
-    "example": "\"Hooray!\" yells Pete."
-  },
-  {
-    "word": "sled",
-    "meaning": "썰매를 타다",
-    "example": "Let's go sledding!"
-  },
-  {
-    "word": "wear",
-    "meaning": "입다/쓰다",
-    "example": "Pete wears his hat."
-  },
-  {
-    "word": "mitten",
-    "meaning": "벙어리장갑",
-    "example": "He puts on his mittens."
-  },
-  {
-    "word": "throw",
-    "meaning": "던지다",
-    "example": "He throws a ball."
-  },
-  {
-    "word": "fun",
-    "meaning": "재미있는",
-    "example": "Snow days are fun."
-  },
-  {
-    "word": "wait",
-    "meaning": "기다리다",
-    "example": "He can't wait to get there."
-  },
-  {
-    "word": "yummy",
-    "meaning": "맛있는",
-    "example": "The hot chocolate is yummy."
-  },
-  {
-    "word": "tomorrow",
-    "meaning": "내일",
-    "example": "See you tomorrow!"
-  },
-  {
-    "word": "tired",
-    "meaning": "피곤한",
-    "example": "He is too tired to play."
-  },
-  {
-    "word": "miss",
-    "meaning": "그리워하다",
-    "example": "Pete misses his teacher."
-  },
-  {
-    "word": "safe",
-    "meaning": "안전한",
-    "example": "The streets are safe."
-  },
-  {
-    "word": "excited",
-    "meaning": "신이 난",
-    "example": "The kids are excited."
-  },
-  {
-    "word": "drive",
-    "meaning": "운전하다",
-    "example": "The bus can drive."
-  }
-]
+        {
+          "word": "ready",
+          "meaning": "준비된",
+          "example": "I am ready to go."
+        },
+        {
+          "word": "yell",
+          "meaning": "소리치다",
+          "example": "\"Hooray!\" yells Pete."
+        },
+        {
+          "word": "sled",
+          "meaning": "썰매를 타다",
+          "example": "Let's go sledding!"
+        },
+        {
+          "word": "wear",
+          "meaning": "입다/쓰다",
+          "example": "Pete wears his hat."
+        },
+        {
+          "word": "mitten",
+          "meaning": "벙어리장갑",
+          "example": "He puts on his mittens."
+        },
+        {
+          "word": "throw",
+          "meaning": "던지다",
+          "example": "He throws a ball."
+        },
+        {
+          "word": "fun",
+          "meaning": "재미있는",
+          "example": "Snow days are fun."
+        },
+        {
+          "word": "wait",
+          "meaning": "기다리다",
+          "example": "He can't wait to get there."
+        },
+        {
+          "word": "yummy",
+          "meaning": "맛있는",
+          "example": "The hot chocolate is yummy."
+        },
+        {
+          "word": "tomorrow",
+          "meaning": "내일",
+          "example": "See you tomorrow!"
+        },
+        {
+          "word": "tired",
+          "meaning": "피곤한",
+          "example": "He is too tired to play."
+        },
+        {
+          "word": "miss",
+          "meaning": "그리워하다",
+          "example": "Pete misses his teacher."
+        },
+        {
+          "word": "safe",
+          "meaning": "안전한",
+          "example": "The streets are safe."
+        },
+        {
+          "word": "excited",
+          "meaning": "신이 난",
+          "example": "The kids are excited."
+        },
+        {
+          "word": "drive",
+          "meaning": "운전하다",
+          "example": "The bus can drive."
+        }
+      ]
     };
 
     // Initialize book reader
