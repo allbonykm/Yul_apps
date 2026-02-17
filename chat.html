@@ -583,6 +583,7 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
     const auth = firebase.auth(); // Auth 초기화
+    let isAuthReady = false;
 
     // 오프라인 지속성
     db.enablePersistence().catch(err => console.log("Persistence Error", err.code));
@@ -591,6 +592,7 @@
     auth.signInAnonymously()
       .then(() => {
         console.log("Signed in anonymously");
+        isAuthReady = true;
       })
       .catch((error) => {
         console.error("Error signing in anonymously:", error);
@@ -933,6 +935,12 @@
       const file = e.target.files[0];
       if (!file) return;
 
+      // 인증 상태 체크
+      if (!isAuthReady) {
+        alert("로그인 처리 중입니다. 잠시 후 다시 시도해 주세요! ☁️");
+        return;
+      }
+
       if (!confirm("이 사진을 전송할까요?")) return;
 
       const fileName = Date.now() + '_' + file.name;
@@ -940,17 +948,27 @@
 
       document.getElementById('msg-input').placeholder = "사진 업로드 중... ☁️";
 
-      ref.put(file).then(snapshot => snapshot.ref.getDownloadURL()).then(url => {
+      // Metadata 추가 (디버깅 지원)
+      const metadata = {
+        contentType: file.type,
+        customMetadata: {
+          'uploadedBy': myName
+        }
+      };
+
+      ref.put(file, metadata).then(snapshot => snapshot.ref.getDownloadURL()).then(url => {
         sendMessage(null, url);
         document.getElementById('msg-input').placeholder = "메시지 입력...";
       }).catch(err => {
-        console.error(err);
+        console.error("Full Upload Error:", err);
         // 구체적인 에러 메시지 표시
         let msg = "사진 전송 실패 ㅠㅠ";
         if (err.code === 'storage/unauthorized') {
-          msg += "\n(원인: 권한이 없습니다. Firebase Console에서 'Anonymous' 로그인을 켜주세요!)";
+          msg += "\n(원인: 권한이 없습니다. Firebase Console의 'Storage' -> 'Rules' 탭에서 쓰기 권한이 'request.auth != null'로 되어 있는지 확인해 주세요!)";
+        } else if (err.code === 'storage/retry-limit-exceeded') {
+          msg += "\n(원인: 네트워크 연결이 불안정합니다.)";
         } else {
-          msg += "\n(" + err.message + ")";
+          msg += "\n(" + err.code + ": " + err.message + ")";
         }
         alert(msg);
         document.getElementById('msg-input').placeholder = "메시지 입력...";
