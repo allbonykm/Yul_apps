@@ -5,432 +5,548 @@
   <meta charset="UTF-8">
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>율이랑 아빠랑</title>
+  <title>율톡</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+  <!-- 파비콘 대신 이모지 사용 -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐰</text></svg>">
+
+  <!-- 폰트: 감자꽃 (Gamja Flower) -->
+  <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap" rel="stylesheet">
 
   <style>
-    /* 전체 디자인 */
+    /* =========================================
+       [Reset & Base Variables]
+       ========================================= */
+    :root {
+      --primary-color: #FFD1DC;
+      /* 파스텔 핑크 */
+      --secondary-color: #FFF9C4;
+      /* 파스텔 옐로우 */
+      --bg-color: #FFFDF5;
+      /* 크림색 배경 */
+      --text-color: #5D4037;
+      /* 따뜻한 갈색 */
+      --bubble-mine: #FFEBEE;
+      --bubble-yours: #FFFFFF;
+      --point-color: #FF8A80;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
       margin: 0;
       padding: 0;
-      background: #FDF6F8;
-      /* 파스텔 핑크 */
-      font-family: 'Noto Serif KR', serif;
+      background-color: var(--bg-color);
+      font-family: 'Gamja Flower', cursive;
+      /* 폰트 적용 */
+      font-size: 1.1rem;
+      color: var(--text-color);
       height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      position: relative;
     }
 
-    /* 배경 아이콘 (토끼, 도마뱀 패턴) - CSS로 간단히 표현하거나 나중에 이미지 교체 */
-    .bg-clouds {
+    /* =========================================
+       [Splash Screen (Login)]
+       ========================================= */
+    #splash-screen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: -1;
-      pointer-events: none;
-      /* 은은한 패턴 */
-      background-image: radial-gradient(#FFD1DC 1px, transparent 1px), radial-gradient(#FFD1DC 1px, transparent 1px);
-      background-size: 40px 40px;
-      background-position: 0 0, 20px 20px;
-      opacity: 0.3;
-    }
-
-    .cloud {
-      /* 기존 구름 제거 또는 숨김 */
-      display: none;
-    }
-
-    .c1 {
-      top: 10%;
-      left: -5%;
-      width: 100px;
-      height: 40px;
-    }
-
-    .c2 {
-      top: 25%;
-      right: -10%;
-      width: 120px;
-      height: 45px;
-      opacity: 0.3;
-    }
-
-    .c3 {
-      bottom: 30%;
-      left: 5%;
-      width: 110px;
-      height: 40px;
-    }
-
-    .c4 {
-      bottom: 10%;
-      right: 15%;
-      width: 130px;
-      height: 50px;
-      opacity: 0.5;
-    }
-
-    /* 상단 헤더 */
-    header {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      padding: 15px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 1.2rem;
-      color: #5D4037;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-      z-index: 10;
+      background: var(--primary-color);
+      z-index: 9999;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      position: relative;
-      padding-top: env(safe-area-inset-top);
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
+      transition: opacity 0.5s ease-out;
     }
 
-    .back-btn {
-      position: absolute;
-      left: 15px;
-      text-decoration: none;
-      font-size: 1.5rem;
+    .splash-content {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 300px;
+    }
+
+    .splash-title {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #E57373;
+    }
+
+    .user-btn {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
       border: none;
-      background: none;
+      border-radius: 15px;
+      font-family: inherit;
+      font-size: 1.2rem;
       cursor: pointer;
+      background: var(--bg-color);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.1s;
     }
 
-    /* 채팅 내용 영역 */
+    .user-btn:active {
+      transform: scale(0.95);
+    }
+
+    .user-btn.dad {
+      border: 2px solid #81C784;
+      color: #2E7D32;
+    }
+
+    .user-btn.yul {
+      border: 2px solid #FF8A80;
+      color: #C62828;
+    }
+
+    /* =========================================
+       [Main Chat Layout]
+       ========================================= */
+    #chat-screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      display: none;
+      /* 초기엔 숨김 (로그인 후 보임) */
+    }
+
+    /* Header */
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+      z-index: 10;
+      padding-top: calc(10px + env(safe-area-inset-top));
+    }
+
+    .header-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #E57373;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .point-badge {
+      background: #FFF9C4;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      border: 2px solid #FBC02D;
+      color: #F57F17;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .logout-btn {
+      background: none;
+      border: none;
+      font-size: 0.8rem;
+      color: #999;
+      text-decoration: underline;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* Chat Container */
     #chat-container {
       flex: 1;
       padding: 15px;
       overflow-y: scroll;
+      background: var(--bg-color);
+      /* 귀여운 배경 패턴 */
+      background-image: radial-gradient(#FFEBEE 2px, transparent 2px);
+      background-size: 30px 30px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding-bottom: 120px;
-      -webkit-overflow-scrolling: touch;
-      z-index: 1;
+      gap: 15px;
+      padding-bottom: 20px;
+      /* 입력창 공간 확보는 js로 처리 or padding */
     }
 
-    /* 말풍선 공통 */
+    /* Message Rows */
     .message-row {
       display: flex;
-      align-items: flex-start;
+      align-items: flex-end;
       margin-bottom: 10px;
     }
 
-    /* 프로필 사진 */
     .profile-img {
       width: 40px;
       height: 40px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      object-fit: cover;
-      flex-shrink: 0;
+      border-radius: 40%;
+      /* 둥글둥글 */
       background: #eee;
+      object-fit: cover;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-right: 8px;
     }
 
-    /* 말풍선 박스 */
-    .message-bubble-box {
+    .bubble-wrapper {
       display: flex;
       flex-direction: column;
       max-width: 70%;
-    }
-
-    .message-content {
-      padding: 12px 16px;
-      border-radius: 20px;
-      font-size: 1rem;
-      line-height: 1.5;
       position: relative;
-      word-break: break-all;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
-    .message-content img {
+    .msg-bubble {
+      padding: 10px 15px;
+      border-radius: 18px;
+      font-size: 1.1rem;
+      line-height: 1.4;
+      position: relative;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      word-break: break-all;
+    }
+
+    .msg-bubble img {
       max-width: 100%;
       border-radius: 10px;
       display: block;
-      margin-top: 5px;
     }
 
-    .message-time {
+    .msg-info {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 2px;
+    }
+
+    /* Read Receipt '1' */
+    .unread-mark {
+      color: #FBC02D;
+      /* 카카오톡 노란색 느낌 */
+      font-weight: bold;
       font-size: 0.7rem;
-      color: #555;
-      margin-top: 5px;
     }
 
-    /* 율이(나) 스타일 */
+    /* Mine (Right) */
     .mine {
-      flex-direction: row-reverse;
+      justify-content: flex-end;
     }
 
     .mine .profile-img {
-      margin-left: 10px;
+      display: none;
+      /* 내 프사 숨김 */
     }
 
-    .mine .message-content {
-      background-color: #FFEBEE;
-      /* 연한 분홍 */
-      color: #5D4037;
-      border-top-right-radius: 4px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    .mine .message-bubble-box {
+    .mine .bubble-wrapper {
       align-items: flex-end;
     }
 
-    .mine .message-time {
-      text-align: right;
+    .mine .msg-bubble {
+      background: var(--bubble-mine);
+      border-bottom-right-radius: 4px;
     }
 
-    /* 아빠(상대방) 스타일 */
+    .mine .msg-info {
+      flex-direction: row-reverse;
+      /* 시간, 읽음표시 순서 */
+    }
+
+    /* Yours (Left) */
     .yours {
+      justify-content: flex-start;
+    }
+
+    .yours .msg-bubble {
+      background: var(--bubble-yours);
+      border-bottom-left-radius: 4px;
+    }
+
+    .yours .msg-info {
       flex-direction: row;
     }
 
-    .yours .profile-img {
-      margin-right: 10px;
+    /* Date Divider */
+    .date-divider {
+      text-align: center;
+      margin: 20px 0;
     }
 
-    .yours .message-content {
-      background-color: #FFFFFF;
-      color: #5D4037;
-      border-top-left-radius: 4px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
+    .date-divider span {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      color: #777;
     }
 
-    .yours .message-bubble-box {
-      align-items: flex-start;
-    }
-
-    /* 하단 입력창 */
+    /* Input Area */
     .input-area {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
       background: #fff;
       padding: 10px;
-      display: flex;
-      align-items: center;
-      box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      z-index: 20;
       padding-bottom: calc(10px + env(safe-area-inset-bottom));
-      z-index: 10;
-      flex-direction: column;
-      /* 이모티콘 바 추가 위해 컬럼 변경 */
     }
 
     .emoji-bar {
-      width: 100%;
       display: flex;
       gap: 10px;
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       overflow-x: auto;
     }
 
     .emoji-btn {
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 15px;
-      padding: 5px 12px;
+      background: #F5F5F5;
+      border: none;
+      border-radius: 12px;
+      padding: 5px 10px;
       font-size: 1.2rem;
       cursor: pointer;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .input-row {
-      width: 100%;
       display: flex;
       align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 5px;
     }
 
     #msg-input {
       flex: 1;
-      padding: 10px 15px;
+      padding: 12px;
       border: 1px solid #eee;
-      background-color: #fff;
+      background: #F9F9F9;
       border-radius: 25px;
+      font-family: inherit;
       font-size: 1rem;
       outline: none;
-      margin: 0 10px;
     }
 
-    .icon-btn {
-      background: none;
+    #send-btn {
+      background: var(--point-color);
+      color: #fff;
       border: none;
-      font-size: 1.6rem;
-      padding: 5px;
-      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(255, 138, 128, 0.4);
     }
 
-    /* 날짜 구분선 */
-    .date-divider {
-      text-align: center;
-      margin: 20px 0;
-      position: relative;
-    }
-
-    .date-divider span {
-      background-color: rgba(255, 255, 255, 0.6);
-      padding: 5px 15px;
-      border-radius: 15px;
-      font-size: 0.8rem;
-      color: #888;
-      font-weight: normal;
-      font-family: 'Noto Serif KR', serif;
-    }
-
-    /* 이미지 미리보기 모달 */
-    .modal {
+    /* =========================================
+       [Stamp Board Modal]
+       ========================================= */
+    #stamp-modal {
       display: none;
       position: fixed;
-      z-index: 100;
-      left: 0;
       top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(3px);
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
     }
 
-    .modal-content {
-      background-color: #fefefe;
-      margin: 15% auto;
+    .stamp-board {
+      background: #fff;
+      width: 90%;
+      max-width: 350px;
+      border-radius: 20px;
       padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 300px;
-      border-radius: 15px;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      background-image: linear-gradient(#F0F4C3 1px, transparent 1px), linear-gradient(90deg, #F0F4C3 1px, transparent 1px);
+      background-size: 20px 20px;
+      background-color: #fff;
     }
 
-    .modal-content img {
-      max-width: 100%;
-      max-height: 300px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: space-around;
-    }
-
-    .modal-btn {
-      padding: 10px 20px;
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
       border: none;
-      border-radius: 10px;
-      font-weight: bold;
+      background: none;
       cursor: pointer;
-      font-size: 1rem;
+      color: #aaa;
     }
 
-    .btn-cancel {
-      background: #eee;
-      color: #333;
+    .stamp-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 20px 0;
     }
 
-    .btn-send {
-      background: #Fef01b;
-      color: #000;
+    .stamp-slot {
+      width: 100%;
+      aspect-ratio: 1;
+      border: 2px dashed #ddd;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      background: #fff;
+    }
+
+    .stamp-slot.filled {
+      border: 2px solid #FF8A80;
+      background: #FFEBEE;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .stamp-action-btn {
+      background: #FF8A80;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-family: inherit;
+      font-size: 1.1rem;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .stamp-action-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="bg-clouds">
-    <div class="cloud c1"></div>
-    <div class="cloud c2"></div>
-    <div class="cloud c3"></div>
-    <div class="cloud c4"></div>
-  </div>
-
-  <header>
-    <a href="index.html" class="back-btn">🔙</a>
-
-    <div style="display:flex; flex-direction:column; align-items:center;">
-      <span id="header-title">율이랑 아빠랑 💕</span>
-    </div>
-  </header>
-
-  <div id="chat-container">
-    <div
-      style="text-align:center; margin-top:20px; color:#555; font-size:0.8rem; background: rgba(255,255,255,0.5); padding: 5px; border-radius: 10px; display:inline-block; margin: 20px auto;">
-      ☁️ 대화 내용을 불러오고 있어요... (v2.1) 🚀
+  <!-- [1] 스플래시 화면 (로그인) -->
+  <div id="splash-screen">
+    <div class="splash-content">
+      <div class="splash-title">누구세요? 🤔</div>
+      <button class="user-btn dad" onclick="selectUser('아빠')">👨🏻 아빠</button>
+      <button class="user-btn yul" onclick="selectUser('율이')">👧🏻 율이</button>
     </div>
   </div>
 
-  <div class="input-area">
-    <div class="emoji-bar">
-      <button class="emoji-btn" onclick="addEmoji('❤️')">❤️</button>
-      <button class="emoji-btn" onclick="addEmoji('😊')">😊</button>
-      <button class="emoji-btn" onclick="addEmoji('😭')">😭</button>
-      <button class="emoji-btn" onclick="addEmoji('☁️')">☁️</button>
-      <button class="emoji-btn" onclick="addEmoji('🐰')">🐰</button>
-      <button class="emoji-btn" onclick="addEmoji('🦎')">🦎</button>
-    </div>
-    <div class="input-row">
-      <label for="img-input" class="icon-btn" style="color:#888;">📷</label>
-      <input type="file" id="img-input" accept="image/*" style="display: none;">
-      <input type="text" id="msg-input" placeholder="비밀 메시지..." autocomplete="off">
-      <button id="send-btn" class="icon-btn"
-        style="color:#5D4037; background:#FFD1DC; border-radius:50%; width:40px; height:40px; font-size:1.2rem; margin-left:5px; border:2px solid #fff;">⬆</button>
-    </div>
-  </div>
+  <!-- [2] 메인 채팅 화면 -->
+  <div id="chat-screen">
+    <header>
+      <div class="header-title">율톡 💕</div>
+      <div class="header-right">
+        <div class="point-badge" id="gecko-point-badge" onclick="openStampBoard()">
+          🦎 <span id="gecko-point-val">0</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">나가기</button>
+      </div>
+    </header>
 
-  <!-- 이미지 미리보기 모달 -->
-  <div id="img-modal" class="modal">
-    <div class="modal-content">
-      <p style="margin-top:0; font-weight:bold; color:#555;">사진을 보낼까요? 📸</p>
-      <img id="preview-img" src="">
-      <div class="modal-actions">
-        <button class="modal-btn btn-cancel" id="modal-cancel">취소</button>
-        <button class="modal-btn btn-send" id="modal-send">전송</button>
+    <div id="chat-container">
+      <div style="text-align:center; color:#aaa; font-size:0.9rem; margin-top:20px;">
+        구름 위로 메시지를 불러오는 중... ☁️
+      </div>
+    </div>
+
+    <!-- 스크롤 감지용 하단 앵커 -->
+    <div id="bottom-anchor"></div>
+
+    <div class="input-area">
+      <!-- 1. 이모티콘/도장 퀵 버튼 -->
+      <div class="emoji-bar">
+        <button class="emoji-btn" onclick="addEmoji('❤️')">❤️</button>
+        <button class="emoji-btn" onclick="addEmoji('😊')">😊</button>
+        <button class="emoji-btn" onclick="addEmoji('😭')">😭</button>
+        <button class="emoji-btn" onclick="addEmoji('☁️')">☁️</button>
+        <button class="emoji-btn" onclick="addEmoji('🐰')">🐰</button>
+        <button class="emoji-btn" onclick="addEmoji('🦎')">🦎</button>
+      </div>
+
+      <!-- 2. 입력 및 전송 -->
+      <div class="input-row">
+        <button class="action-btn" onclick="document.getElementById('img-input').click()">📷</button>
+        <button class="action-btn" onclick="openStampBoard()" style="font-size:1.3rem;">💮</button>
+
+        <input type="file" id="img-input" accept="image/*" style="display: none;">
+        <input type="text" id="msg-input" placeholder="메시지 입력..." autocomplete="off">
+
+        <button id="send-btn">⬆</button>
       </div>
     </div>
   </div>
 
-  <script>
-    // [Global Error Handler for Mobile Debugging]
-    window.onerror = function (msg, url, lineNo, columnNo, error) {
-      alert('System Error: ' + msg);
-      return false;
-    };
+  <!-- [3] 도장판 모달 -->
+  <div id="stamp-modal">
+    <div class="stamp-board">
+      <button class="close-btn" onclick="closeStampBoard()">×</button>
+      <h3>참 잘했어요! 💮</h3>
+      <p style="font-size:0.9rem; color:#888;">도장 10개를 모으면 100 게코 포인트!</p>
 
-    // [Connection Timeout Check]
-    setTimeout(() => {
-      const container = document.getElementById('chat-container');
-      // 아직도 로켓(초기화면)이 남아있다면 -> 로딩 실패로 간주
-      if (container && container.innerText.includes('🚀')) {
-        if (confirm("연결이 너무 오래 걸립니다.\n인터넷 상태를 확인하거나 새로고침 하시겠습니까?")) {
-          location.reload();
-        }
-      }
-    }, 7000); // 7초 후 체크
-  </script>
+      <div class="stamp-grid" id="stamp-grid">
+        <!-- JS로 슬롯 10개 생성 -->
+      </div>
 
+      <p>현재 포인트: 🦎 <strong id="modal-point-val" style="color:#F57F17; font-size:1.2rem;">0</strong> P</p>
+
+      <!-- 아빠만 보임 -->
+      <button id="give-stamp-btn" class="stamp-action-btn" style="display:none;" onclick="giveStamp()">
+        도장 찍어주기! 쾅! 💮
+      </button>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script src="books/config.js"></script> <!-- config.js가 있다면 여기 API Key 사용 가능, 없으면 아래 하드코딩 -->
 
   <script>
+    /* =========================================
+       [Firebase Init]
+       ========================================= */
     const firebaseConfig = {
-      apiKey: "AIzaSyB_mGDSlGtox4DN6HsL8SDcX6gzoVO1V8M",
+      apiKey: "AIzaSyB_mGDSlGtox4DN6HsL8SDcX6gzoVO1V8M", // 기존 Key 유지
       authDomain: "yul-apps.firebaseapp.com",
       projectId: "yul-apps",
       storageBucket: "yul-apps.firebasestorage.app",
@@ -440,453 +556,406 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    // [Offline Persistence Enable]
-    db.enablePersistence()
-      .catch((err) => {
-        if (err.code == 'failed-precondition') {
-          console.log("Persistence failed: Multiple tabs open");
-        } else if (err.code == 'unimplemented') {
-          console.log("Persistence not supported by browser");
-        }
-      });
-
     const storage = firebase.storage();
 
+    // 오프라인 지속성
+    db.enablePersistence().catch(err => console.log("Persistence Error", err.code));
+
     /* =========================================
-       [설정]
+       [Global State & Utils]
        ========================================= */
-    const DAD_PROFILE_URL = "https://cdn.imgbin.com/16/17/13/imgbin-steve-jobs-memorial-apple-icon-steve-jobs-steve-jobs-0tbHUhDyd0Yqt7vs6CAeBtubw.jpg";
-    const YUL_PROFILE_URL = "https://i.pinimg.com/564x/a5/61/9e/a5619e9ef5949fb35e71523644ea6c24.jpg";
+    let myName = localStorage.getItem('chatUser'); // '아빠' or '율이' or null
+    let otherName = null;
+    let otherUserLastRead = 0; // Timestamp (milliseconds)
 
-    // ★ 율이 목소리 파일 주소
+    // assets
     const SOUND_URL = "https://firebasestorage.googleapis.com/v0/b/yul-apps.firebasestorage.app/o/sounds%2Fyul-talk.mp3?alt=media&token=02b2a1aa-c06f-4f62-ba9e-db2cdf25268e";
-    /* ========================================= */
+    const DAD_IMG = "https://cdn.imgbin.com/16/17/13/imgbin-steve-jobs-memorial-apple-icon-steve-jobs-steve-jobs-0tbHUhDyd0Yqt7vs6CAeBtubw.jpg";
+    const YUL_IMG = "https://i.pinimg.com/564x/a5/61/9e/a5619e9ef5949fb35e71523644ea6c24.jpg";
 
-    // [1] 사용자(아빠/율이) 설정 및 제목 변경 기능
-    let myName = localStorage.getItem('chatUser') || "율이";
-
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('user') === 'dad') {
-      myName = "아빠";
-      localStorage.setItem('chatUser', "아빠");
+    function getProfileImg(name) {
+      return name === '아빠' ? DAD_IMG : YUL_IMG;
     }
 
-    const titleElement = document.getElementById('header-title');
-    if (myName === "아빠") titleElement.innerText = "율이랑 아빠랑 👧";
+    /* =========================================
+       [User Logic: Login / Logout]
+       ========================================= */
+    function checkLogin() {
+      if (myName) {
+        document.getElementById('splash-screen').style.display = 'none';
+        document.getElementById('chat-screen').style.display = 'flex';
 
-    titleElement.style.cursor = "pointer";
-    titleElement.addEventListener('click', () => {
-      const newUser = myName === "아빠" ? "율이" : "아빠";
-      if (confirm(`지금 '${myName}' 모드입니다.\n'${newUser}'(으)로 바꾸시겠어요? 🔄`)) {
-        localStorage.setItem('chatUser', newUser);
-        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-        window.history.pushState({ path: newUrl }, '', newUrl);
+        otherName = (myName === '아빠') ? '율이' : '아빠';
+
+        // 아빠일 때만 '도장 주기' 버튼 보이기
+        if (myName === '아빠') {
+          document.getElementById('give-stamp-btn').style.display = 'block';
+        }
+
+        initializeApp();
+      } else {
+        document.getElementById('splash-screen').style.display = 'flex';
+        document.getElementById('chat-screen').style.display = 'none';
+      }
+    }
+
+    function selectUser(user) {
+      localStorage.setItem('chatUser', user);
+      myName = user;
+
+      // 간단한 페이드아웃 효과
+      const splash = document.getElementById('splash-screen');
+      splash.style.opacity = '0';
+      setTimeout(() => checkLogin(), 500);
+
+      // 입장 사운드 재생 (최초 1회)
+      unlockAudio();
+    }
+
+    function logout() {
+      if (confirm("정말 로그아웃 할까요?")) {
+        localStorage.removeItem('chatUser');
         location.reload();
       }
-    });
-
-    const chatContainer = document.getElementById('chat-container');
-    const msgInput = document.getElementById('msg-input');
-    const sendBtn = document.getElementById('send-btn');
-    const imgInput = document.getElementById('img-input');
-
-    /* =========================================
-       [소리 자동 활성화]
-       ========================================= */
-    /* =========================================
-       [소리 자동 활성화 - 중복 방지 개선]
-       ========================================= */
-    let audioContextAllowed = false;
-
-    function unlockAudio() {
-      if (audioContextAllowed) return; // 이미 허용되었으면 즉시 종료
-
-      // 플래그 즉시 설정 (중복 호출 방지)
-      audioContextAllowed = true;
-
-      const audio = new Audio(SOUND_URL);
-      audio.volume = 0;
-
-      const playPromise = audio.play();
-
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          console.log("Audio Unlocked Successfully");
-          // 이벤트 리스너 제거
-          document.body.removeEventListener('click', unlockAudio);
-          document.body.removeEventListener('touchstart', unlockAudio);
-          document.body.removeEventListener('keydown', unlockAudio);
-        }).catch(error => {
-          console.log("Audio Unlock Prevented (User interaction needed)");
-          // 실패 시 플래그 원복 (다시 시도할 수 있게)
-          audioContextAllowed = false;
-        });
-      }
-    }
-
-    document.body.addEventListener('click', unlockAudio);
-    document.body.addEventListener('touchstart', unlockAudio, { passive: true }); // passive 옵션 추가
-    document.body.addEventListener('keydown', unlockAudio);
-
-    function playNotification() {
-      const audio = new Audio(SOUND_URL);
-      audio.volume = 1.0;
-      audio.play().catch(e => {
-        console.log("소리 재생 차단됨:", e);
-      });
     }
 
     /* =========================================
-       [메시지 렌더링 & 페이지네이션]
+       [Core Logic: Read Receipts & Presence]
        ========================================= */
-    let firstMessageDoc = null; // 현재 로드된 메시지 중 가장 오래된 것
-    let isFetchingOlder = false;
-    let isAllLoaded = false;
-    const PAGE_SIZE = 30; // 한 번에 불러올 개수
-
-    // [UI Helper] 날짜 구분선 생성
-    function createDateDivider(timestamp) {
-      if (!timestamp) return null;
-      const date = timestamp.toDate();
-      const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-      const dateStr = date.toLocaleDateString('ko-KR', options);
-
-      const wrapper = document.createElement('div');
-      wrapper.style.textAlign = 'center';
-      wrapper.style.margin = '20px 0';
-      wrapper.style.position = 'relative';
-
-      const textSpan = document.createElement('span');
-      textSpan.innerText = dateStr;
-      textSpan.style.backgroundColor = 'rgba(255,255,255,0.6)';
-      textSpan.style.padding = '5px 15px';
-      textSpan.style.borderRadius = '15px';
-      textSpan.style.fontSize = '0.8rem';
-      textSpan.style.color = '#555';
-      textSpan.style.fontWeight = 'bold';
-
-      wrapper.appendChild(textSpan);
-      wrapper.className = 'date-divider';
-      wrapper.dataset.date = date.toDateString(); // 날짜비교용
-      return wrapper;
+    function updateMyLastRead() {
+      if (!myName) return;
+      // Firestore: users/{myName} -> lastRead: now
+      db.collection('users').doc(myName).set({
+        lastRead: firebase.firestore.FieldValue.serverTimestamp(),
+        online: true
+      }, { merge: true });
     }
 
-    function createMessageElement(doc) {
-      const data = doc.data();
-      const isMine = data.sender === myName;
-
-      let timeStr = "";
-      if (data.timestamp) {
-        const date = data.timestamp.toDate();
-        let hours = date.getHours();
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const ampm = hours >= 12 ? '오후' : '오전';
-        hours = hours % 12; hours = hours ? hours : 12;
-        timeStr = `${ampm} ${hours}:${minutes}`;
-      }
-
-      const msgRow = document.createElement('div');
-      msgRow.className = `message-row ${isMine ? 'mine' : 'yours'}`;
-      msgRow.dataset.id = doc.id;
-
-      const profileImg = document.createElement('img');
-      profileImg.className = 'profile-img';
-      profileImg.src = (data.sender === "아빠") ? DAD_PROFILE_URL : YUL_PROFILE_URL;
-
-      const bubbleBox = document.createElement('div');
-      bubbleBox.className = 'message-bubble-box';
-
-      const contentDiv = document.createElement('div');
-      contentDiv.className = 'message-content';
-
-      if (data.imageUrl) {
-        const img = document.createElement('img');
-        img.src = data.imageUrl;
-        img.onload = () => {
-          // 이미지가 로드되면 스크롤 위치 조정이 필요할 수 있음 (특히 최하단일 때)
-          if (chatContainer.scrollTop + chatContainer.clientHeight >= chatContainer.scrollHeight - 200) {
-            scrollToBottom();
+    function listenToOtherUser() {
+      if (!otherName) return;
+      db.collection('users').doc(otherName).onSnapshot(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          if (data.lastRead) {
+            otherUserLastRead = data.lastRead.toMillis();
+            // 상대방이 읽었으므로 화면 갱신 (특히 '1' 없애기 위해)
+            renderStart();
           }
-        };
-        img.onerror = () => {
-          img.style.display = 'none';
-          const errorText = document.createElement('div');
-          errorText.innerText = "☁️ 사진이 삭제되었어요";
-          errorText.style.color = "#aaa";
-          errorText.style.fontSize = "0.8rem";
-          errorText.style.marginTop = "5px";
-          contentDiv.appendChild(errorText);
-        };
-        contentDiv.appendChild(img);
-      }
-
-      if (data.text) {
-        const textSpan = document.createElement('div');
-        textSpan.innerText = data.text;
-        contentDiv.appendChild(textSpan);
-      }
-      bubbleBox.appendChild(contentDiv);
-
-      const timeDiv = document.createElement('div');
-      timeDiv.className = 'message-time';
-      timeDiv.innerText = timeStr;
-      bubbleBox.appendChild(timeDiv);
-
-      msgRow.appendChild(profileImg);
-      msgRow.appendChild(bubbleBox);
-
-      return msgRow;
-    }
-
-    function scrollToBottom() {
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-
-    function sendMessage(text, imageUrl = null) {
-      if (!text && !imageUrl) return;
-
-      db.collection("messages").add({
-        sender: myName,
-        text: text,
-        imageUrl: imageUrl,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => {
-        msgInput.value = "";
-        scrollToBottom();
+        }
       });
-    }
-
-    sendBtn.addEventListener('click', () => sendMessage(msgInput.value));
-    msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(msgInput.value); });
-    msgInput.addEventListener('focus', scrollToBottom);
-
-    function addEmoji(emoji) {
-      msgInput.value += emoji;
-      msgInput.focus();
     }
 
     /* =========================================
-       [이미지 미리보기 모달 로직]
+       [Core Logic: Chat Rendering]
        ========================================= */
-    const imgModal = document.getElementById('img-modal');
-    const previewImg = document.getElementById('preview-img');
-    const modalCancel = document.getElementById('modal-cancel');
-    const modalSend = document.getElementById('modal-send');
-    let pendingFile = null;
+    let unsubscribeMsg = null;
+    const PAGE_SIZE = 50;
 
-    imgInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+    function initializeApp() {
+      updateMyLastRead();
+      listenToOtherUser();
+      listenToStamps();
 
-      pendingFile = file;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        previewImg.src = e.target.result;
-        imgModal.style.display = "block";
-      }
-      reader.readAsDataURL(file);
-    });
+      // 메시지 리스너 시작
+      if (unsubscribeMsg) unsubscribeMsg();
 
-    modalCancel.addEventListener('click', () => {
-      imgModal.style.display = "none";
-      imgInput.value = "";
-      pendingFile = null;
-      previewImg.src = "";
-    });
+      const q = db.collection('messages').orderBy('timestamp', 'asc').limitToLast(PAGE_SIZE);
 
-    modalSend.addEventListener('click', () => {
-      if (!pendingFile) return;
+      unsubscribeMsg = q.onSnapshot(snapshot => {
+        const container = document.getElementById('chat-container');
 
-      imgModal.style.display = "none";
-      const file = pendingFile;
-      const fileName = new Date().getTime() + '_' + file.name;
-      const storageRef = storage.ref().child('chat_images/' + fileName);
-      msgInput.placeholder = "사진 보내는 중... ☁️";
-
-      storageRef.put(file).then((snapshot) => snapshot.ref.getDownloadURL()).then((url) => {
-        sendMessage(null, url);
-        msgInput.placeholder = "메시지 입력...";
-        imgInput.value = "";
-        pendingFile = null;
-      }).catch(err => {
-        alert("사진 전송 실패 ㅠㅠ");
-        msgInput.placeholder = "메시지 입력...";
-      });
-    });
-
-    let isFirstLoad = true;
-    let lastRenderedDate = null; // for appending (new messages)
-
-    function getDateString(timestamp) {
-      if (!timestamp) return null;
-      return timestamp.toDate().toDateString(); // "Mon Feb 17 2024"
-    }
-
-    // 1. 초기 로드 (최근 N개) & 실시간 수신
-    db.collection("messages")
-      .orderBy("timestamp", "asc")
-      .limitToLast(PAGE_SIZE)
-      .onSnapshot((snapshot) => {
-        if (isFirstLoad) {
-          chatContainer.innerHTML = "";
-          lastRenderedDate = null; // 초기화
-          // 스크롤 감지 로딩 스피너 (상단)
-          const loaderDiv = document.createElement('div');
-          loaderDiv.id = 'top-loader';
-          loaderDiv.style.textAlign = 'center';
-          loaderDiv.style.padding = '10px';
-          loaderDiv.style.fontSize = '0.8rem';
-          loaderDiv.style.color = '#888';
-          loaderDiv.style.display = 'none'; // 평소엔 숨김
-          loaderDiv.innerText = "이전 대화 불러오는 중... ⏳";
-          chatContainer.appendChild(loaderDiv);
+        // 첫 로딩 시 초기화
+        if (container.innerText.includes('구름')) {
+          container.innerHTML = "";
         }
 
-        // 스냅샷 처리
-        if (!snapshot.empty && isFirstLoad) {
-          firstMessageDoc = snapshot.docs[0];
-        }
-
-        snapshot.docChanges().forEach((change) => {
+        snapshot.docChanges().forEach(change => {
           if (change.type === "added") {
+            const msgDiv = createMessageDiv(change.doc);
+            container.appendChild(msgDiv);
+
+            // 새 메시지가 왔으므로 소리 (내가 보낸거 아니면)
             const data = change.doc.data();
-            const msgDate = getDateString(data.timestamp);
-
-            // 날짜 구분선 추가 (Appending Logic)
-            if (msgDate && msgDate !== lastRenderedDate) {
-              const divider = createDateDivider(data.timestamp);
-              chatContainer.appendChild(divider);
-              lastRenderedDate = msgDate;
-            }
-
-            const msgEl = createMessageElement(change.doc);
-            chatContainer.appendChild(msgEl);
-
-            // 소리 재생 (첫 로드 아니고, 내 메시지 아니면)
-            if (!isFirstLoad && data.sender !== myName) {
+            if (data.sender !== myName) {
+              // debounce/flag logic needed? simple is okay for now
               playNotification();
             }
           }
         });
 
-        if (isFirstLoad) {
-          scrollToBottom();
-          isFirstLoad = false;
-        } else {
-          // 새 메시지가 왔을 때만 스크롤 (사용자가 보고있는 위치가 맨 아래 근처라면)
-          if (chatContainer.scrollTop + chatContainer.clientHeight >= chatContainer.scrollHeight - 300) {
-            scrollToBottom();
-          }
-        }
-      }, (error) => {
-        // [ERROR HANDLER]
-        console.error("Firestore Error:", error);
-        alert("데이터 로딩 오류: " + error.message);
-        chatContainer.innerHTML = `<div style="padding:20px; text-align:center; color:red;">
-            <h3>😢 오류가 발생했어요</h3>
-            <p>${error.message}</p>
-            <p>잠시 후 다시 시도해 주세요.</p>
-          </div>`;
+        // 스크롤 하단 이동
+        scrollToBottom();
+
+        // 읽음 갱신
+        updateMyLastRead();
       });
 
-    // 2. 스크롤 이벤트 (상단 도달 시 과거 데이터 로드)
-    chatContainer.addEventListener('scroll', () => {
-      if (chatContainer.scrollTop === 0 && !isFetchingOlder && !isAllLoaded && firstMessageDoc) {
-        loadOlderMessages();
-        // 스크롤이 탑에 닿았을 때 미세하게 튕기는 현상 방지를 위해 약간 아래로? 
-        // 아니면 로더가 보이면서 자연스러워짐.
+      // 일정 시간마다 heartbeat (선택 사항)
+      setInterval(updateMyLastRead, 60000);
+    }
+
+    function createMessageDiv(doc) {
+      const data = doc.data();
+      const isMine = data.sender === myName;
+      const msgId = doc.id;
+
+      const row = document.createElement('div');
+      row.className = `message-row ${isMine ? 'mine' : 'yours'}`;
+      row.dataset.id = msgId;
+      row.dataset.timestamp = data.timestamp ? data.timestamp.toMillis() : Date.now();
+
+      // Profile (Yours Only)
+      if (!isMine) {
+        const img = document.createElement('img');
+        img.src = getProfileImg(data.sender);
+        img.className = 'profile-img';
+        row.appendChild(img);
       }
+
+      // Wrapper
+      const wrapper = document.createElement('div');
+      wrapper.className = 'bubble-wrapper';
+
+      // Bubble
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+
+      if (data.imageUrl) {
+        const img = document.createElement('img');
+        img.src = data.imageUrl;
+        bubble.appendChild(img);
+      }
+      if (data.text) {
+        const span = document.createElement('div');
+        span.innerText = data.text;
+        bubble.appendChild(span);
+      }
+      wrapper.appendChild(bubble);
+
+      // Info (Time & Read Mark)
+      const info = document.createElement('div');
+      info.className = 'msg-info';
+
+      // Time
+      let timeStr = "";
+      if (data.timestamp) {
+        const date = data.timestamp.toDate();
+        let h = date.getHours();
+        let m = String(date.getMinutes()).padStart(2, '0');
+        const ampm = h >= 12 ? '오후' : '오전';
+        h = h % 12 || 12;
+        timeStr = `${ampm} ${h}:${m}`;
+      }
+      const timeSpan = document.createElement('span');
+      timeSpan.innerText = timeStr;
+
+      // Read Mark ('1')
+      const readSpan = document.createElement('span');
+      readSpan.className = 'unread-mark';
+      readSpan.innerText = '1';
+      // Logic: Will be hidden by CSS or JS if read. 
+      // JS based update:
+      checkReadStatus(readSpan, row.dataset.timestamp);
+
+      info.appendChild(readSpan);
+      info.appendChild(timeSpan);
+
+      wrapper.appendChild(info);
+      row.appendChild(wrapper);
+
+      return row;
+    }
+
+    function checkReadStatus(el, msgTimestamp) {
+      // 상대방 LastRead > 메시지 시간 => 읽음 => '1' 삭제
+      if (otherUserLastRead >= msgTimestamp) {
+        el.style.display = 'none';
+      } else {
+        el.style.display = 'inline';
+      }
+    }
+
+    // 화면 갱신 (읽음 표시 업데이트 용)
+    function renderStart() {
+      const marks = document.querySelectorAll('.unread-mark');
+      marks.forEach(mark => {
+        const row = mark.closest('.message-row');
+        if (row && row.dataset.timestamp) {
+          checkReadStatus(mark, parseInt(row.dataset.timestamp));
+        }
+      });
+    }
+
+    function scrollToBottom() {
+      const container = document.getElementById('chat-container');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendMessage(text, imgUrl = null) {
+      if (!text && !imgUrl) return;
+
+      db.collection('messages').add({
+        sender: myName, // '아빠' or '율이'
+        text: text,
+        imageUrl: imgUrl,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        document.getElementById('msg-input').value = "";
+        scrollToBottom();
+      });
+    }
+
+    /* =========================================
+       [Interactive: Sound & Emoji]
+       ========================================= */
+
+    // Sound - Once Policy
+    let audioUnlocked = false;
+    function unlockAudio() {
+      if (audioUnlocked) return;
+      audioUnlocked = true;
+
+      const audio = new Audio(SOUND_URL);
+      audio.volume = 0;
+      audio.play().catch(e => {
+        console.log("Audio autoplay blocked");
+        audioUnlocked = false; // try again on next click
+      });
+
+      // Remove listeners
+      document.body.removeEventListener('click', unlockAudio);
+      document.body.removeEventListener('touchstart', unlockAudio);
+    }
+    document.body.addEventListener('click', unlockAudio);
+    document.body.addEventListener('touchstart', unlockAudio, { passive: true });
+
+    function playNotification() {
+      const audio = new Audio(SOUND_URL);
+      audio.volume = 1.0;
+      audio.play().catch(e => { });
+    }
+
+    // Emoji
+    window.addEmoji = (emoji) => {
+      const input = document.getElementById('msg-input');
+      input.value += emoji;
+      input.focus();
+    };
+
+    document.getElementById('send-btn').addEventListener('click', () => {
+      sendMessage(document.getElementById('msg-input').value);
     });
 
-    function loadOlderMessages() {
-      isFetchingOlder = true;
-      const loader = document.getElementById('top-loader');
-      if (loader) loader.style.display = 'block';
+    document.getElementById('msg-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage(e.target.value);
+    });
 
-      const oldScrollHeight = chatContainer.scrollHeight;
+    /* =========================================
+       [Feature: Stamp Board & Gecko Points]
+       ========================================= */
+    // Data Model:
+    // users/common/stamps/current (doc) -> count: 5
+    // users/common/points/yul (doc) -> value: 300
+    // OR simpler: users/yul -> { stampCount: 5, geckoPoints: 300 }
 
-      db.collection("messages")
-        .orderBy("timestamp", "asc")
-        .endBefore(firstMessageDoc) // 현재 가장 상단 메시지보다 이전 것들
-        .limitToLast(PAGE_SIZE)     // 그 중에서 뒤에서부터 30개 (즉, 바로 직전 30개)
-        .get()
-        .then((snapshot) => {
-          if (snapshot.empty) {
-            isAllLoaded = true;
-            if (loader) loader.innerText = "대화의 시작입니다 🎉";
-            return;
-          }
+    // Let's use `users/yul` document for everything for simplicity.
 
-          // * 중요: 이번 청크의 마지막 메시지 (시간상 가장 최신)의 날짜
-          const chunkLastMsg = snapshot.docs[snapshot.docs.length - 1];
-          const chunkLastDate = getDateString(chunkLastMsg.data().timestamp);
+    const STAMP_TARGET = 10;
+    const POINT_REWARD = 100;
 
-          // * 기존 화면의 첫 메시지 날짜 확인 (boundary check)
-          // 화면 구조: [Loader] [Divider?] [OldFirstMsg] ...
-          // Loader 다음 형제 요소를 찾습니다.
-          let existingFirstEl = loader.nextSibling;
-          let existingFirstDate = null;
+    function listenToStamps() {
+      db.collection('users').doc('율이').onSnapshot(doc => {
+        if (!doc.exists) return;
+        const data = doc.data();
+        const count = data.stampCount || 0;
+        const points = data.geckoPoints || 0;
 
-          // 만약 기존 첫 요소가 'date-divider'라면, 그 날짜를 가져옵니다.
-          if (existingFirstEl && existingFirstEl.classList.contains('date-divider')) {
-            existingFirstDate = existingFirstEl.dataset.date;
-          } else if (existingFirstEl && existingFirstEl.classList.contains('message-row')) {
-            // 구분선이 없다면.. 그 메시지의 날짜를 알아야 하는데, 
-            // 보통 구분선이 있을 것이므로 이 케이스는 드뭅니다.
-          }
+        // UI Update
+        document.getElementById('gecko-point-val').innerText = points;
+        document.getElementById('modal-point-val').innerText = points;
 
-          // 만약 불러온 청크의 마지막 날짜와 기존 화면의 첫 날짜가 같다면,
-          // 기존 화면의 구분선은 중복되므로 제거합니다.
-          if (chunkLastDate && existingFirstDate && chunkLastDate === existingFirstDate) {
-            // console.log("Duplicate divider removed:", existingFirstDate);
-            chatContainer.removeChild(existingFirstEl);
-          }
-
-          // 갱신된 '가장 오래된 메시지' 업데이트
-          firstMessageDoc = snapshot.docs[0];
-
-          // 문서 조각 생성
-          const fragment = document.createDocumentFragment();
-          let currentChunkDate = null;
-
-          snapshot.docs.forEach(doc => {
-            const data = doc.data();
-            const msgDate = getDateString(data.timestamp);
-
-            if (msgDate !== currentChunkDate) {
-              const divider = createDateDivider(data.timestamp);
-              fragment.appendChild(divider);
-              currentChunkDate = msgDate;
-            }
-
-            const el = createMessageElement(doc);
-            fragment.appendChild(el);
-          });
-
-          // 로더 바로 뒤에 삽입 (로더는 계속 맨 위에 유지)
-          // chatContainer 구조: [Loader] [OldMsg1] ... [TargetMsg]
-          if (loader && loader.nextSibling) {
-            chatContainer.insertBefore(fragment, loader.nextSibling);
-          } else {
-            // 로더가 없거나 혼자 있다면 그냥 append (이런 경우 거의 없음)
-            chatContainer.appendChild(fragment);
-          }
-
-          // 스크롤 위치 복원
-          // (새로운 높이 - 예전 높이) 만큼 스크롤을 내려줘야 시각적으로 고정됨
-          const newScrollHeight = chatContainer.scrollHeight;
-          chatContainer.scrollTop = newScrollHeight - oldScrollHeight;
-
-          if (loader) loader.style.display = 'none';
-          isFetchingOlder = false;
-        })
-        .catch(err => {
-          console.error("Load older messages failed", err);
-          if (loader) loader.style.display = 'none';
-          isFetchingOlder = false;
-        });
+        renderStamps(count);
+      });
     }
+
+    function renderStamps(count) {
+      const grid = document.getElementById('stamp-grid');
+      grid.innerHTML = "";
+
+      for (let i = 0; i < STAMP_TARGET; i++) {
+        const slot = document.createElement('div');
+        slot.className = `stamp-slot ${i < count ? 'filled' : ''}`;
+        slot.innerText = i < count ? '💮' : (i + 1);
+        grid.appendChild(slot);
+      }
+    }
+
+    function openStampBoard() {
+      document.getElementById('stamp-modal').style.display = 'flex';
+    }
+
+    function closeStampBoard() {
+      document.getElementById('stamp-modal').style.display = 'none';
+    }
+
+    function giveStamp() {
+      // Transaction to ensure atomicity
+      const ref = db.collection('users').doc('율이');
+
+      db.runTransaction(async (transaction) => {
+        const doc = await transaction.get(ref);
+        if (!doc.exists) return; // Should exist
+
+        let newCount = (doc.data().stampCount || 0) + 1;
+        let newPoints = (doc.data().geckoPoints || 0);
+
+        if (newCount >= STAMP_TARGET) {
+          // Reward Logic
+          newCount = 0;
+          newPoints += POINT_REWARD;
+          alert("🎉 축하합니다! 도장 10개를 모아서 100 게코 포인트를 받았어요! 🦎💰");
+          sendMessage("🎉 [알림] 율이가 도장을 다 모아서 100 게코 포인트를 받았어요! 축하해! 💕");
+        }
+
+        transaction.update(ref, { stampCount: newCount, geckoPoints: newPoints });
+      }).then(() => {
+        // Success
+        alert("도장을 찍었습니다! 쾅!");
+      }).catch(err => {
+        alert("도장 찍기 실패 ㅠㅠ: " + err);
+      });
+    }
+
+    /* =========================================
+       [Image Upload Logic]
+       ========================================= */
+    const imgInput = document.getElementById('img-input');
+    imgInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (!confirm("이 사진을 전송할까요?")) return;
+
+      // Reset input immediately
+      const fileName = Date.now() + '_' + file.name;
+      const ref = storage.ref().child('chat_images_v2/' + fileName);
+
+      document.getElementById('msg-input').placeholder = "사진 업로드 중... ☁️";
+
+      ref.put(file).then(snapshot => snapshot.ref.getDownloadURL()).then(url => {
+        sendMessage(null, url);
+        document.getElementById('msg-input').placeholder = "메시지 입력...";
+      }).catch(err => {
+        alert("사진 전송 실패");
+        document.getElementById('msg-input').placeholder = "메시지 입력...";
+      });
+
+      imgInput.value = "";
+    });
+
+    // Start
+    checkLogin();
+
   </script>
 </body>
 
