@@ -37,6 +37,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    html,
     body {
       margin: 0;
       padding: 0;
@@ -45,10 +46,13 @@
       /* 폰트 적용 */
       font-size: 1.1rem;
       color: var(--text-color);
-      height: 100vh;
+
+      /* [Layout Fix] 가로 스크롤 방지 및 높이 고정 */
+      width: 100%;
+      height: 100%;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      position: fixed;
+      /* iOS 고무밴드 효과 방지 및 전체 화면 고정 */
     }
 
     /* =========================================
@@ -120,6 +124,7 @@
       display: flex;
       flex-direction: column;
       height: 100%;
+      width: 100%;
       display: none;
       /* 초기엔 숨김 (로그인 후 보임) */
     }
@@ -185,6 +190,9 @@
       gap: 15px;
       padding-bottom: 20px;
       /* 입력창 공간 확보는 js로 처리 or padding */
+
+      /* 스크롤 부드럽게 */
+      -webkit-overflow-scrolling: touch;
     }
 
     /* Message Rows */
@@ -305,6 +313,8 @@
       box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
       z-index: 20;
       padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      width: 100%;
+      /* 너비 강제 */
     }
 
     .emoji-bar {
@@ -312,6 +322,13 @@
       gap: 10px;
       padding-bottom: 10px;
       overflow-x: auto;
+      /* 스크롤바 숨김 */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .emoji-bar::-webkit-scrollbar {
+      display: none;
     }
 
     .emoji-btn {
@@ -321,12 +338,15 @@
       padding: 5px 10px;
       font-size: 1.2rem;
       cursor: pointer;
+      flex-shrink: 0;
+      /* 찌그러짐 방지 */
     }
 
     .input-row {
       display: flex;
       align-items: center;
       gap: 8px;
+      width: 100%;
     }
 
     .action-btn {
@@ -335,6 +355,7 @@
       font-size: 1.5rem;
       cursor: pointer;
       padding: 5px;
+      flex-shrink: 0;
     }
 
     #msg-input {
@@ -346,6 +367,8 @@
       font-family: inherit;
       font-size: 1rem;
       outline: none;
+      min-width: 0;
+      /* 플렉스 아이템 넘침 방지 */
     }
 
     #send-btn {
@@ -361,6 +384,7 @@
       font-size: 1.2rem;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(255, 138, 128, 0.4);
+      flex-shrink: 0;
     }
 
     /* =========================================
@@ -537,9 +561,10 @@
 
   <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script> <!-- Auth 추가 -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-  <script src="books/config.js"></script> <!-- config.js가 있다면 여기 API Key 사용 가능, 없으면 아래 하드코딩 -->
+  <script src="books/config.js"></script>
 
   <script>
     /* =========================================
@@ -557,9 +582,19 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const storage = firebase.storage();
+    const auth = firebase.auth(); // Auth 초기화
 
     // 오프라인 지속성
     db.enablePersistence().catch(err => console.log("Persistence Error", err.code));
+
+    // [익명 로그인] 사진 업로드 권한을 위해 필요
+    auth.signInAnonymously()
+      .then(() => {
+        console.log("Signed in anonymously");
+      })
+      .catch((error) => {
+        console.error("Error signing in anonymously:", error);
+      });
 
     /* =========================================
        [Global State & Utils]
@@ -587,7 +622,6 @@
 
         otherName = (myName === '아빠') ? '율이' : '아빠';
 
-        // 아빠일 때만 '도장 주기' 버튼 보이기
         if (myName === '아빠') {
           document.getElementById('give-stamp-btn').style.display = 'block';
         }
@@ -603,12 +637,10 @@
       localStorage.setItem('chatUser', user);
       myName = user;
 
-      // 간단한 페이드아웃 효과
       const splash = document.getElementById('splash-screen');
       splash.style.opacity = '0';
       setTimeout(() => checkLogin(), 500);
 
-      // 입장 사운드 재생 (최초 1회)
       unlockAudio();
     }
 
@@ -624,7 +656,6 @@
        ========================================= */
     function updateMyLastRead() {
       if (!myName) return;
-      // Firestore: users/{myName} -> lastRead: now
       db.collection('users').doc(myName).set({
         lastRead: firebase.firestore.FieldValue.serverTimestamp(),
         online: true
@@ -638,7 +669,6 @@
           const data = doc.data();
           if (data.lastRead) {
             otherUserLastRead = data.lastRead.toMillis();
-            // 상대방이 읽었으므로 화면 갱신 (특히 '1' 없애기 위해)
             renderStart();
           }
         }
@@ -656,7 +686,6 @@
       listenToOtherUser();
       listenToStamps();
 
-      // 메시지 리스너 시작
       if (unsubscribeMsg) unsubscribeMsg();
 
       const q = db.collection('messages').orderBy('timestamp', 'asc').limitToLast(PAGE_SIZE);
@@ -664,7 +693,6 @@
       unsubscribeMsg = q.onSnapshot(snapshot => {
         const container = document.getElementById('chat-container');
 
-        // 첫 로딩 시 초기화
         if (container.innerText.includes('구름')) {
           container.innerHTML = "";
         }
@@ -674,23 +702,17 @@
             const msgDiv = createMessageDiv(change.doc);
             container.appendChild(msgDiv);
 
-            // 새 메시지가 왔으므로 소리 (내가 보낸거 아니면)
             const data = change.doc.data();
             if (data.sender !== myName) {
-              // debounce/flag logic needed? simple is okay for now
               playNotification();
             }
           }
         });
 
-        // 스크롤 하단 이동
         scrollToBottom();
-
-        // 읽음 갱신
         updateMyLastRead();
       });
 
-      // 일정 시간마다 heartbeat (선택 사항)
       setInterval(updateMyLastRead, 60000);
     }
 
@@ -704,7 +726,6 @@
       row.dataset.id = msgId;
       row.dataset.timestamp = data.timestamp ? data.timestamp.toMillis() : Date.now();
 
-      // Profile (Yours Only)
       if (!isMine) {
         const img = document.createElement('img');
         img.src = getProfileImg(data.sender);
@@ -712,11 +733,9 @@
         row.appendChild(img);
       }
 
-      // Wrapper
       const wrapper = document.createElement('div');
       wrapper.className = 'bubble-wrapper';
 
-      // Bubble
       const bubble = document.createElement('div');
       bubble.className = 'msg-bubble';
 
@@ -732,11 +751,9 @@
       }
       wrapper.appendChild(bubble);
 
-      // Info (Time & Read Mark)
       const info = document.createElement('div');
       info.className = 'msg-info';
 
-      // Time
       let timeStr = "";
       if (data.timestamp) {
         const date = data.timestamp.toDate();
@@ -749,12 +766,9 @@
       const timeSpan = document.createElement('span');
       timeSpan.innerText = timeStr;
 
-      // Read Mark ('1')
       const readSpan = document.createElement('span');
       readSpan.className = 'unread-mark';
       readSpan.innerText = '1';
-      // Logic: Will be hidden by CSS or JS if read. 
-      // JS based update:
       checkReadStatus(readSpan, row.dataset.timestamp);
 
       info.appendChild(readSpan);
@@ -767,7 +781,6 @@
     }
 
     function checkReadStatus(el, msgTimestamp) {
-      // 상대방 LastRead > 메시지 시간 => 읽음 => '1' 삭제
       if (otherUserLastRead >= msgTimestamp) {
         el.style.display = 'none';
       } else {
@@ -775,7 +788,6 @@
       }
     }
 
-    // 화면 갱신 (읽음 표시 업데이트 용)
     function renderStart() {
       const marks = document.querySelectorAll('.unread-mark');
       marks.forEach(mark => {
@@ -809,7 +821,6 @@
        [Interactive: Sound & Emoji]
        ========================================= */
 
-    // Sound - Once Policy
     let audioUnlocked = false;
     function unlockAudio() {
       if (audioUnlocked) return;
@@ -822,7 +833,6 @@
         audioUnlocked = false; // try again on next click
       });
 
-      // Remove listeners
       document.body.removeEventListener('click', unlockAudio);
       document.body.removeEventListener('touchstart', unlockAudio);
     }
@@ -835,7 +845,6 @@
       audio.play().catch(e => { });
     }
 
-    // Emoji
     window.addEmoji = (emoji) => {
       const input = document.getElementById('msg-input');
       input.value += emoji;
@@ -853,12 +862,6 @@
     /* =========================================
        [Feature: Stamp Board & Gecko Points]
        ========================================= */
-    // Data Model:
-    // users/common/stamps/current (doc) -> count: 5
-    // users/common/points/yul (doc) -> value: 300
-    // OR simpler: users/yul -> { stampCount: 5, geckoPoints: 300 }
-
-    // Let's use `users/yul` document for everything for simplicity.
 
     const STAMP_TARGET = 10;
     const POINT_REWARD = 100;
@@ -870,7 +873,6 @@
         const count = data.stampCount || 0;
         const points = data.geckoPoints || 0;
 
-        // UI Update
         document.getElementById('gecko-point-val').innerText = points;
         document.getElementById('modal-point-val').innerText = points;
 
@@ -899,18 +901,16 @@
     }
 
     function giveStamp() {
-      // Transaction to ensure atomicity
       const ref = db.collection('users').doc('율이');
 
       db.runTransaction(async (transaction) => {
         const doc = await transaction.get(ref);
-        if (!doc.exists) return; // Should exist
+        if (!doc.exists) return;
 
         let newCount = (doc.data().stampCount || 0) + 1;
         let newPoints = (doc.data().geckoPoints || 0);
 
         if (newCount >= STAMP_TARGET) {
-          // Reward Logic
           newCount = 0;
           newPoints += POINT_REWARD;
           alert("🎉 축하합니다! 도장 10개를 모아서 100 게코 포인트를 받았어요! 🦎💰");
@@ -919,7 +919,6 @@
 
         transaction.update(ref, { stampCount: newCount, geckoPoints: newPoints });
       }).then(() => {
-        // Success
         alert("도장을 찍었습니다! 쾅!");
       }).catch(err => {
         alert("도장 찍기 실패 ㅠㅠ: " + err);
@@ -936,7 +935,6 @@
 
       if (!confirm("이 사진을 전송할까요?")) return;
 
-      // Reset input immediately
       const fileName = Date.now() + '_' + file.name;
       const ref = storage.ref().child('chat_images_v2/' + fileName);
 
@@ -946,7 +944,15 @@
         sendMessage(null, url);
         document.getElementById('msg-input').placeholder = "메시지 입력...";
       }).catch(err => {
-        alert("사진 전송 실패");
+        console.error(err);
+        // 구체적인 에러 메시지 표시
+        let msg = "사진 전송 실패 ㅠㅠ";
+        if (err.code === 'storage/unauthorized') {
+          msg += "\n(원인: 권한이 없습니다. Firebase Console에서 'Anonymous' 로그인을 켜주세요!)";
+        } else {
+          msg += "\n(" + err.message + ")";
+        }
+        alert(msg);
         document.getElementById('msg-input').placeholder = "메시지 입력...";
       });
 
