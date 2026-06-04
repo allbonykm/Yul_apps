@@ -30,7 +30,13 @@
             <h1 class="text-3xl md:text-4xl font-bold text-green-700 kids-title tracking-wide flex flex-wrap justify-center items-center gap-2">
                 🦎 소리튠영어 My Dream Speech Training! 🎤
             </h1>
-            <p class="text-gray-600 mt-2 text-sm md:text-base font-semibold">스스로 소리를 듣고 말하며 재미있게 스피치 발음을 연습해요!</p>
+            <p class="text-gray-600 mt-2 text-sm md:text-base font-semibold mb-3">스스로 소리를 듣고 말하며 재미있게 스피치 발음을 연습해요!</p>
+            <!-- Gecko Points Display -->
+            <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-800 px-4 py-1.5 rounded-full font-bold text-sm shadow-sm border border-amber-200">
+                <span>🦎 오늘의 게코 포인트:</span>
+                <span id="geckoPoints" class="text-green-700 text-base font-black">0</span>
+                <span>pt</span>
+            </div>
         </header>
 
         <!-- Controls (Speech Settings) -->
@@ -239,16 +245,13 @@
         let showKorean = true;
         let isRecording = false;
         let currentMode = 'sentence'; // 'sentence' | 'paragraph'
+        let geckoPoints = 0; // 게코 포인트 누적
+        const rewardedSentences = new Set(); // 포인트를 획득한 문장 번호 기록
         
         // Browser Speech APIs Compatibility
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition = null;
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.lang = 'en-US';
-            recognition.interimResults = false;
-        } else {
+        if (!SpeechRecognition) {
             // STT 미지원 브라우저인 경우 가이드라인 배너 노출
             browserWarning.classList.remove('hidden');
         }
@@ -353,6 +356,10 @@
                 currentIndex++;
             } else {
                 currentIndex = 0; // Wrap around
+                // 처음으로 돌아가면 포인트 초기화
+                geckoPoints = 0;
+                rewardedSentences.clear();
+                document.getElementById('geckoPoints').textContent = geckoPoints;
             }
             updateUI();
         });
@@ -372,65 +379,87 @@
 
         // Speech Recognition (STT) Trigger
         btnRecordSentence.addEventListener('click', () => {
-            if (!recognition) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
                 alert("이 웹 브라우저는 음성 인식(마이크) 기능을 지원하지 않습니다. 구글 크롬 브라우저를 이용해 주세요!");
                 return;
             }
 
             if (isRecording) {
-                recognition.stop();
+                if (recognition) recognition.stop();
             } else {
+                // 1. 녹음 시작 전 실행 중인 TTS를 확실하게 취소하여 오디오 세션 충돌 방지
+                window.speechSynthesis.cancel();
+
                 isRecording = true;
                 recordPing.classList.remove('opacity-0');
                 recordPing.classList.add('opacity-100');
-                recordingStatus.textContent = "듣고 있어요... 씩씩하게 말해보세요!";
+                recordingStatus.textContent = "듣고 있어요! 바로 큰 소리로 씩씩하게 말해주세요!";
                 recordingStatus.classList.remove('text-gray-500');
                 recordingStatus.classList.add('text-red-500');
                 btnRecordSentence.classList.add('scale-110');
+
+                // 2. 매 녹음 시작 시마다 인스턴스를 새로 동적 할당하여 iOS Safari 등에서의 마이크 잠김 버그 예방
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+
+                // 음성 인식 결과 핸들러
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    const targetText = speechData[currentIndex].en;
+                    
+                    // 일치율 비교
+                    const score = calculateSimilarity(speechResult, targetText);
+                    
+                    // 피드백 창 표기
+                    feedbackBox.classList.remove('hidden');
+                    recognizedText.textContent = `"${speechResult}"`;
+                    speechMatchPercent.textContent = `일치율: ${score}%`;
+                    
+                    if (score >= 80) {
+                        encouragementMsg.textContent = "🏆 완벽해요! 진짜 원어민 같은 영단어 발음이에요! 최고!";
+                        encouragementMsg.className = "text-sm font-bold text-green-700 mt-2 text-right animate-bounce";
+                        
+                        // 현재 문장 최초 성공 시 100 게코 포인트 지급
+                        if (!rewardedSentences.has(currentIndex)) {
+                            rewardedSentences.add(currentIndex);
+                            geckoPoints += 100;
+                            document.getElementById('geckoPoints').textContent = geckoPoints;
+                            encouragementMsg.textContent += " (+100 Gecko Point! 🎉)";
+                        }
+                    } else if (score >= 50) {
+                        encouragementMsg.textContent = "🌟 정말 잘했어요! 조금만 더 크고 또박또박 연습해 볼까요?";
+                        encouragementMsg.className = "text-sm font-bold text-blue-600 mt-2 text-right";
+                    } else {
+                        encouragementMsg.textContent = "🌱 아주 기특해요! 원어민 목소리를 한 번 더 듣고 다시 도전해 봐요!";
+                        encouragementMsg.className = "text-sm font-bold text-amber-600 mt-2 text-right";
+                    }
+                };
+
+                // 음성 인식 에러 핸들러
+                recognition.onerror = (event) => {
+                    console.error("STT Error:", event.error);
+                    if (event.error === 'not-allowed') {
+                        recordingStatus.textContent = "마이크 사용 권한이 거부되었습니다. 설정에서 마이크를 허용해 주세요.";
+                    } else if (event.error === 'no-speech') {
+                        recordingStatus.textContent = "소리가 들리지 않았어요. 마이크 버튼 클릭 후 바로 크게 말씀해 주세요.";
+                    } else {
+                        recordingStatus.textContent = "소리가 잘 들리지 않았어요. 다시 한번 눌러주세요.";
+                    }
+                    stopRecordingState();
+                };
+
+                // 세션 종료 핸들러
+                recognition.onend = () => {
+                    stopRecordingState();
+                };
+
+                // 인식 시작
                 recognition.start();
             }
         });
-
-        // Speech Recognition Logic
-        if (recognition) {
-            recognition.onresult = (event) => {
-                const speechResult = event.results[0][0].transcript;
-                const targetText = speechData[currentIndex].en;
-                
-                // Compare
-                const score = calculateSimilarity(speechResult, targetText);
-                
-                // Show Feedback Box
-                feedbackBox.classList.remove('hidden');
-                recognizedText.textContent = `"${speechResult}"`;
-                speechMatchPercent.textContent = `일치율: ${score}%`;
-                
-                if (score >= 80) {
-                    encouragementMsg.textContent = "🏆 완벽해요! 진짜 원어민 같은 영단어 발음이에요! 최고!";
-                    encouragementMsg.className = "text-sm font-bold text-green-700 mt-2 text-right animate-bounce";
-                } else if (score >= 50) {
-                    encouragementMsg.textContent = "🌟 정말 잘했어요! 조금만 더 크고 또박또박 연습해 볼까요?";
-                    encouragementMsg.className = "text-sm font-bold text-blue-600 mt-2 text-right";
-                } else {
-                    encouragementMsg.textContent = "🌱 아주 기특해요! 원어민 목소리를 한 번 더 듣고 다시 도전해 봐요!";
-                    encouragementMsg.className = "text-sm font-bold text-amber-600 mt-2 text-right";
-                }
-            };
-
-            recognition.onerror = (event) => {
-                console.error(event.error);
-                if (event.error === 'not-allowed') {
-                    recordingStatus.textContent = "마이크 사용 권한이 거부되었습니다. 주소창 왼쪽의 자물쇠 아이콘을 눌러 허용해 주세요.";
-                } else {
-                    recordingStatus.textContent = "소리가 잘 들리지 않았어요. 다시 한번 눌러주세요.";
-                }
-                stopRecordingState();
-            };
-
-            recognition.onend = () => {
-                stopRecordingState();
-            };
-        }
 
         function stopRecordingState() {
             isRecording = false;
