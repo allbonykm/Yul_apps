@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소리튠영어 My dream speech training</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700&family=Outfit:wght@400;600;800&display=swap');
+        body {
+            font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F0FDF4; /* 연한 초록빛 자연 느낌 */
+        }
+        .kids-title {
+            font-family: 'Gaegu', cursive;
+        }
+        .english-text {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <div class="max-w-3xl mx-auto px-4 pt-6">
+        <!-- Header -->
+        <header class="text-center bg-white rounded-3xl p-6 shadow-md border-4 border-green-300 mb-6 transition-all duration-300 hover:shadow-lg">
+            <h1 class="text-3xl md:text-4xl font-bold text-green-700 kids-title tracking-wide flex flex-wrap justify-center items-center gap-2">
+                🦎 소리튠영어 My Dream Speech Training! 🎤
+            </h1>
+            <p class="text-gray-600 mt-2 text-sm md:text-base font-semibold">스스로 소리를 듣고 말하며 재미있게 스피치 발음을 연습해요!</p>
+        </header>
+
+        <!-- Controls (Speech Settings) -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4 border border-green-100">
+            <!-- Speed Control -->
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <span class="text-sm font-bold text-gray-700 whitespace-nowrap">🐢 목소리 속도:</span>
+                <input type="range" id="speedRange" min="0.6" max="1.3" step="0.1" value="0.9" class="w-full sm:w-32 accent-green-600">
+                <span id="speedValue" class="text-sm font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">0.9x</span>
+            </div>
+            
+            <!-- Mode Selector -->
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button id="btnSentenceMode" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-sm font-bold bg-green-600 text-white transition-all shadow-sm">
+                    🔤 한 문장씩 연습
+                </button>
+                <button id="btnParagraphMode" class="flex-1 sm:flex-initial px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-green-50 transition-all">
+                    📖 전체 통독 연습
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN PRACTICE CONTAINER -->
+        <main class="bg-white rounded-3xl p-6 md:p-8 shadow-lg border-2 border-green-200">
+            
+            <!-- [MODE 1] Sentence Mode -->
+            <div id="sentencePractice" class="block">
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-100 rounded-full h-3.5 mb-6 relative">
+                    <div id="progressBar" class="bg-green-500 h-3.5 rounded-full transition-all duration-500" style="width: 16.6%"></div>
+                </div>
+
+                <!-- Sentence Display Box -->
+                <div class="text-center py-8 px-4 bg-green-50 rounded-2xl border border-green-100 min-h-[180px] flex flex-col justify-center items-center relative overflow-hidden">
+                    <span id="sentenceNumber" class="absolute top-3 left-4 text-xs font-bold text-green-700 bg-green-200/60 px-2.5 py-1 rounded-full">문장 1 / 6</span>
+                    
+                    <p id="targetEnglish" class="text-2xl md:text-3xl font-bold text-gray-800 leading-relaxed break-keep english-text"></p>
+                    <p id="targetKorean" class="text-base md:text-lg text-green-700 font-semibold mt-4 transition-opacity duration-300"></p>
+                </div>
+
+                <!-- Web Speech API 지원하지 않을 때 노출할 경고 배너 -->
+                <div id="browserWarning" class="hidden mt-4 p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs md:text-sm flex items-start gap-2">
+                    <span class="text-base">⚠️</span>
+                    <div>
+                        <p class="font-bold">현재 브라우저는 음성 인식(STT) 기능을 지원하지 않습니다.</p>
+                        <p class="mt-0.5 text-gray-600">영어 마이크 인식을 활성화하려면 <b>구글 크롬(Google Chrome) 브라우저</b>를 권장합니다.</p>
+                    </div>
+                </div>
+
+                <!-- Control Buttons for Active Sentence -->
+                <div class="flex flex-col items-center gap-4 mt-8">
+                    <div class="flex justify-center items-center gap-6">
+                        <!-- Play TTS Button -->
+                        <button id="btnPlaySentence" class="w-16 h-16 rounded-full bg-green-600 text-white hover:bg-green-700 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all" title="원어민 발음 듣기">
+                            <i data-lucide="volume-2" class="w-8 h-8"></i>
+                        </button>
+
+                        <!-- Record Button -->
+                        <button id="btnRecordSentence" class="w-20 h-20 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all relative" title="내 목소리 녹음하기">
+                            <span class="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-0 animate-ping" id="recordPing"></span>
+                            <i data-lucide="mic" class="w-10 h-10 z-10"></i>
+                        </button>
+
+                        <!-- Toggle Translation Button -->
+                        <button id="btnToggleTranslation" class="w-16 h-16 rounded-full bg-amber-500 text-white hover:bg-amber-600 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all" title="한글 번역 켜기/끄기">
+                            <i data-lucide="languages" class="w-8 h-8"></i>
+                        </button>
+                    </div>
+                    <span id="recordingStatus" class="text-sm font-bold text-gray-500 mt-1">마이크 버튼을 눌러 발음을 녹음해 보세요!</span>
+                </div>
+
+                <!-- Recognition Result/Feedback -->
+                <div id="feedbackBox" class="mt-6 p-4 bg-gray-50 rounded-2xl border border-dashed border-gray-300 hidden transition-all duration-300">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs font-bold bg-gray-200 text-gray-700 px-2 py-0.5 rounded">내가 말한 소리</span>
+                        <span id="speechMatchPercent" class="text-sm font-bold text-green-600 ml-auto">일치율: 0%</span>
+                    </div>
+                    <p id="recognizedText" class="text-lg font-medium text-gray-700 italic">"..."</p>
+                    <div id="encouragementMsg" class="text-sm font-bold text-green-700 mt-2 text-right">🌟 참 잘했어요! 조금만 더 자신 있게 말해봐요!</div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-between items-center mt-8 pt-4 border-t border-gray-100">
+                    <button id="btnPrev" class="px-5 py-2.5 rounded-xl border border-gray-300 font-bold text-gray-600 hover:bg-gray-50 flex items-center gap-1 transition-all disabled:opacity-50">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i> 이전 문장
+                    </button>
+                    <button id="btnNext" class="px-5 py-2.5 rounded-xl bg-green-100 text-green-700 font-bold hover:bg-green-200 flex items-center gap-1 transition-all">
+                        다음 문장 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- [MODE 2] Full Paragraph Mode -->
+            <div id="paragraphPractice" class="hidden">
+                <div class="mb-4 flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <i data-lucide="sparkles" class="text-amber-500 w-5 h-5"></i> 끊김 없이 쭉 발표 연습하기
+                    </h2>
+                    <button id="btnPlayAll" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold flex items-center gap-2 shadow transition-all">
+                        <i data-lucide="play" class="w-4 h-4"></i> 전체 듣기
+                    </button>
+                </div>
+
+                <div class="p-6 bg-amber-50/55 rounded-2xl border border-amber-200 mb-6">
+                    <p class="text-xl md:text-2xl text-gray-800 leading-relaxed font-semibold break-keep english-text" id="fullParagraphText">
+                        My dream is to be a lizard cafe owner. I want to be a lizard cafe owner because I like crested geckos and yummy bread. A lizard cafe owner helps people find cute lizard friends. They sell coffee and raise 100 lizards. I became interested in this job when I felt the soft lizard on my hand. I will study about lizards and baking. I will take good care of my lizards. I believe I can make a happy lizard cafe. I will make my dream come true!
+                    </p>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-gray-200">
+                    <h3 class="font-bold text-gray-700 mb-2 flex items-center gap-1">
+                        <i data-lucide="lightbulb" class="text-yellow-500 w-4 h-4"></i> 씩씩하게 말하기 미션!
+                    </h3>
+                    <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                        <li>중간에 숨을 쉴 때는 편안하게 쉬어 가도 괜찮아요.</li>
+                        <li>틀리더라도 멈추지 말고 끝까지 웃으며 말하는 연습을 해요!</li>
+                        <li>원어민 소리와 얼마나 속도가 비슷한지 비교해 보세요.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </main>
+        
+        <!-- Helpful Mascot Widget -->
+        <div class="mt-6 bg-white rounded-2xl p-4 shadow-md border-2 border-amber-300 flex items-center gap-4 transition-all duration-300 hover:scale-[1.01]">
+            <div class="text-4xl select-none">🦎</div>
+            <div>
+                <h4 class="font-bold text-amber-800 text-sm md:text-base">친구 게코의 응원 한마디!</h4>
+                <p class="text-xs md:text-sm text-gray-600" id="mascotMessage">"처음에는 조금 서툴러도 괜찮아! 나를 만졌을 때의 느낌을 기억하며 자신 있게 말해봐!"</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Data Definition
+        const speechData = [
+            {
+                en: "My dream is to be a lizard cafe owner.",
+                ko: "내 꿈은 도마뱀 카페 주인이 되는 거예요."
+            },
+            {
+                en: "I want to be a lizard cafe owner because I like crested geckos and yummy bread.",
+                ko: "나는 크레스티드 게코와 맛있는 빵을 좋아하기 때문에 도마뱀 카페 주인이 되고 싶어요."
+            },
+            {
+                en: "A lizard cafe owner helps people find cute lizard friends. They sell coffee and raise 100 lizards.",
+                ko: "도마뱀 카페 주인은 사람들이 귀여운 도마뱀 친구를 찾도록 도와줘요. 그들은 커피를 팔고 100마리의 도마뱀을 키워요."
+            },
+            {
+                en: "I became interested in this job when I felt the soft lizard on my hand.",
+                ko: "도마뱀의 부드러운 느낌을 손에서 느꼈을 때 이 직업에 관심을 가지게 되었어요."
+            },
+            {
+                en: "I will study about lizards and baking. I will take good care of my lizards.",
+                ko: "나는 도마뱀에 대해서 공부하고 빵 굽는 것도 배울 거예요. 나는 내 도마뱀들을 정성껏 돌볼 거예요."
+            },
+            {
+                en: "I believe I can make a happy lizard cafe. I will make my dream come true!",
+                ko: "나는 행복한 도마뱀 카페를 만들 수 있다고 믿어요. 내 꿈을 꼭 이룰 거예요!"
+            }
+        ];
+
+        const mascotCheers = [
+            "진짜 원어민처럼 멋진 발음이었어! 🦎",
+            "빵 굽는 냄새가 여기까지 나는 것 같아! 최고야! 🥐",
+            "눈을 크게 뜨고 손동작도 섞어서 말해보자! ✨",
+            "도마뱀 친구들이 네 목소리를 듣고 기뻐하고 있어! 💕",
+            "천천히 또박또박 말하는 게 가장 중요해! 👍",
+            "내 꿈을 꼭 이룰 수 있을 거야! 끝까지 화이팅! 🌟"
+        ];
+
+        // 2. DOM Elements
+        const speedRange = document.getElementById('speedRange');
+        const speedValue = document.getElementById('speedValue');
+        const btnSentenceMode = document.getElementById('btnSentenceMode');
+        const btnParagraphMode = document.getElementById('btnParagraphMode');
+        const sentencePractice = document.getElementById('sentencePractice');
+        const paragraphPractice = document.getElementById('paragraphPractice');
+        
+        const progressBar = document.getElementById('progressBar');
+        const sentenceNumber = document.getElementById('sentenceNumber');
+        const targetEnglish = document.getElementById('targetEnglish');
+        const targetKorean = document.getElementById('targetKorean');
+        const mascotMessage = document.getElementById('mascotMessage');
+        const browserWarning = document.getElementById('browserWarning');
+        
+        const btnPlaySentence = document.getElementById('btnPlaySentence');
+        const btnRecordSentence = document.getElementById('btnRecordSentence');
+        const btnToggleTranslation = document.getElementById('btnToggleTranslation');
+        const recordPing = document.getElementById('recordPing');
+        const recordingStatus = document.getElementById('recordingStatus');
+        
+        const feedbackBox = document.getElementById('feedbackBox');
+        const speechMatchPercent = document.getElementById('speechMatchPercent');
+        const recognizedText = document.getElementById('recognizedText');
+        const encouragementMsg = document.getElementById('encouragementMsg');
+        
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNext = document.getElementById('btnNext');
+        
+        const btnPlayAll = document.getElementById('btnPlayAll');
+        const fullParagraphText = document.getElementById('fullParagraphText');
+
+        // 3. State Variables
+        let currentIndex = 0;
+        let showKorean = true;
+        let isRecording = false;
+        let currentMode = 'sentence'; // 'sentence' | 'paragraph'
+        
+        // Browser Speech APIs Compatibility
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+        } else {
+            // STT 미지원 브라우저인 경우 가이드라인 배너 노출
+            browserWarning.classList.remove('hidden');
+        }
+
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // 4. Speech Synthesis Function (TTS)
+        function speakText(text) {
+            window.speechSynthesis.cancel(); // Stop any ongoing speech
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = parseFloat(speedRange.value);
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 5. Update UI
+        function updateUI() {
+            if (currentMode === 'sentence') {
+                const item = speechData[currentIndex];
+                targetEnglish.textContent = item.en;
+                targetKorean.textContent = item.ko;
+                targetKorean.style.opacity = showKorean ? '1' : '0';
+                
+                sentenceNumber.textContent = `문장 ${currentIndex + 1} / ${speechData.length}`;
+                
+                // Progress Bar calculation
+                const progress = ((currentIndex + 1) / speechData.length) * 100;
+                progressBar.style.width = `${progress}%`;
+                
+                // Navigation button states
+                btnPrev.disabled = currentIndex === 0;
+                btnPrev.classList.toggle('opacity-50', currentIndex === 0);
+                
+                if (currentIndex === speechData.length - 1) {
+                    btnNext.innerHTML = '처음부터 다시 <i data-lucide="rotate-ccw" class="w-4 h-4"></i>';
+                } else {
+                    btnNext.innerHTML = '다음 문장 <i data-lucide="chevron-right" class="w-4 h-4"></i>';
+                }
+                lucide.createIcons();
+                feedbackBox.classList.add('hidden');
+                
+                // Update mascot text
+                mascotMessage.textContent = mascotCheers[currentIndex];
+            }
+        }
+
+        // 6. Similarity Calculation (Child Speech Check)
+        function calculateSimilarity(str1, str2) {
+            // 특수문자 제거 및 소문자 변환 후 공백 기준 토큰 배열 생성
+            const clean = str => str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim().split(/\s+/);
+            const words1 = clean(str1);
+            const words2 = clean(str2);
+            
+            let matches = 0;
+            words1.forEach(w => {
+                if (words2.includes(w)) matches++;
+            });
+            
+            return Math.round((matches / Math.max(words1.length, words2.length)) * 100);
+        }
+
+        // 7. Event Listeners
+        
+        // Speed slider
+        speedRange.addEventListener('input', (e) => {
+            speedValue.textContent = `${e.target.value}x`;
+        });
+
+        // Mode Toggles
+        btnSentenceMode.addEventListener('click', () => {
+            currentMode = 'sentence';
+            btnSentenceMode.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-sm font-bold bg-green-600 text-white transition-all shadow-sm";
+            btnParagraphMode.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-green-50 transition-all";
+            sentencePractice.classList.remove('hidden');
+            paragraphPractice.classList.add('hidden');
+            updateUI();
+        });
+
+        btnParagraphMode.addEventListener('click', () => {
+            currentMode = 'paragraph';
+            btnParagraphMode.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-sm font-bold bg-green-600 text-white transition-all shadow-sm";
+            btnSentenceMode.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-green-50 transition-all";
+            sentencePractice.classList.add('hidden');
+            paragraphPractice.classList.remove('hidden');
+        });
+
+        // Play Sentence TTS
+        btnPlaySentence.addEventListener('click', () => {
+            speakText(speechData[currentIndex].en);
+        });
+
+        // Show/Hide Translation
+        btnToggleTranslation.addEventListener('click', () => {
+            showKorean = !showKorean;
+            targetKorean.style.opacity = showKorean ? '1' : '0';
+        });
+
+        // Navigate Next / Prev
+        btnNext.addEventListener('click', () => {
+            if (currentIndex < speechData.length - 1) {
+                currentIndex++;
+            } else {
+                currentIndex = 0; // Wrap around
+            }
+            updateUI();
+        });
+
+        btnPrev.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateUI();
+            }
+        });
+
+        // Play All (Paragraph Mode)
+        btnPlayAll.addEventListener('click', () => {
+            const allText = speechData.map(item => item.en).join(' ');
+            speakText(allText);
+        });
+
+        // Speech Recognition (STT) Trigger
+        btnRecordSentence.addEventListener('click', () => {
+            if (!recognition) {
+                alert("이 웹 브라우저는 음성 인식(마이크) 기능을 지원하지 않습니다. 구글 크롬 브라우저를 이용해 주세요!");
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                isRecording = true;
+                recordPing.classList.remove('opacity-0');
+                recordPing.classList.add('opacity-100');
+                recordingStatus.textContent = "듣고 있어요... 씩씩하게 말해보세요!";
+                recordingStatus.classList.remove('text-gray-500');
+                recordingStatus.classList.add('text-red-500');
+                btnRecordSentence.classList.add('scale-110');
+                recognition.start();
+            }
+        });
+
+        // Speech Recognition Logic
+        if (recognition) {
+            recognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript;
+                const targetText = speechData[currentIndex].en;
+                
+                // Compare
+                const score = calculateSimilarity(speechResult, targetText);
+                
+                // Show Feedback Box
+                feedbackBox.classList.remove('hidden');
+                recognizedText.textContent = `"${speechResult}"`;
+                speechMatchPercent.textContent = `일치율: ${score}%`;
+                
+                if (score >= 80) {
+                    encouragementMsg.textContent = "🏆 완벽해요! 진짜 원어민 같은 영단어 발음이에요! 최고!";
+                    encouragementMsg.className = "text-sm font-bold text-green-700 mt-2 text-right animate-bounce";
+                } else if (score >= 50) {
+                    encouragementMsg.textContent = "🌟 정말 잘했어요! 조금만 더 크고 또박또박 연습해 볼까요?";
+                    encouragementMsg.className = "text-sm font-bold text-blue-600 mt-2 text-right";
+                } else {
+                    encouragementMsg.textContent = "🌱 아주 기특해요! 원어민 목소리를 한 번 더 듣고 다시 도전해 봐요!";
+                    encouragementMsg.className = "text-sm font-bold text-amber-600 mt-2 text-right";
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error(event.error);
+                if (event.error === 'not-allowed') {
+                    recordingStatus.textContent = "마이크 사용 권한이 거부되었습니다. 주소창 왼쪽의 자물쇠 아이콘을 눌러 허용해 주세요.";
+                } else {
+                    recordingStatus.textContent = "소리가 잘 들리지 않았어요. 다시 한번 눌러주세요.";
+                }
+                stopRecordingState();
+            };
+
+            recognition.onend = () => {
+                stopRecordingState();
+            };
+        }
+
+        function stopRecordingState() {
+            isRecording = false;
+            recordPing.classList.remove('opacity-100');
+            recordPing.classList.add('opacity-0');
+            recordingStatus.textContent = "마이크 버튼을 눌러 발음을 녹음해 보세요!";
+            recordingStatus.classList.remove('text-red-500');
+            recordingStatus.classList.add('text-gray-500');
+            btnRecordSentence.classList.remove('scale-110');
+        }
+
+        // Initialize App UI
+        updateUI();
+    </script>
+</body>
+</html>
