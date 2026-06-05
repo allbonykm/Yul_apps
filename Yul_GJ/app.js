@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     "description": "성덕대왕신종은 소리가 깊고 은은하며 아주 길게 이어지는 것으로 유명해요. 단지 크고 무겁기 때문이 아니라, 종의 형태가 미세하게 '이것'이어서 신비로운 소리가 반복해서 나는 것이랍니다. 종의 양쪽 모양이 똑같지 않고 살짝 다른 것을 무엇이라고 할까요? (힌트: ㅂㄷㅊ)",
                     "answer": "비대칭",
                     "point": 100,
-                    "image_url": "성덕대왕신종.jpg"
+                    "image_url": "성덕대왕신종.jpeg"
                 },
                 {
                     "id": "m1_5",
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     "description": "신라의 대표적 유물인 이 항아리에는 흙으로 빚은 여러 인형(토우)들이 붙어 있어요. 항아리 몸통에 개구리의 뒷다리를 입에 앙 물고 있는 다리 없는 기다란 동물 인형은 무엇일까요?",
                     "answer": "뱀",
                     "point": 100,
-                    "image_url": "토우장식항아리.jpg"
+                    "image_url": "토우장식항아리.jpeg"
                 },
                 {
                     "id": "m1_6",
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     "description": "이 멋진 신라 금관을 자세히 보면, 머리띠 위에 서 있는 나뭇가지 모양 3개와 또 다른 동물의 뿔 모양 2개가 세워져 있어요. 신라 사람들이 신성하게 여겨 머리관에 멋진 뿔을 장식했던 이 동물의 이름은 무엇일까요? (힌트: ㅅㅅ)",
                     "answer": "사슴",
                     "point": 100,
-                    "image_url": "황남대총 북분 금관.jpg"
+                    "image_url": "황남대총 북분 금관.jpeg"
                 }
             ]
         },
@@ -402,13 +402,10 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         modalDescription.textContent = mission.description;
 
-        // 비밀 오버레이 제어 (잠금 상태에서는 도감 내용 물음표 가림 가능하나, 유물은 힌트로 보이게 오프)
-        modalMysteryOverlay.style.opacity = isCompleted ? '0' : '1';
-        if (isCompleted) {
-            modalMysteryOverlay.style.display = 'none';
-        } else {
-            modalMysteryOverlay.style.display = 'flex';
-        }
+        // 잠금 상태에서도 유물 그림이 힌트로 보이도록 물음표 오버레이 비활성화 및 흑백 필터 연출
+        modalMysteryOverlay.style.display = 'none';
+        modalMysteryOverlay.style.opacity = '0';
+        modalImage.style.filter = isCompleted ? 'none' : 'grayscale(100%) brightness(0.8)';
 
         // 입력 폼 동적 주입
         missionActionArea.innerHTML = '';

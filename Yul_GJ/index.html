@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>⏳ 율이의 경주 타임머신 여행!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <!-- 밤하늘 별 배경 -->
     <div class="stars" id="stars"></div>
@@ -16,11 +20,15 @@
         <!-- 상단 헤더 및 뒤로가기 -->
         <header class="app-header">
             <a href="../index.html" class="back-btn" id="backBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
             </a>
             <div class="header-title">
-                <h1>⏳ 신라 타임머신</h1>
-                <span class="sub-title">경주 보물 도감</span>
+                <h1>⏳ 조율이와 함께 신라 속으로!</h1>
+                <span class="sub-title">경주국립박물관</span>
             </div>
             <button class="settings-btn" id="settingsBtn">⚙️</button>
         </header>
@@ -30,7 +38,7 @@
             <div class="agent-profile">
                 <div class="avatar">👑</div>
                 <div class="agent-info">
-                    <div class="agent-name">율이 특급 요원</div>
+                    <div class="agent-name">조율 요원</div>
                     <div class="agent-status" id="agentStatus">신라 탐험 진행 중...</div>
                 </div>
             </div>
@@ -61,7 +69,8 @@
 
             <!-- 2. 복원된 보물 도감 (컬러 카드, 도감 완료 도장) -->
             <section class="mission-section completed-section">
-                <h2 class="section-title">✨ 복원 완료된 도감 <span class="count-badge completed-badge" id="unlockedCount">0</span></h2>
+                <h2 class="section-title">✨ 복원 완료된 도감 <span class="count-badge completed-badge"
+                        id="unlockedCount">0</span></h2>
                 <div class="treasure-grid" id="unlockedGrid">
                     <!-- JS에서 동적으로 이동됨 (컬러 + 완료 도장) -->
                 </div>
@@ -122,4 +131,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
