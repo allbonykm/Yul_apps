@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>⏳ 율이의 경주 타임머신 여행!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 밤하늘 별 배경 -->
+    <div class="stars" id="stars"></div>
+    <div class="clouds"></div>
+
+    <div class="app-container">
+        <!-- 상단 헤더 및 뒤로가기 -->
+        <header class="app-header">
+            <a href="../index.html" class="back-btn" id="backBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </a>
+            <div class="header-title">
+                <h1>⏳ 신라 타임머신</h1>
+                <span class="sub-title">경주 보물 도감</span>
+            </div>
+            <button class="settings-btn" id="settingsBtn">⚙️</button>
+        </header>
+
+        <!-- 요원 대시보드 -->
+        <section class="agent-dashboard">
+            <div class="agent-profile">
+                <div class="avatar">👑</div>
+                <div class="agent-info">
+                    <div class="agent-name">율이 특급 요원</div>
+                    <div class="agent-status" id="agentStatus">신라 탐험 진행 중...</div>
+                </div>
+            </div>
+            <div class="score-card">
+                <span class="score-label">획득한 에너지 (GP)</span>
+                <div class="score-value" id="currentScore">0 <span class="gp-unit">GP</span></div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+                </div>
+                <div class="progress-text" id="progressText">0 / 9 미션 완료</div>
+            </div>
+        </section>
+
+        <!-- 카테고리 탭 네비게이션 -->
+        <nav class="category-tabs" id="categoryTabs">
+            <!-- JS에서 동적으로 생성 -->
+        </nav>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main class="main-content">
+            <!-- 1. 찾을 보물 도감 (흑백 카드) -->
+            <section class="mission-section">
+                <h2 class="section-title">🗝️ 남은 시간의 수수께끼 <span class="count-badge" id="lockedCount">0</span></h2>
+                <div class="treasure-grid" id="lockedGrid">
+                    <!-- JS에서 동적으로 생성 (흑백) -->
+                </div>
+            </section>
+
+            <!-- 2. 복원된 보물 도감 (컬러 카드, 도감 완료 도장) -->
+            <section class="mission-section completed-section">
+                <h2 class="section-title">✨ 복원 완료된 도감 <span class="count-badge completed-badge" id="unlockedCount">0</span></h2>
+                <div class="treasure-grid" id="unlockedGrid">
+                    <!-- JS에서 동적으로 이동됨 (컬러 + 완료 도장) -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 미션 수행 팝업 모달 -->
+    <div class="modal-overlay" id="missionModal">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="closeModalBtn">&times;</button>
+            <div class="modal-header">
+                <span class="modal-category" id="modalCategory">국립경주박물관</span>
+                <h3 class="modal-title" id="modalTitle">성덕대왕신종</h3>
+            </div>
+            <div class="modal-body">
+                <div class="modal-image-container">
+                    <div class="mystery-overlay" id="modalMysteryOverlay">?</div>
+                    <img src="" alt="유물 이미지" class="modal-image" id="modalImage">
+                </div>
+                <p class="modal-description" id="modalDescription">미션 설명이 들어갑니다.</p>
+
+                <!-- 미션 입력 폼 -->
+                <div class="mission-action-area" id="missionActionArea">
+                    <!-- JS에서 미션 타입별로 동적 폼 주입 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 설정 / 관리자 팝업 모달 -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content admin-modal">
+            <button class="modal-close-btn" id="closeSettingsModalBtn">&times;</button>
+            <div class="modal-header">
+                <h3>🛠️ 아빠 전용 제어판</h3>
+            </div>
+            <div class="modal-body">
+                <p class="admin-notice">이곳은 율이의 신라 타임머신을 리셋하거나 포인트를 관리하는 보호자용 메뉴입니다.</p>
+                <div class="admin-buttons">
+                    <button class="admin-btn reset-btn" id="resetAppBtn">🔄 전체 탐험 초기화</button>
+                    <button class="admin-btn complete-all-btn" id="completeAllBtn">⚡ 모든 도감 복원 (개발용)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 도장 찍기 연출 레이어 -->
+    <div class="stamp-overlay-effect" id="stampOverlayEffect">
+        <div class="stamp-wrapper">
+            <div class="stamp-seal">도감 완료</div>
+        </div>
+    </div>
+
+    <!-- 사운드 효과 (Web Audio API로 대체하거나 오디오 임베딩) -->
+    <audio id="soundStamp" src="https://assets.mixkit.co/active_storage/sfx/2018/2018-84.wav" preload="auto"></audio>
+    <audio id="soundSuccess" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" preload="auto"></audio>
+
+    <script src="app.js"></script>
+</body>
+</html>

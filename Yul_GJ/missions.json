@@ -1,0 +1,103 @@
+[
+  {
+    "category": "국립경주박물관",
+    "missions": [
+      {
+        "id": "m1_1",
+        "title": "성덕대왕신종 (에밀레종)",
+        "type": "quiz",
+        "description": "종 아래 땅을 파고 묻어놓은 커다란 항아리 모양(음통)을 찾아보세요. 이 항아리는 종소리를 더 멀리 울리게 할까요, 아니면 소리를 나지 않게 막을까요?",
+        "answer": "더 멀리 울리게 한다!",
+        "point": 100,
+        "image_url": "bell.jpg"
+      },
+      {
+        "id": "m1_2",
+        "title": "얼굴무늬 수막새",
+        "type": "action",
+        "description": "신라의 미소라고 불리는 기와입니다. 얼굴무늬 수막새 바로 앞에서 수막새와 똑같이 온화한 미소를 지으며 인증샷 찍기!",
+        "answer": "인증샷 촬영 완료",
+        "point": 100,
+        "image_url": "smile_giwa.jpg"
+      },
+      {
+        "id": "m1_3",
+        "title": "금관총 금관",
+        "type": "discovery",
+        "description": "박물관 안에서 가장 반짝반짝 빛나는 신라 왕의 황금 왕관을 찾아 도감을 터치하세요!",
+        "answer": "황금 왕관 발견 완료",
+        "point": 100,
+        "image_url": "gold_crown.jpg"
+      }
+    ]
+  },
+  {
+    "category": "첨성대",
+    "missions": [
+      {
+        "id": "m2_1",
+        "title": "첨성대 몸통",
+        "type": "action",
+        "description": "동양에서 가장 오래된 천문대인 첨성대 앞에서, 온몸으로 첨성대 모양(V자를 거꾸로 뒤집은 모양) 포즈를 잡고 멋지게 사진 찍기!",
+        "answer": "첨성대 포즈 촬영 완료",
+        "point": 100,
+        "image_url": "cheomseongdae.jpg"
+      },
+      {
+        "id": "m2_2",
+        "title": "꼭대기 우물 정(井)자",
+        "type": "quiz",
+        "description": "첨성대 꼭대기를 자세히 보면 돌이 '#' 모양으로 쌓여 있어요. 한자로는 우물을 뜻하는 이 글자의 이름은 무엇일까요?",
+        "answer": "우물 정",
+        "point": 100,
+        "image_url": "top_stone.jpg"
+      }
+    ]
+  },
+  {
+    "category": "동궁과 월지",
+    "missions": [
+      {
+        "id": "m3_1",
+        "title": "야경 비치는 연못",
+        "type": "discovery",
+        "description": "까만 밤하늘과 화려한 궁궐이 거울처럼 똑같이 비치는 아름다운 연못을 찾아 도감을 완성하세요!",
+        "answer": "야경 연못 발견 완료",
+        "point": 100,
+        "image_url": "pond_night.jpg"
+      },
+      {
+        "id": "m3_2",
+        "title": "신라의 주사위, 주령구",
+        "type": "quiz",
+        "description": "신라 귀족들이 놀던 주사위입니다. 일반 주사위는 6면이지만, 이 주령구는 총 몇 개의 면으로 이루어져 있을까요? 현장 안내판에서 숫자를 찾아보세요!",
+        "answer": "14면",
+        "point": 100,
+        "image_url": "dice.jpg"
+      }
+    ]
+  },
+  {
+    "category": "라한셀렉트 경주",
+    "missions": [
+      {
+        "id": "m4_1",
+        "title": "보문호수 뷰",
+        "type": "action",
+        "description": "라한셀렉트 숙소 또는 테라스에서 탁 트인 보문호수를 배경으로 멋진 기념사진 남기기!",
+        "answer": "보문호수 인증샷 촬영 완료",
+        "point": 100,
+        "image_url": "lake_view.jpg"
+      },
+      {
+        "id": "m4_2",
+        "title": "경주산책 (북카페)",
+        "type": "discovery",
+        "description": "라한셀렉트 내에 있는 북카페 '경주산책'에 방문하여 마음에 드는 공간을 발견하고 타임머신 임무를 공식 종료합니다.",
+        "answer": "경주산책 방문 완료",
+        "point": 100,
+        "image_url": "book_cafe.jpg"
+      }
+    ]
+  }
+]
