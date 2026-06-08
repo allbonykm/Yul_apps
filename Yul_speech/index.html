@@ -95,9 +95,14 @@
                         </button>
 
                         <!-- Record Button -->
-                        <button id="btnRecordSentence" class="w-20 h-20 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all relative" title="내 목소리 녹음하기">
+                        <button id="btnRecordSentence" class="w-20 h-20 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all relative disabled:opacity-50 disabled:pointer-events-none" title="내 목소리 녹음 시작하기">
                             <span class="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-0 animate-ping" id="recordPing"></span>
                             <i data-lucide="mic" class="w-10 h-10 z-10"></i>
+                        </button>
+
+                        <!-- Record Stop Button -->
+                        <button id="btnStopRecord" class="w-16 h-16 rounded-full bg-gray-400 text-white hover:bg-gray-500 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none" title="녹음 완료 및 중지" disabled>
+                            <i data-lucide="square" class="w-7 h-7"></i>
                         </button>
 
                         <!-- Toggle Translation Button -->
@@ -230,6 +235,7 @@
         
         const btnPlaySentence = document.getElementById('btnPlaySentence');
         const btnRecordSentence = document.getElementById('btnRecordSentence');
+        const btnStopRecord = document.getElementById('btnStopRecord');
         const btnToggleTranslation = document.getElementById('btnToggleTranslation');
         const recordPing = document.getElementById('recordPing');
         const recordingStatus = document.getElementById('recordingStatus');
@@ -395,91 +401,107 @@
                 return;
             }
 
-            if (isRecording) {
-                // 이미 녹음 중인 경우 즉시 강제 취소 및 UI 초기화
-                try {
-                    if (recognition) recognition.abort();
-                } catch (e) {
-                    console.error("SpeechRecognition abort error:", e);
+            if (isRecording) return; // 이미 녹음 중이면 중복 방지
+
+            // 1. 녹음 시작 전 실행 중인 TTS를 확실하게 취소하여 오디오 세션 충돌 방지
+            window.speechSynthesis.cancel();
+
+            // 2. 매 녹음 시작 시마다 인스턴스를 새로 동적 할당하여 iOS Safari 등에서의 마이크 잠김 버그 예방
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+
+            // 음성 인식 결과 핸들러
+            recognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript;
+                const targetText = speechData[currentIndex].en;
+                
+                // 일치율 비교
+                const score = calculateSimilarity(speechResult, targetText);
+                
+                // 피드백 창 표기
+                feedbackBox.classList.remove('hidden');
+                recognizedText.textContent = `"${speechResult}"`;
+                speechMatchPercent.textContent = `일치율: ${score}%`;
+                
+                if (score >= 80) {
+                    encouragementMsg.textContent = "🏆 완벽해요! 진짜 원어민 같은 영단어 발음이에요! 최고!";
+                    encouragementMsg.className = "text-sm font-bold text-green-700 mt-2 text-right animate-bounce";
+                    
+                    // 현재 문장 최초 성공 시 100 게코 포인트 지급
+                    if (!rewardedSentences.has(currentIndex)) {
+                        rewardedSentences.add(currentIndex);
+                        geckoPoints += 100;
+                        document.getElementById('geckoPoints').textContent = geckoPoints;
+                        encouragementMsg.textContent += " (+100 Gecko Point! 🎉)";
+                    }
+                } else if (score >= 50) {
+                    encouragementMsg.textContent = "🌟 정말 잘했어요! 조금만 더 크고 또박또박 연습해 볼까요?";
+                    encouragementMsg.className = "text-sm font-bold text-blue-600 mt-2 text-right";
+                } else {
+                    encouragementMsg.textContent = "🌱 아주 기특해요! 원어민 목소리를 한 번 더 듣고 다시 도전해 봐요!";
+                    encouragementMsg.className = "text-sm font-bold text-amber-600 mt-2 text-right";
+                }
+            };
+
+            // 음성 인식 에러 핸들러
+            recognition.onerror = (event) => {
+                console.error("STT Error:", event.error);
+                // 사용자가 수동 취소(abort)한 경우에는 경고 메시지를 띄우지 않고 조용히 리턴
+                if (event.error === 'aborted') {
+                    return;
+                }
+                if (event.error === 'not-allowed') {
+                    recordingStatus.textContent = "마이크 사용 권한이 거부되었습니다. 설정에서 마이크를 허용해 주세요.";
+                } else if (event.error === 'no-speech') {
+                    recordingStatus.textContent = "소리가 들리지 않았어요. 마이크 버튼 클릭 후 바로 크게 말씀해 주세요.";
+                } else {
+                    recordingStatus.textContent = "소리가 잘 들리지 않았어요. 다시 한번 눌러주세요.";
                 }
                 stopRecordingState();
-            } else {
-                // 1. 녹음 시작 전 실행 중인 TTS를 확실하게 취소하여 오디오 세션 충돌 방지
-                window.speechSynthesis.cancel();
+            };
 
-                isRecording = true;
-                recordPing.classList.remove('opacity-0');
-                recordPing.classList.add('opacity-100');
-                recordingStatus.textContent = "듣고 있어요! 바로 큰 소리로 씩씩하게 말해주세요!";
-                recordingStatus.classList.remove('text-gray-500');
-                recordingStatus.classList.add('text-red-500');
-                btnRecordSentence.classList.add('scale-110');
+            // 세션 종료 핸들러
+            recognition.onend = () => {
+                stopRecordingState();
+            };
 
-                // 2. 매 녹음 시작 시마다 인스턴스를 새로 동적 할당하여 iOS Safari 등에서의 마이크 잠김 버그 예방
-                recognition = new SpeechRecognition();
-                recognition.continuous = false;
-                recognition.lang = 'en-US';
-                recognition.interimResults = false;
-
-                // 음성 인식 결과 핸들러
-                recognition.onresult = (event) => {
-                    const speechResult = event.results[0][0].transcript;
-                    const targetText = speechData[currentIndex].en;
-                    
-                    // 일치율 비교
-                    const score = calculateSimilarity(speechResult, targetText);
-                    
-                    // 피드백 창 표기
-                    feedbackBox.classList.remove('hidden');
-                    recognizedText.textContent = `"${speechResult}"`;
-                    speechMatchPercent.textContent = `일치율: ${score}%`;
-                    
-                    if (score >= 80) {
-                        encouragementMsg.textContent = "🏆 완벽해요! 진짜 원어민 같은 영단어 발음이에요! 최고!";
-                        encouragementMsg.className = "text-sm font-bold text-green-700 mt-2 text-right animate-bounce";
-                        
-                        // 현재 문장 최초 성공 시 100 게코 포인트 지급
-                        if (!rewardedSentences.has(currentIndex)) {
-                            rewardedSentences.add(currentIndex);
-                            geckoPoints += 100;
-                            document.getElementById('geckoPoints').textContent = geckoPoints;
-                            encouragementMsg.textContent += " (+100 Gecko Point! 🎉)";
-                        }
-                    } else if (score >= 50) {
-                        encouragementMsg.textContent = "🌟 정말 잘했어요! 조금만 더 크고 또박또박 연습해 볼까요?";
-                        encouragementMsg.className = "text-sm font-bold text-blue-600 mt-2 text-right";
-                    } else {
-                        encouragementMsg.textContent = "🌱 아주 기특해요! 원어민 목소리를 한 번 더 듣고 다시 도전해 봐요!";
-                        encouragementMsg.className = "text-sm font-bold text-amber-600 mt-2 text-right";
-                    }
-                };
-
-                // 음성 인식 에러 핸들러
-                recognition.onerror = (event) => {
-                    console.error("STT Error:", event.error);
-                    // 사용자가 수동 취소(abort)한 경우에는 경고 메시지를 띄우지 않고 조용히 리턴
-                    if (event.error === 'aborted') {
-                        return;
-                    }
-                    if (event.error === 'not-allowed') {
-                        recordingStatus.textContent = "마이크 사용 권한이 거부되었습니다. 설정에서 마이크를 허용해 주세요.";
-                    } else if (event.error === 'no-speech') {
-                        recordingStatus.textContent = "소리가 들리지 않았어요. 마이크 버튼 클릭 후 바로 크게 말씀해 주세요.";
-                    } else {
-                        recordingStatus.textContent = "소리가 잘 들리지 않았어요. 다시 한번 눌러주세요.";
-                    }
-                    stopRecordingState();
-                };
-
-                // 세션 종료 핸들러
-                recognition.onend = () => {
-                    stopRecordingState();
-                };
-
-                // 인식 시작
-                recognition.start();
-            }
+            // UI 상태 반영 및 인식 시작
+            startRecordingState();
+            recognition.start();
         });
+
+        // 녹음 완료 및 중지 버튼 이벤트 핸들러
+        btnStopRecord.addEventListener('click', () => {
+            if (!isRecording) return;
+            
+            try {
+                if (recognition) {
+                    // stop()을 호출하여 현재까지 말한 내용을 분석하도록 유도
+                    recognition.stop();
+                }
+            } catch (e) {
+                console.error("SpeechRecognition stop error:", e);
+            }
+            stopRecordingState();
+        });
+
+        function startRecordingState() {
+            isRecording = true;
+            recordPing.classList.remove('opacity-0');
+            recordPing.classList.add('opacity-100');
+            recordingStatus.textContent = "듣고 있어요! 바로 큰 소리로 씩씩하게 말해주세요!";
+            recordingStatus.classList.remove('text-gray-500');
+            recordingStatus.classList.add('text-red-500');
+            btnRecordSentence.classList.add('scale-105');
+            btnRecordSentence.disabled = true;
+            
+            // 녹음 완료/중지 버튼 활성화
+            btnStopRecord.disabled = false;
+            btnStopRecord.classList.remove('bg-gray-400', 'hover:bg-gray-500');
+            btnStopRecord.classList.add('bg-red-500', 'hover:bg-red-600');
+        }
 
         function stopRecordingState() {
             isRecording = false;
@@ -488,7 +510,13 @@
             recordingStatus.textContent = "마이크 버튼을 눌러 발음을 녹음해 보세요!";
             recordingStatus.classList.remove('text-red-500');
             recordingStatus.classList.add('text-gray-500');
-            btnRecordSentence.classList.remove('scale-110');
+            btnRecordSentence.classList.remove('scale-105');
+            btnRecordSentence.disabled = false;
+            
+            // 녹음 완료/중지 버튼 비활성화
+            btnStopRecord.disabled = true;
+            btnStopRecord.classList.remove('bg-red-500', 'hover:bg-red-600');
+            btnStopRecord.classList.add('bg-gray-400', 'hover:bg-gray-500');
         }
 
         // Initialize App UI
