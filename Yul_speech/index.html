@@ -66,12 +66,12 @@
             <div id="sentencePractice" class="block">
                 <!-- Progress Bar -->
                 <div class="w-full bg-gray-100 rounded-full h-3.5 mb-6 relative">
-                    <div id="progressBar" class="bg-green-500 h-3.5 rounded-full transition-all duration-500" style="width: 16.6%"></div>
+                    <div id="progressBar" class="bg-green-500 h-3.5 rounded-full transition-all duration-500" style="width: 14.3%"></div>
                 </div>
 
                 <!-- Sentence Display Box -->
                 <div class="text-center py-8 px-4 bg-green-50 rounded-2xl border border-green-100 min-h-[180px] flex flex-col justify-center items-center relative overflow-hidden">
-                    <span id="sentenceNumber" class="absolute top-3 left-4 text-xs font-bold text-green-700 bg-green-200/60 px-2.5 py-1 rounded-full">문장 1 / 6</span>
+                    <span id="sentenceNumber" class="absolute top-3 left-4 text-xs font-bold text-green-700 bg-green-200/60 px-2.5 py-1 rounded-full">문장 1 / 7</span>
                     
                     <p id="targetEnglish" class="text-2xl md:text-3xl font-bold text-gray-800 leading-relaxed break-keep english-text"></p>
                     <p id="targetKorean" class="text-base md:text-lg text-green-700 font-semibold mt-4 transition-opacity duration-300"></p>
@@ -142,7 +142,7 @@
 
                 <div class="p-6 bg-amber-50/55 rounded-2xl border border-amber-200 mb-6">
                     <p class="text-xl md:text-2xl text-gray-800 leading-relaxed font-semibold break-keep english-text" id="fullParagraphText">
-                        My dream is to be a lizard cafe owner. I want to be a lizard cafe owner because I like crested geckos and yummy bread. A lizard cafe owner helps people find cute lizard friends. They sell coffee and raise 100 lizards. I became interested in this job when I felt the soft lizard on my hand. I will study about lizards and baking. I will take good care of my lizards. I believe I can make a happy lizard cafe. I will make my dream come true!
+                        Hello, everyone! My name is Yul Cho. I'm nine years old and I'm in the second grade. My dream is to be a lizard cafe owner. I want to be a lizard cafe owner because I like crested geckos and yummy bread. A lizard cafe owner helps people find cute lizard friends. They sell coffee and raise 100 lizards. I became interested in this job when I felt the soft lizard on my hand. I will study about lizards and baking. I will take good care of my lizards. I believe I can make a happy lizard cafe. I will make my dream come true!
                     </p>
                 </div>
 
@@ -174,6 +174,10 @@
         // 1. Data Definition
         const speechData = [
             {
+                en: "Hello, everyone! My name is Yul Cho. I'm nine years old and I'm in the second grade.",
+                ko: "여러분 안녕하세요! 제 이름은 조율입니다. 저는 아홉 살이고 초등학교 2학년입니다."
+            },
+            {
                 en: "My dream is to be a lizard cafe owner.",
                 ko: "내 꿈은 도마뱀 카페 주인이 되는 거예요."
             },
@@ -200,6 +204,7 @@
         ];
 
         const mascotCheers = [
+            "멋진 자기소개였어! 자신감 있게 스피치를 시작해볼까? 🎤",
             "진짜 원어민처럼 멋진 발음이었어! 🦎",
             "빵 굽는 냄새가 여기까지 나는 것 같아! 최고야! 🥐",
             "눈을 크게 뜨고 손동작도 섞어서 말해보자! ✨",
@@ -262,7 +267,12 @@
         // 4. Speech Synthesis Function (TTS)
         function speakText(text) {
             window.speechSynthesis.cancel(); // Stop any ongoing speech
-            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // TTS 발음 교정: gecko/geckos가 "제코"로 발음되는 현상을 "게코"로 교정하기 위해 ghecko/gheckos로 치환하여 발음하도록 함
+            let pronunciationText = text;
+            pronunciationText = pronunciationText.replace(/geckos/gi, 'gheckos').replace(/gecko/gi, 'ghecko');
+
+            const utterance = new SpeechSynthesisUtterance(pronunciationText);
             utterance.lang = 'en-US';
             utterance.rate = parseFloat(speedRange.value);
             window.speechSynthesis.speak(utterance);
@@ -386,7 +396,13 @@
             }
 
             if (isRecording) {
-                if (recognition) recognition.stop();
+                // 이미 녹음 중인 경우 즉시 강제 취소 및 UI 초기화
+                try {
+                    if (recognition) recognition.abort();
+                } catch (e) {
+                    console.error("SpeechRecognition abort error:", e);
+                }
+                stopRecordingState();
             } else {
                 // 1. 녹음 시작 전 실행 중인 TTS를 확실하게 취소하여 오디오 세션 충돌 방지
                 window.speechSynthesis.cancel();
@@ -441,6 +457,10 @@
                 // 음성 인식 에러 핸들러
                 recognition.onerror = (event) => {
                     console.error("STT Error:", event.error);
+                    // 사용자가 수동 취소(abort)한 경우에는 경고 메시지를 띄우지 않고 조용히 리턴
+                    if (event.error === 'aborted') {
+                        return;
+                    }
                     if (event.error === 'not-allowed') {
                         recordingStatus.textContent = "마이크 사용 권한이 거부되었습니다. 설정에서 마이크를 허용해 주세요.";
                     } else if (event.error === 'no-speech') {
