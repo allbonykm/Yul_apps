@@ -84,13 +84,23 @@
             <button class="modal-close-btn" id="closeModalBtn">&times;</button>
             <div class="modal-header">
                 <span class="modal-category" id="modalCategory">국립경주박물관</span>
-                <h3 class="modal-title" id="modalTitle">성덕대왕신종</h3>
+                <div class="modal-title-area">
+                    <h3 class="modal-title" id="modalTitle">성덕대왕신종</h3>
+                    <span class="modal-heritage-badge" id="modalHeritageBadge" style="display: none;"></span>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="modal-image-container">
                     <div class="mystery-overlay" id="modalMysteryOverlay">?</div>
                     <img src="" alt="유물 이미지" class="modal-image" id="modalImage">
                 </div>
+                
+                <!-- 초2 맞춤 문화재 설명 상자 -->
+                <div class="heritage-explain-box" id="heritageExplainBox">
+                    <div class="explain-header">🔍 문화재 돋보기</div>
+                    <div class="explain-content" id="heritageExplainContent">국보나 보물에 대한 설명이 들어갑니다.</div>
+                </div>
+
                 <p class="modal-description" id="modalDescription">미션 설명이 들어갑니다.</p>
 
                 <!-- 미션 입력 폼 -->

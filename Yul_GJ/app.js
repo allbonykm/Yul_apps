@@ -29,6 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalMysteryOverlay = document.getElementById('modalMysteryOverlay');
     const modalDescription = document.getElementById('modalDescription');
     const missionActionArea = document.getElementById('missionActionArea');
+    const modalHeritageBadge = document.getElementById('modalHeritageBadge');
+    const heritageExplainBox = document.getElementById('heritageExplainBox');
+    const heritageExplainContent = document.getElementById('heritageExplainContent');
 
     // 설정 모달 요소
     const settingsBtn = document.getElementById('settingsBtn');
@@ -204,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     "id": "m1_18",
                     "title": "동물 모양의 서수모양 주전자",
                     "type": "quiz",
-                    "description": "이 그릇은 몸통은 거북이, 머리와 꼬리는 용의 모양을 하고 있어요. 등에는 물을 넣는 구멍이 있고 가슴에는 물을 따르는 부리가 달린 '이 도구'예요. 차나 물을 담아 따르는 이 도구는 무엇일까요? (힌트: ㅈㅈㄴ)",
+                    "description": "이 그릇은 몸통은 거북이, 머리와 꼬리는 용의 모양을 하고 있어요. 등에는 물을 넣는 구멍이 있고 가슴에는 물을 따르는 부리가 달린 '이 도구'예요. 차나 물을 담아 따르는 이 도구는 무엇일까요? (힌트: ㅈㅈㅈ)",
                     "answer": "주전자",
                     "point": 100,
                     "image_url": "서수모양 주전자.jpg"
@@ -484,6 +487,31 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         imgWrapper.appendChild(img);
 
+        // 국보/보물 뱃지 생성 (카드의 좌측 상단 모서리)
+        if (mission.heritage_type) {
+            const badgeWrapper = document.createElement('div');
+            badgeWrapper.className = 'heritage-badge-wrapper';
+            
+            const badge = document.createElement('span');
+            badge.className = 'heritage-badge';
+            
+            if (mission.heritage_type === '국보') {
+                badge.classList.add('national-treasure');
+                badge.textContent = '👑 국보';
+            } else if (mission.heritage_type === '보물') {
+                badge.classList.add('treasure');
+                badge.textContent = '💎 보물';
+            } else if (mission.heritage_type === '사적') {
+                badge.classList.add('historical-site');
+                badge.textContent = '🏛️ 사적';
+            }
+            
+            if (badge.classList.contains('national-treasure') || badge.classList.contains('treasure') || badge.classList.contains('historical-site')) {
+                badgeWrapper.appendChild(badge);
+                imgWrapper.appendChild(badgeWrapper);
+            }
+        }
+
         // 완성 도장 (미니)
         if (isCompleted) {
             const stampMini = document.createElement('div');
@@ -545,6 +573,43 @@ document.addEventListener('DOMContentLoaded', () => {
             modalImage.src = 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?auto=format&fit=crop&w=800&q=80';
         };
         modalDescription.textContent = mission.description;
+
+        // 국보/보물 뱃지 설정 및 설명 토글 제어
+        if (mission.heritage_type) {
+            modalHeritageBadge.style.display = 'inline-flex';
+            modalHeritageBadge.className = 'modal-heritage-badge'; // 기존 클래스 리셋
+            
+            if (mission.heritage_type === '국보') {
+                modalHeritageBadge.classList.add('national-treasure');
+                modalHeritageBadge.textContent = '👑 국보';
+            } else if (mission.heritage_type === '보물') {
+                modalHeritageBadge.classList.add('treasure');
+                modalHeritageBadge.textContent = '💎 보물';
+            } else if (mission.heritage_type === '사적') {
+                modalHeritageBadge.classList.add('historical-site');
+                modalHeritageBadge.textContent = '🏛️ 사적';
+            } else {
+                modalHeritageBadge.style.display = 'none';
+            }
+        } else {
+            modalHeritageBadge.style.display = 'none';
+        }
+
+        // 설명 박스 기본 닫힘 및 뱃지 클릭 이벤트 바인딩
+        heritageExplainBox.classList.remove('active');
+        
+        modalHeritageBadge.onclick = () => {
+            if (mission.heritage_type === '국보') {
+                heritageExplainContent.innerHTML = '👑 <strong>국보</strong>는 우리나라에 딱 하나밖에 없거나 정말정말 소중해서 나라의 대표가 된 엄청난 보물이에요!';
+                heritageExplainBox.classList.toggle('active');
+            } else if (mission.heritage_type === '보물') {
+                heritageExplainContent.innerHTML = '💎 <strong>보물</strong>은 옛날 조상님들의 모습을 알 수 있는 아주 귀하고 훌륭한 가치를 인정받은 멋진 보물이에요!';
+                heritageExplainBox.classList.toggle('active');
+            } else if (mission.heritage_type === '사적') {
+                heritageExplainContent.innerHTML = '🏛️ <strong>사적</strong>은 옛날 조상님들이 살았거나 역사적으로 아주 특별한 일이 있었던 소중한 장소예요!';
+                heritageExplainBox.classList.toggle('active');
+            }
+        };
 
         // 잠금 상태에서도 유물 그림이 힌트로 보이도록 물음표 오버레이 비활성화 및 흑백 필터 연출
         modalMysteryOverlay.style.display = 'none';

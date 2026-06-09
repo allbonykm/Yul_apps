@@ -842,3 +842,122 @@ body {
     60% { transform: translate(-3px, -2px) rotate(-0.2deg); }
     80% { transform: translate(2px, 3px) rotate(0.1deg); }
 }
+
+/* 문화재 뱃지 및 설명창 스타일 */
+.heritage-badge-wrapper {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 3;
+}
+
+.heritage-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 3px 7px;
+    border-radius: 10px;
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.heritage-badge:hover {
+    transform: scale(1.05);
+}
+
+.heritage-badge.national-treasure {
+    background: linear-gradient(135deg, #FF4E50, #F9D423); /* 화려한 주황-골드 */
+}
+
+.heritage-badge.treasure {
+    background: linear-gradient(135deg, #00c6ff, #0072ff); /* 청량한 파란-하늘 */
+}
+
+.heritage-badge.historical-site {
+    background: linear-gradient(135deg, #11998e, #38ef7d); /* 에메랄드 초록 */
+}
+
+/* 모달 타이틀 영역 정렬 */
+.modal-title-area {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.modal-heritage-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    animation: pulseBadge 2s infinite;
+}
+
+@keyframes pulseBadge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2); }
+}
+
+.modal-heritage-badge.national-treasure {
+    background: linear-gradient(135deg, #FF4E50, #F9D423);
+}
+
+.modal-heritage-badge.treasure {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+}
+
+.modal-heritage-badge.historical-site {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+/* 초2 맞춤 문화재 설명 박스 */
+.heritage-explain-box {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: var(--border-radius-md);
+    padding: 12px 14px;
+    margin: 12px 0 20px 0;
+    display: none;
+    animation: slideDownFade 0.3s ease forwards;
+}
+
+.heritage-explain-box.active {
+    display: block;
+}
+
+.explain-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-gold);
+    margin-bottom: 6px;
+}
+
+.explain-content {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--color-text-light);
+}
+
+@keyframes slideDownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
