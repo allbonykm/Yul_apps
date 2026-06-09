@@ -330,6 +330,18 @@
             return Math.round((matches / Math.max(words1.length, words2.length)) * 100);
         }
 
+        // 6.5. Abort current recording
+        function abortRecording() {
+            if (isRecording && recognition) {
+                try {
+                    recognition.abort();
+                } catch (e) {
+                    console.error("SpeechRecognition abort error:", e);
+                }
+                stopRecordingState();
+            }
+        }
+
         // 7. Event Listeners
         
         // Speed slider
@@ -339,6 +351,7 @@
 
         // Mode Toggles
         btnSentenceMode.addEventListener('click', () => {
+            abortRecording();
             currentMode = 'sentence';
             btnSentenceMode.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-sm font-bold bg-green-600 text-white transition-all shadow-sm";
             btnParagraphMode.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-green-50 transition-all";
@@ -348,6 +361,7 @@
         });
 
         btnParagraphMode.addEventListener('click', () => {
+            abortRecording();
             currentMode = 'paragraph';
             btnParagraphMode.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-sm font-bold bg-green-600 text-white transition-all shadow-sm";
             btnSentenceMode.className = "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-green-50 transition-all";
@@ -357,6 +371,7 @@
 
         // Play Sentence TTS
         btnPlaySentence.addEventListener('click', () => {
+            abortRecording();
             speakText(speechData[currentIndex].en);
         });
 
@@ -368,6 +383,7 @@
 
         // Navigate Next / Prev
         btnNext.addEventListener('click', () => {
+            abortRecording();
             if (currentIndex < speechData.length - 1) {
                 currentIndex++;
             } else {
@@ -381,6 +397,7 @@
         });
 
         btnPrev.addEventListener('click', () => {
+            abortRecording();
             if (currentIndex > 0) {
                 currentIndex--;
                 updateUI();
@@ -389,6 +406,7 @@
 
         // Play All (Paragraph Mode)
         btnPlayAll.addEventListener('click', () => {
+            abortRecording();
             const allText = speechData.map(item => item.en).join(' ');
             speakText(allText);
         });
@@ -450,6 +468,7 @@
                 console.error("STT Error:", event.error);
                 // 사용자가 수동 취소(abort)한 경우에는 경고 메시지를 띄우지 않고 조용히 리턴
                 if (event.error === 'aborted') {
+                    stopRecordingState();
                     return;
                 }
                 if (event.error === 'not-allowed') {
@@ -484,7 +503,6 @@
             } catch (e) {
                 console.error("SpeechRecognition stop error:", e);
             }
-            stopRecordingState();
         });
 
         function startRecordingState() {
