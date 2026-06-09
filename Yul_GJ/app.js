@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 미션 데이터 초기 로드
     async function loadMissions() {
         try {
-            const response = await fetch('missions.json');
+            const response = await fetch('missions.json?v=1.1');
             if (!response.ok) throw new Error('네트워크 응답 오류');
             missionsData = await response.json();
         } catch (error) {
