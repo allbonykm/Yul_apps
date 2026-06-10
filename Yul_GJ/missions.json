@@ -306,6 +306,16 @@
         "point": 100,
         "image_url": "top_stone.jpg",
         "heritage_type": "국보"
+      },
+      {
+        "id": "m2_3",
+        "title": "별을 관측하던 첨성대",
+        "type": "quiz",
+        "description": "신라 선덕여왕 때 세워진, 동양에서 가장 오래된 별을 보는 관측대예요. 돌을 동그랗고 높게 쌓아 올린 이 유명한 건물의 이름은 무엇일까요? (힌트: ㅊㅅㄷ)",
+        "answer": "첨성대",
+        "point": 100,
+        "image_url": "첨성대.jpg",
+        "heritage_type": "국보"
       }
     ]
   },
@@ -331,6 +341,16 @@
         "point": 100,
         "image_url": "dice.jpg",
         "heritage_type": "사적"
+      },
+      {
+        "id": "m3_3",
+        "title": "손님을 맞이하던 동궁과 월지",
+        "type": "quiz",
+        "description": "신라 왕궁의 별궁터로, 나라에 기쁜 일이 있을 때 귀한 손님들을 모셔 잔치를 열던 곳이에요. 아름다운 연못인 '안압지'와 함께 불리는 이곳의 이름은 무엇일까요? (힌트: ㄷㄱㄱㅇㅈ)",
+        "answer": "동궁과 월지",
+        "point": 100,
+        "image_url": "동궁과 월지.jpg",
+        "heritage_type": "사적"
       }
     ]
   },
@@ -355,6 +375,16 @@
         "answer": "경주산책 방문 완료",
         "point": 100,
         "image_url": "book_cafe.jpg",
+        "heritage_type": ""
+      },
+      {
+        "id": "m4_3",
+        "title": "아름다운 인공 호수, 보문호",
+        "type": "quiz",
+        "description": "경주 보문관광단지에 있는 아주 크고 아름다운 호수예요. 봄이 되면 주변에 벚꽃이 예쁘게 피어나고 산책하기 좋은 이 호수의 이름은 무엇일까요? (힌트: ㅂㅁㅎ)",
+        "answer": "보문호",
+        "point": 100,
+        "image_url": "보문호.jpg",
         "heritage_type": ""
       }
     ]

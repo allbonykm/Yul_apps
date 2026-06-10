@@ -269,7 +269,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     "description": "첨성대 꼭대기를 자세히 보면 돌이 '#' 모양으로 쌓여 있어요. 한자로는 우물을 뜻하는 이 글자의 이름은 무엇일까요?",
                     "answer": "우물 정",
                     "point": 100,
-                    "image_url": "top_stone.jpg"
+                    "image_url": "top_stone.jpg",
+                    "heritage_type": "국보"
+                },
+                {
+                    "id": "m2_3",
+                    "title": "별을 관측하던 첨성대",
+                    "type": "quiz",
+                    "description": "신라 선덕여왕 때 세워진, 동양에서 가장 오래된 별을 보는 관측대예요. 돌을 동그랗고 높게 쌓아 올린 이 유명한 건물의 이름은 무엇일까요? (힌트: ㅊㅅㄷ)",
+                    "answer": "첨성대",
+                    "point": 100,
+                    "image_url": "첨성대.jpg",
+                    "heritage_type": "국보"
                 }
             ]
         },
@@ -292,7 +303,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     "description": "신라 귀족들이 놀던 주사위입니다. 일반 주사위는 6면이지만, 이 주령구는 총 몇 개의 면으로 이루어져 있을까요? 현장 안내판에서 숫자를 찾아보세요!",
                     "answer": "14면",
                     "point": 100,
-                    "image_url": "dice.jpg"
+                    "image_url": "dice.jpg",
+                    "heritage_type": "사적"
+                },
+                {
+                    "id": "m3_3",
+                    "title": "손님을 맞이하던 동궁과 월지",
+                    "type": "quiz",
+                    "description": "신라 왕궁의 별궁터로, 나라에 기쁜 일이 있을 때 귀한 손님들을 모셔 잔치를 열던 곳이에요. 아름다운 연못인 '안압지'와 함께 불리는 이곳의 이름은 무엇일까요? (힌트: ㄷㄱㄱㅇㅈ)",
+                    "answer": "동궁과 월지",
+                    "point": 100,
+                    "image_url": "동궁과 월지.jpg",
+                    "heritage_type": "사적"
                 }
             ]
         },
@@ -315,7 +337,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     "description": "라한셀렉트 내에 있는 북카페 '경주산책'에 방문하여 마음에 드는 공간을 발견하고 타임머신 임무를 공식 종료합니다.",
                     "answer": "경주산책 방문 완료",
                     "point": 100,
-                    "image_url": "book_cafe.jpg"
+                    "image_url": "book_cafe.jpg",
+                    "heritage_type": ""
+                },
+                {
+                    "id": "m4_3",
+                    "title": "아름다운 인공 호수, 보문호",
+                    "type": "quiz",
+                    "description": "경주 보문관광단지에 있는 아주 크고 아름다운 호수예요. 봄이 되면 주변에 벚꽃이 예쁘게 피어나고 산책하기 좋은 이 호수의 이름은 무엇일까요? (힌트: ㅂㅁㅎ)",
+                    "answer": "보문호",
+                    "point": 100,
+                    "image_url": "보문호.jpg",
+                    "heritage_type": ""
                 }
             ]
         }
@@ -324,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 미션 데이터 초기 로드
     async function loadMissions() {
         try {
-            const response = await fetch('missions.json?v=1.1');
+            const response = await fetch('missions.json?v=1.2');
             if (!response.ok) throw new Error('네트워크 응답 오류');
             missionsData = await response.json();
         } catch (error) {
