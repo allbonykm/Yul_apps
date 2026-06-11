@@ -359,6 +359,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     "point": 100,
                     "image_url": "울부짖는 형상들.webp",
                     "heritage_type": "미술품"
+                },
+                {
+                    "id": "m4_5",
+                    "title": "풍요",
+                    "type": "action",
+                    "description": "라한셀렉트 호텔 안에 전시된 김수현 조각가님의 '풍요' 조각상 앞에서, 넉넉하고 둥글둥글한 느낌의 포즈를 취하고 인증 사진을 찍어 도감을 완성하세요!",
+                    "answer": "인증샷 촬영 완료",
+                    "point": 100,
+                    "image_url": "풍요.webp",
+                    "heritage_type": "미술품"
+                },
+                {
+                    "id": "m4_6",
+                    "title": "Untitled 1990",
+                    "type": "action",
+                    "description": "라한셀렉트 호텔 안에 전시된 클로드 비알라 작가님의 'Untitled 1990(무제 1990)' 그림 앞에서, 상상력을 자극하는 멋진 포즈로 인증 사진을 찍어 도감을 완성하세요!",
+                    "answer": "인증샷 촬영 완료",
+                    "point": 100,
+                    "image_url": "Untitled 1990.webp",
+                    "heritage_type": "미술품"
                 }
             ]
         }
@@ -367,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 미션 데이터 초기 로드
     async function loadMissions() {
         try {
-            const response = await fetch('missions.json?v=1.3');
+            const response = await fetch('missions.json?v=1.4');
             if (!response.ok) throw new Error('네트워크 응답 오류');
             missionsData = await response.json();
         } catch (error) {
