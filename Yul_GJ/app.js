@@ -254,25 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
             "category": "첨성대",
             "missions": [
                 {
-                    "id": "m2_1",
-                    "title": "첨성대 몸통",
-                    "type": "action",
-                    "description": "동양에서 가장 오래된 천문대인 첨성대 앞에서, 온몸으로 첨성대 모양(V자를 거꾸로 뒤집은 모양) 포즈를 잡고 멋지게 사진 찍기!",
-                    "answer": "첨성대 포즈 촬영 완료",
-                    "point": 100,
-                    "image_url": "cheomseongdae.jpg"
-                },
-                {
-                    "id": "m2_2",
-                    "title": "꼭대기 우물 정(井)자",
-                    "type": "quiz",
-                    "description": "첨성대 꼭대기를 자세히 보면 돌이 '#' 모양으로 쌓여 있어요. 한자로는 우물을 뜻하는 이 글자의 이름은 무엇일까요?",
-                    "answer": "우물 정",
-                    "point": 100,
-                    "image_url": "top_stone.jpg",
-                    "heritage_type": "국보"
-                },
-                {
                     "id": "m2_3",
                     "title": "별을 관측하던 첨성대",
                     "type": "quiz",
@@ -288,25 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
             "category": "동궁과 월지",
             "missions": [
                 {
-                    "id": "m3_1",
-                    "title": "야경 비치는 연못",
-                    "type": "discovery",
-                    "description": "까만 밤하늘과 화려한 궁궐이 거울처럼 똑같이 비치는 아름다운 연못을 찾아 도감을 완성하세요!",
-                    "answer": "야경 연못 발견 완료",
-                    "point": 100,
-                    "image_url": "pond_night.jpg"
-                },
-                {
-                    "id": "m3_2",
-                    "title": "신라의 주사위, 주령구",
-                    "type": "quiz",
-                    "description": "신라 귀족들이 놀던 주사위입니다. 일반 주사위는 6면이지만, 이 주령구는 총 몇 개의 면으로 이루어져 있을까요? 현장 안내판에서 숫자를 찾아보세요!",
-                    "answer": "14면",
-                    "point": 100,
-                    "image_url": "dice.jpg",
-                    "heritage_type": "사적"
-                },
-                {
                     "id": "m3_3",
                     "title": "손님을 맞이하던 동궁과 월지",
                     "type": "quiz",
@@ -321,25 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             "category": "라한셀렉트 경주",
             "missions": [
-                {
-                    "id": "m4_1",
-                    "title": "보문호수 뷰",
-                    "type": "action",
-                    "description": "라한셀렉트 숙소 또는 테라스에서 탁 트인 보문호수를 배경으로 멋진 기념사진 남기기!",
-                    "answer": "보문호수 인증샷 촬영 완료",
-                    "point": 100,
-                    "image_url": "lake_view.jpg"
-                },
-                {
-                    "id": "m4_2",
-                    "title": "경주산책 (북카페)",
-                    "type": "discovery",
-                    "description": "라한셀렉트 내에 있는 북카페 '경주산책'에 방문하여 마음에 드는 공간을 발견하고 타임머신 임무를 공식 종료합니다.",
-                    "answer": "경주산책 방문 완료",
-                    "point": 100,
-                    "image_url": "book_cafe.jpg",
-                    "heritage_type": ""
-                },
                 {
                     "id": "m4_3",
                     "title": "아름다운 인공 호수, 보문호",
@@ -387,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 미션 데이터 초기 로드
     async function loadMissions() {
         try {
-            const response = await fetch('missions.json?v=1.4');
+            const response = await fetch('missions.json?v=1.5');
             if (!response.ok) throw new Error('네트워크 응답 오류');
             missionsData = await response.json();
         } catch (error) {
