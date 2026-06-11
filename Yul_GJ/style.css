@@ -884,6 +884,10 @@ body {
     background: linear-gradient(135deg, #11998e, #38ef7d); /* 에메랄드 초록 */
 }
 
+.heritage-badge.artpiece {
+    background: linear-gradient(135deg, #b388ff, #8c9eff); /* 보라-블루 */
+}
+
 /* 모달 타이틀 영역 정렬 */
 .modal-title-area {
     display: flex;
@@ -923,6 +927,10 @@ body {
 
 .modal-heritage-badge.historical-site {
     background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+.modal-heritage-badge.artpiece {
+    background: linear-gradient(135deg, #b388ff, #8c9eff);
 }
 
 /* 초2 맞춤 문화재 설명 박스 */

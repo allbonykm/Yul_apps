@@ -386,6 +386,16 @@
         "point": 100,
         "image_url": "보문호.jpg",
         "heritage_type": ""
+      },
+      {
+        "id": "m4_4",
+        "title": "울부짖는 형상들",
+        "type": "action",
+        "description": "라한셀렉트 호텔 안에 전시된 프랑스의 유명한 조각가 부르델의 '울부짖는 형상들' 조각상 앞에서, 멋지게 인증 사진을 찍어 도감을 완성하세요!",
+        "answer": "인증샷 촬영 완료",
+        "point": 100,
+        "image_url": "울부짖는 형상들.webp",
+        "heritage_type": "미술품"
       }
     ]
   }

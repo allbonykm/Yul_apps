@@ -349,6 +349,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     "point": 100,
                     "image_url": "보문호.jpg",
                     "heritage_type": ""
+                },
+                {
+                    "id": "m4_4",
+                    "title": "울부짖는 형상들",
+                    "type": "action",
+                    "description": "라한셀렉트 호텔 안에 전시된 프랑스의 유명한 조각가 부르델의 '울부짖는 형상들' 조각상 앞에서, 멋지게 인증 사진을 찍어 도감을 완성하세요!",
+                    "answer": "인증샷 촬영 완료",
+                    "point": 100,
+                    "image_url": "울부짖는 형상들.webp",
+                    "heritage_type": "미술품"
                 }
             ]
         }
@@ -357,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. 미션 데이터 초기 로드
     async function loadMissions() {
         try {
-            const response = await fetch('missions.json?v=1.2');
+            const response = await fetch('missions.json?v=1.3');
             if (!response.ok) throw new Error('네트워크 응답 오류');
             missionsData = await response.json();
         } catch (error) {
@@ -537,9 +547,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (mission.heritage_type === '사적') {
                 badge.classList.add('historical-site');
                 badge.textContent = '🏛️ 사적';
+            } else if (mission.heritage_type === '미술품') {
+                badge.classList.add('artpiece');
+                badge.textContent = '🖼️ 미술품';
             }
             
-            if (badge.classList.contains('national-treasure') || badge.classList.contains('treasure') || badge.classList.contains('historical-site')) {
+            if (badge.classList.contains('national-treasure') || badge.classList.contains('treasure') || badge.classList.contains('historical-site') || badge.classList.contains('artpiece')) {
                 badgeWrapper.appendChild(badge);
                 imgWrapper.appendChild(badgeWrapper);
             }
@@ -621,6 +634,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (mission.heritage_type === '사적') {
                 modalHeritageBadge.classList.add('historical-site');
                 modalHeritageBadge.textContent = '🏛️ 사적';
+            } else if (mission.heritage_type === '미술품') {
+                modalHeritageBadge.classList.add('artpiece');
+                modalHeritageBadge.textContent = '🖼️ 미술품';
             } else {
                 modalHeritageBadge.style.display = 'none';
             }
@@ -640,6 +656,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 heritageExplainBox.classList.toggle('active');
             } else if (mission.heritage_type === '사적') {
                 heritageExplainContent.innerHTML = '🏛️ <strong>사적</strong>은 옛날 조상님들이 살았거나 역사적으로 아주 특별한 일이 있었던 소중한 장소예요!';
+                heritageExplainBox.classList.toggle('active');
+            } else if (mission.heritage_type === '미술품') {
+                heritageExplainContent.innerHTML = '🖼️ <strong>미술품</strong>은 호텔 안에 전시되어 있는 아주 멋지고 훌륭한 진짜 예술 작품이에요!';
                 heritageExplainBox.classList.toggle('active');
             }
         };
